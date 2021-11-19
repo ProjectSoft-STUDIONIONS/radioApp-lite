@@ -1,1 +1,1 @@
-# radioApp-lite
+# Your Radio Lite | Ваше Радио (облегчённая версия)

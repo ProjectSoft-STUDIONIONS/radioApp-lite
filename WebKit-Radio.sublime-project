@@ -1,0 +1,23 @@
+{
+	"folders":
+	[
+		{
+			"path": ".",
+			"name": "WebKit App Radio",
+			"file_exclude_patterns": [
+				"*.sublime-project",
+				"*.sublime-workspace",
+				"package.json",
+				"*-lock.json",
+				"bower.json",
+				"radioapp.template"
+			],
+			"folder_exclude_patterns": [
+				"bower_components",
+				"node_modules",
+				"src/images",
+				"src/font"
+			]
+		}
+	]
+}

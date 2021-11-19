@@ -1,0 +1,17 @@
+{
+	"appName": {
+		"message": "Ваше радио"
+	},
+	"appError": {
+		"message": "ОШИБКА!\nПожалуйста, переустановите программу!"
+	},
+	"close": {
+		"message": "Закрыть"
+	},
+	"minimize": {
+		"message": "Свернуть"
+	},
+	"restore": {
+		"message": "Востановить"
+	}
+}

@@ -1,0 +1,86 @@
+#TitleBar {
+	-webkit-user-select: none;
+	-webkit-app-region: drag;
+	display: flex;
+	flex-direction: row;
+	flex-wrap: nowrap;
+	align-items: stretch;
+	user-select: none;
+	box-shadow: 0 0 2px #000;
+	width: 100%;
+	overflow: hidden;
+	background-color: #171814;
+	&, * {
+		line-height: 1;
+	}
+	&-icon,
+	&-buttons {
+		flex: 0 0 auto;
+	}
+	&-icon,
+	&-buttons,
+	&-text {
+		display: flex;
+		flex-direction: row;
+		flex-wrap: nowrap;
+		align-items: center;
+	}
+	&-icon {
+		padding: 3px;
+		img {
+			width: 20px;
+			height: 20px;
+			object-fit: contain;
+			object-position: center center;
+			display: block;
+		}
+	}
+	&-text {
+		flex: 1 0 auto;
+		padding-right: 8px;
+		padding-left: 6px;
+		max-width: ~'calc(100% - 164px)';
+		span {
+			overflow: hidden;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+			display: block;
+			width: 100%;
+			font-family: 'sans-serif';
+			font-size: small;
+			color: #e0e4e5;
+		}
+	}
+	&-buttons {
+		-webkit-app-region: no-drag;
+		display: flex;
+		flex-direction: row;
+		flex-wrap: nowrap;
+		align-items: stretch;
+		justify-content: space-between;
+		box-shadow: 0 0 1px 1px #000;
+		user-select: none;
+		span {
+			display: flex;
+			flex-direction: row;
+			flex-wrap: nowrap;
+			align-items: center;
+			justify-content: center;
+			padding: 9px 18px;
+			pointer-events: all;
+			cursor: pointer;
+			svg {
+				pointer-events: none;
+				stroke: #e0e4e5;
+			}
+			&:hover {
+				background-color: #2e2f2b;
+			}
+			&#close {
+				&:hover {
+					background-color: #e81123;
+				}
+			}
+		}
+	}
+}

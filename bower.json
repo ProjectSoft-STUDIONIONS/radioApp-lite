@@ -1,0 +1,23 @@
+{
+  "name": "webkit-app-radio",
+  "description": "WebKit радио плеер. Самостоятельное добавление радио потока. Импорт/Экспорт плейлиста радиостанций.",
+  "main": "Gruntfile.js",
+  "authors": [
+    "ProjectSoft <projectsoft2009@yandex.ru>"
+  ],
+  "license": "MIT",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "Croppie": "croppie#2.6.5",
+    "jquery-ui": "^1.12.1",
+    "jquery": "^3.6.0",
+    "jquery.scrollTo": "^2.1.3"
+  }
+}

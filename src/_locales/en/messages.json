@@ -1,0 +1,17 @@
+{
+	"appName": {
+		"message": "Your Radio"
+	},
+	"appError": {
+		"message": "ERROR!\nPlease reinstall the program! "
+	},
+	"close": {
+		"message": "Close"
+	},
+	"minimize": {
+		"message": "Minimise"
+	},
+	"restore": {
+		"message": "Restore"
+	}
+}

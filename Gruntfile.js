@@ -153,9 +153,14 @@ module.exports = function(grunt) {
 						//'src/js/main.viz.js'
 					],
 					'application/js/main.js': [
+						'src/js/require.js',
+						'src/js/windows.js',
+						'src/js/main.js'
+					],
+					/*'application/js/main.js': [
 						//'src/js/require.js',
 						'src/js/main.js'
-					]
+					]*/
 				}
 			},
 			modules: {

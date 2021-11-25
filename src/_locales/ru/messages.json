@@ -5,6 +5,9 @@
 	"appError": {
 		"message": "ОШИБКА!\nПожалуйста, переустановите программу!"
 	},
+	"notStations": {
+		"message": "Нет радиостанций"
+	},
 	"close": {
 		"message": "Закрыть"
 	},
@@ -13,5 +16,14 @@
 	},
 	"restore": {
 		"message": "Востановить"
+	},
+	"default": {
+		"message": "Развернуть на весь экран"
+	},
+	"goToDev": {
+		"message": "Перейти на сайт разработчика ProjectSoft?"
+	},
+	"notToDev": {
+		"message": "Ну и ладно..."
 	}
 }

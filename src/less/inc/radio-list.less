@@ -3,16 +3,160 @@ ul#radio-list {
 	list-style: none;
 	padding: 0;
 	max-height: 100%;
-	overflow-y: auto;
 	max-width: 100%;
 	min-width: 100%;
 	width: 100%;
 	height: 100%;
 	position: relative;
+	overflow-y: auto;
+	overflow-x: hidden;
+	user-select: none;
 	li {
 		padding: 0;
 		margin: 0;
 		list-style: none;
+		box-shadow: 0 0 2px #adadad;
+		&.radio-item {
+			overflow: hidden;
+			position: relative;
+			padding: 10px;
+			background-color: #ffffff;
+			color: #333333;
+			&.active {
+				background-color: #333333;
+				color: #ffffff;
+				&.preload {
+					.radio-item-icon {
+						span {
+							&.icons {
+								&:after {
+									z-index: 4;
+								}
+							}
+						}
+					}
+				}
+				.radio-item-icon {
+
+				}
+			}
+		}
+		.radio-item {
+			&-box {
+				display: flex;
+				flex-direction: row;
+				align-items: center;
+			}
+			&-wrap {
+				flex: 1 0 auto;
+				position: relative;
+				padding-left: 10px;
+				padding-right: 10px;
+				width: calc(100% - 40px);
+				overflow: hidden;
+				span.station-name {
+					white-space: nowrap;
+					overflow: hidden;
+					text-overflow: ellipsis;
+					display: block;
+					width: 100%;
+				}
+			}
+			&-icon,
+			&-handler {
+				flex: 0 0 auto;
+			}
+			&-icon {
+				width: 40px;
+				height: 40px;
+				position: relative;
+				span {
+					display: block;
+					line-height: 1;
+					&.icons {
+						&,
+						&:after,
+						&:before {
+							position: absolute;
+							top: 0;
+							left: 0;
+							width: 100%;
+							height: 100%;
+							right: 0;
+							bottom: 0;
+						}
+						&:after {
+							background-image: data-uri('inc/data-uri/preloader.svg');
+							background-size: contain;
+							background-repeat: no-repeat;
+							background-position: center center;
+							content: "";
+							z-index: -1;
+							transition: all .3s ease;
+						}
+					}
+				}
+			}
+			&-handler {
+				width: 10px;
+				height: 40px;
+				min-width: 10px;
+				cursor: row-resize;
+				.icon-handler {
+					display: flex;
+					flex-direction: column;
+					align-items: center;
+					justify-content: center;
+					opacity: .5;
+					transition: opacity .4s ease;
+					position: absolute;
+					top: 0;
+					bottom: 0;
+					height: 100%;
+					right: 3px;
+					span.center,
+					span.top,
+					span.bottom {
+						color: #ffab6a;
+						font-size: 16px;
+						line-height: 16px;
+						height: 16px;
+						overflow: hidden;
+						display: block;
+					}
+					span.top,
+					span.bottom {
+						position: absolute;
+						right: -3px;
+						transition: top .3s ease, bottom .3s ease;
+					}
+					span.bottom {
+						bottom: 16px;
+					}
+					span.top {
+						top: 17px;
+					}
+				}
+				&:hover {
+					.icon-handler {
+						opacity: 1;
+						span.bottom {
+							bottom: 9px;
+						}
+						span.top {
+							top: 10px;
+						}
+					}
+				}
+			}
+		}
+		&.radio-item {
+			&.active {
+				&.preload {
+
+				}
+			}
+		}
 	}
 	&:empty {
 		display: flex;
@@ -23,7 +167,7 @@ ul#radio-list {
 		&:before {
 			display: block;
 			text-align: center;
-			content: "Нет станций"
+			content: attr(data-title)
 		}
 	}
 }

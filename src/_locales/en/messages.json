@@ -3,7 +3,10 @@
 		"message": "Your Radio"
 	},
 	"appError": {
-		"message": "ERROR!\nPlease reinstall the program! "
+		"message": "ERROR!\nPlease reinstall the program!"
+	},
+	"notStations": {
+		"message": "No radio stations"
 	},
 	"close": {
 		"message": "Close"
@@ -13,5 +16,14 @@
 	},
 	"restore": {
 		"message": "Restore"
+	},
+	"default": {
+		"message": "Expand to full screen"
+	},
+	"goToDev": {
+		"message": "Go to the ProjectSoft developer site? "
+	},
+	"notToDev": {
+		"message": "Well, okay..."
 	}
 }

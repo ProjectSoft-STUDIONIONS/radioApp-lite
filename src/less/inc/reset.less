@@ -7,4 +7,23 @@
 }
 body {
 	margin: 0px;
+	font-family: 'Bender', 'sans-serif';
+	background-image: radial-gradient(circle,#fdc9a0,#ff7000);
+}
+html,
+body {
+	height: 100%;
+	position: relative;
+	overflow: hidden;
+}
+img {
+	max-width: 100%;
+}
+.clearfix {
+	&:before,
+	&:after {
+		display: table;
+		content: "";
+		clear: both;
+	}
 }

@@ -22,6 +22,30 @@ ul#radio-list {
 			padding: 10px;
 			background-color: #ffffff;
 			color: #333333;
+			&.play {
+				.radio-item-icon {
+					span {
+						&.icons {
+							&:before {
+								background-image: data-uri('inc/data-uri/pause.svg');
+								background-size: 24px;
+							}
+						}
+					}
+				}
+			}
+			&.stop {
+				.radio-item-icon {
+					span {
+						&.icons {
+							&:before {
+								background-image: data-uri('inc/data-uri/play.svg');
+								background-size: 18px;
+							}
+						}
+					}
+				}
+			}
 			&.active {
 				background-color: #333333;
 				color: #ffffff;
@@ -31,13 +55,11 @@ ul#radio-list {
 							&.icons {
 								&:after {
 									z-index: 4;
+									opacity: 1;
 								}
 							}
 						}
 					}
-				}
-				.radio-item-icon {
-
 				}
 			}
 		}
@@ -70,6 +92,7 @@ ul#radio-list {
 				width: 40px;
 				height: 40px;
 				position: relative;
+				cursor: pointer;
 				span {
 					display: block;
 					line-height: 1;
@@ -85,14 +108,35 @@ ul#radio-list {
 							right: 0;
 							bottom: 0;
 						}
-						&:after {
-							background-image: data-uri('inc/data-uri/preloader.svg');
-							background-size: contain;
+						&:after,
+						&:before {
 							background-repeat: no-repeat;
 							background-position: center center;
 							content: "";
-							z-index: -1;
+							overflow: hidden;
+							transform-origin: center center;
 							transition: all .3s ease;
+						}
+						&:after {
+							background-image: data-uri('inc/data-uri/preloader.svg');
+							background-size: cover;
+							z-index: -1;
+							opacity: 0;
+						}
+						&:before {
+							background-color: rgba(0, 0, 0, .3);
+							border-radius: 50%;
+							transform: scale(0.0);
+							transition: all .3s ease;
+						}
+					}
+				}
+				&:hover {
+					span {
+						&.icons {
+							&:before {
+								transform: scale(1);
+							}
 						}
 					}
 				}
@@ -150,10 +194,16 @@ ul#radio-list {
 				}
 			}
 		}
-		&.radio-item {
-			&.active {
-				&.preload {
-
+		&.ui-sortable-helper {
+			.radio-item-handler {
+				.icon-handler {
+					opacity: 1;
+					span.bottom {
+						bottom: 9px;
+					}
+					span.top {
+						top: 10px;
+					}
 				}
 			}
 		}

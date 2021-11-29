@@ -155,6 +155,7 @@ module.exports = function(grunt) {
 					'application/js/main.js': [
 						'src/js/require.js',
 						'src/js/windows.js',
+						'src/js/stationInsert.js',
 						'src/js/main.js'
 					],
 					/*'application/js/main.js': [
@@ -189,7 +190,7 @@ module.exports = function(grunt) {
 			sdk: {
 				options: {
 					platforms: ['win32'],
-					winIco: 'application/favicon.ico',
+					winIco: 'application/fav.ico',
 					buildDir: __dirname+'/build/sdk',
 					flavor: 'sdk',
 					version: gc.version,
@@ -204,7 +205,7 @@ module.exports = function(grunt) {
 			normal: {
 				options: {
 					platforms: ['win32'],
-					winIco: 'application/favicon.ico',
+					winIco: 'application/fav.ico',
 					buildDir: __dirname+'/build/normal',
 					flavor: 'normal',
 					version: gc.version,

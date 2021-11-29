@@ -1,17 +1,18 @@
-li.radio-item
-	.radio-item-box
-		.radio-item-icon
-			span.icons.icon-stop
-			span
-				img(src="favicon.png" alt="Логотип радиостанции")
-		.radio-item-wrap
-			span.station-name
-				|Название радиостанции Название радиостанции
-		.radio-item-handler
-			span.icon-handler
-				span.top
-					|▲
-				span.center
-					|●
-				span.bottom
-					|▼
+each val in [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30]
+	li.radio-item.stop
+		.radio-item-box
+			.radio-item-icon
+				span.icons
+				span
+					img(src="favicon.png" alt="Логотип радиостанции")
+			.radio-item-wrap
+				span.station-name
+					|Название радиостанции Название радиостанции
+			.radio-item-handler
+				span.icon-handler
+					span.top
+						|▲
+					span.center
+						|●
+					span.bottom
+						|▼

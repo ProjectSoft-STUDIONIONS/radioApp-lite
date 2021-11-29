@@ -29,7 +29,7 @@
 		let eId = e.currentTarget.id;
 		if(eId == "minimized" || eId == "restored" || eId == "close"){
 			e.preventDefault();
-			eId == "minimized" ? win.minimize() : (eId == "close" ? nw.App.quit() : (isMaximized ? win.restore() : win.maximize()))
+			eId == "minimized" ? win.minimize() : (eId == "close" ? win.close() : (isMaximized ? win.restore() : win.maximize()))
 			return !1;
 		}
 	});
@@ -72,7 +72,7 @@
 				label: "  " + locale.close,
 				icon: "images/tray_close.png",
 				click: function() {
-					nw.App.quit();
+					win.close();
 				}
 			}),
 			tray_mini_restore = new nw.MenuItem({

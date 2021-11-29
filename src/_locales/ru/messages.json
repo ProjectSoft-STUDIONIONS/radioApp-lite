@@ -18,12 +18,39 @@
 		"message": "Востановить"
 	},
 	"default": {
-		"message": "Развернуть на весь экран"
+		"message": "Развернуть"
 	},
 	"goToDev": {
 		"message": "Перейти на сайт разработчика ProjectSoft?"
 	},
 	"notToDev": {
 		"message": "Ну и ладно..."
+	},
+	"editTitle": {
+		"message": "Редактировать радиостанцию"
+	},
+	"exportTitle": {
+		"message": "Экспортировать радиостанции"
+	},
+	"insertTitle": {
+		"message": "Добавить радиостанцию"
+	},
+	"importTitle": {
+		"message": "Импортировать радиостанции"
+	},
+	"insertName": {
+		"message": "Название радиостанции"
+	},
+	"inserStream": {
+		"message": "Поток радиостанции"
+	},
+	"insert": {
+		"message": "Добавить"
+	},
+	"cancel": {
+		"message": "Отмена"
+	},
+	"ok": {
+		"message": "Ок"
 	}
 }

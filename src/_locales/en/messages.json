@@ -18,12 +18,39 @@
 		"message": "Restore"
 	},
 	"default": {
-		"message": "Expand to full screen"
+		"message": "Expand"
 	},
 	"goToDev": {
 		"message": "Go to the ProjectSoft developer site? "
 	},
 	"notToDev": {
 		"message": "Well, okay..."
+	},
+	"editTitle": {
+		"message": "Edit radio station"
+	},
+	"exportTitle": {
+		"message": "Export radio stations"
+	},
+	"insertTitle": {
+		"message": "Add radio station"
+	},
+	"importTitle": {
+		"message": "Import radio stations"
+	},
+	"insertName": {
+		"message": "Radio station name"
+	},
+	"inserStream": {
+		"message": "Radio station stream"
+	}, 
+	"insert": {
+		"message": "Add"
+	},
+	"cancel": {
+		"message": "Cancel"
+	},
+	"ok": {
+		"message": "Ok"
 	}
 }

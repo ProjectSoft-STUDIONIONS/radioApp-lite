@@ -4,9 +4,13 @@ if(nw.process.versions["nw-flavor"] == "sdk"){
 }
 const gui = require('nw.gui'),
 	fs = require('fs'),
-	locale = require("./modules/locale.js"),
+	locale = require(".\\modules\\locale.js"),
+	{ StringDecoder } = require('string_decoder'),
+	decoder = new StringDecoder('utf8'),
 	win = nw.Window.get(),
+	dir = nw.App.dataPath + "\\radio",
+	dirFile = dir + "\\data.json",
 	quitError = function(error){
 		alert(error);
-		nw.App.quit();
+		win.close();
 	};

@@ -27,8 +27,23 @@ class LocaleApp {
 	get notToDev() {
 		return chrome.i18n.getMessage('notToDev');
 	}
-	get editStation() {
-		return chrome.i18n.getMessage('editStation');
+	get editTitle() {
+		return chrome.i18n.getMessage('editTitle');
+	}
+	get copyTitle() {
+		return chrome.i18n.getMessage('copyTitle');
+	}
+	get copyOk() {
+		return chrome.i18n.getMessage('copyOk');
+	}
+	get insertTitle() {
+		return chrome.i18n.getMessage('insertTitle');
+	}
+	get deleteTitle() {
+		return chrome.i18n.getMessage('deleteTitle');
+	}
+	get deleteStation() {
+		return chrome.i18n.getMessage('deleteStation');
 	}
 	get exportTitle() {
 		return chrome.i18n.getMessage('exportTitle');
@@ -51,20 +66,6 @@ class LocaleApp {
 	get ok() {
 		return chrome.i18n.getMessage('ok');
 	}
-	/*
-	get () {
-		return chrome.i18n.getMessage('');
-	}
-	get () {
-		return chrome.i18n.getMessage('');
-	}
-	get () {
-		return chrome.i18n.getMessage('');
-	}
-	get () {
-		return chrome.i18n.getMessage('');
-	}
-	*/
 }
 
 var _l = new LocaleApp();

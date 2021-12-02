@@ -26,14 +26,26 @@
 	"notToDev": {
 		"message": "Well, okay..."
 	},
-	"editTitle": {
-		"message": "Edit radio station"
+	"copyTitle": {
+		"message": "Copy station radio stream"
 	},
-	"exportTitle": {
-		"message": "Export radio stations"
+	"copyOk": {
+		"message": "Stream link of radio station %name% copied"
 	},
 	"insertTitle": {
 		"message": "Add radio station"
+	},
+	"editTitle": {
+		"message": "Edit radio station"
+	},
+	"deleteStation": {
+		"message": "Delete radio station"
+	},
+	"deleteText": {
+		"message": "Delete radio station %name%?"
+	},
+	"exportTitle": {
+		"message": "Export radio stations"
 	},
 	"importTitle": {
 		"message": "Import radio stations"

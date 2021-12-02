@@ -26,14 +26,26 @@
 	"notToDev": {
 		"message": "Ну и ладно..."
 	},
-	"editTitle": {
-		"message": "Редактировать радиостанцию"
+	"copyTitle": {
+		"message": "Копировать радиопоток станции"
 	},
-	"exportTitle": {
-		"message": "Экспортировать радиостанции"
+	"copyOk": {
+		"message": "Ссылка на поток радиостанции %name% скопирована"
 	},
 	"insertTitle": {
 		"message": "Добавить радиостанцию"
+	},
+	"editTitle": {
+		"message": "Редактировать радиостанцию"
+	},
+	"deleteTitle": {
+		"message": "Удалить радиостанцию"
+	},
+	"deleteStation": {
+		"message": "Удалить радиостанцию %name%?"
+	},
+	"exportTitle": {
+		"message": "Экспортировать радиостанции"
 	},
 	"importTitle": {
 		"message": "Импортировать радиостанции"

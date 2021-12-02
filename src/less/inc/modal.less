@@ -1,0 +1,96 @@
+.modal {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: flex-end;
+	height: 100%;
+	* {
+		user-select: none;
+	}
+	.close {
+		margin: 10px;
+		cursor: pointer;
+	}
+	&-dialog {
+		flex: 1 0 auto;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		align-self: center;
+		min-width: 400px;
+	}
+	&-wrapper {
+		padding: 15px;
+		align-items: center;
+		justify-content: center;
+		display: flex;
+		flex-direction: column;
+		flex: 1;
+		min-width: 100%;
+		background-color: #fff;
+		box-shadow: 0 0 20px rgba(0, 0, 0, .1);
+	}
+	&-inputs {
+		flex: 1;
+		min-width: 400px;
+		margin-bottom: 20px;
+	}
+	&-label {
+		display: block;
+		margin-bottom: 0;
+		position: relative;
+		padding-top: 20px;
+		span {
+			user-select: none;
+			pointer-events: none;
+			position: absolute;
+			font-size: 12px;
+			top: 0px;
+			left: 15px;
+			transition: top .3s ease;
+			color: #0098ff;
+			font-weight: bolder;
+		}
+		input {
+			user-select: auto;
+			display: block;
+			width: 100%;
+			font-family: Bender,sans-serif;
+			font-size: 12px;
+			padding-top: 0px;
+			padding-bottom: 5px;
+			appearance: none;
+			outline: none !important;
+			border: 0;
+			border-bottom: 1px solid #0098ff;
+			margin-bottom: 5px;
+			&::placeholder {
+				color: transparent;
+			}
+			&:placeholder-shown ~ span {
+				top: 19px;
+			}
+			&:focus ~ span {
+				top: 0px;
+			}
+		}
+	}
+	&-buttons {
+		max-width: 250px;
+		width: 100%;
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		justify-content: center;
+		.btn {
+			margin-right: 15px;
+			padding-top: 0.7em;
+			padding-bottom: 0.7em;
+			flex: 1;
+			font-weight: 900;
+			&:last-child {
+				margin-right: 0;
+			}
+		}
+	}
+}

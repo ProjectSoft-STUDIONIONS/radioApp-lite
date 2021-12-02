@@ -1,6 +1,48 @@
 
 !(function($){
-	const 	readFile = async function(){
+	const 	addListItem = function(data){
+				try{
+					if(data.name && data.stream){
+						let _id = data.id,
+							_name = data.name,
+							_stream = data.stream,
+							has = "?" + (new Date()).getTime(),
+							_icon = ((fs.existsSync(dir + '\\' + _id + '.png'))	? dir + '\\' + _id + '.png' : 'favicon.png') + has,
+							_tmp = $(`<li id="st_${_id}" class="radio-item stop">
+							<div class="radio-item-box">
+								<div class="radio-item-icon">
+									<span class="icons"></span>
+									<span><img src="${_icon}" alt="${_name}"></span>
+								</div>
+								<div class="radio-item-wrap">
+									<span class="station-name">${_name}</span>
+								</div>
+								<div class="radio-item-handler">
+									<span class="icon-handler">
+										<span class="top">▲</span>
+										<span class="center">●</span>
+										<span class="bottom">▼</span>
+									</span>
+								</div>
+							</div>
+						</li>`);
+						_tmp.data({
+							id: _id,
+							name: _name,
+							stream: _stream
+						});
+						$('#radio-list').append(_tmp);
+						if(active == _id){
+							_tmp.addClass('active');
+						}
+						return !0;
+					}
+					return !1;
+				}catch(e){
+					return !1;
+				}
+			},
+			readFile = async function(){
 				let file = dirFile,
 					_json = {
 						stations: {},
@@ -18,38 +60,8 @@
 					json.notify = notify = _json["notify"] ? _json["notify"] : notify;
 					for (let prop in json.stations) {
 						let st = json.stations[prop];
-						if(st.name && st.stream){
-							let _name = st.name,
-								_stream = st.stream,
-								_icon = (fs.existsSync(dir + '\\' + prop + '.png'))	? dir + '\\' + prop + '.png' : 'favicon.png';
-							let _tmp = $(`<li id="st_${prop}" class="radio-item stop">
-								<div class="radio-item-box">
-									<div class="radio-item-icon">
-										<span class="icons"></span>
-										<span><img src="${_icon}" alt="${_name}"></span>
-									</div>
-									<div class="radio-item-wrap">
-										<span class="station-name">${_name}</span>
-									</div>
-									<div class="radio-item-handler">
-										<span class="icon-handler">
-											<span class="top">▲</span>
-											<span class="center">●</span>
-											<span class="bottom">▼</span>
-										</span>
-									</div>
-								</div>
-							</li>`);
-							_tmp.data({
-								id: prop,
-								name: _name,
-								stream: _stream
-							});
-							$('#radio-list').append(_tmp);
-							if(active == prop){
-								_tmp.addClass('active');
-							}
-						}
+						st.id = prop;
+						addListItem(st);
 					}
 
 				} catch(e){}
@@ -136,40 +148,62 @@
 		}
 	});
 	win.on('close',function(){
-		writeFile();
+		writeFile(false);
 		nw.App.quit();
 	});
 	setTitle(locale.appName);
 	
-	const	addStationItem = new nw.MenuItem({
-				label: "Добавить станцию",
+	const	copyStationItem = new nw.MenuItem({
+				label: locale.copyTitle,
+				type: 'normal'
+			}),
+			addStationItem = new nw.MenuItem({
+				label: locale.insertTitle,
 				type: 'normal',
 				click: function() {
-					console.log("Добавить станцию");
+					$.radioDialog.show({
+						type: 'insert'
+					}, function(args){
+						if(args.type == 'insert'){
+							addListItem(args);
+							writeFile(false);
+						}
+					});
 				}
 			}),
+			editStationItem = new nw.MenuItem({
+				label: locale.editTitle,
+				type: 'normal'
+			}),
 			removeStationItem = new nw.MenuItem({
-				label: "Удалить станцию",
-				type: 'normal',
-				click: function() {
-					console.log("Удалить станцию");
-				}
+				label: locale.deleteTitle,
+				type: 'normal'
 			}),
 			separator = nw.MenuItem({
 				type: 'separator'
 			}),
 			exportStations = new nw.MenuItem({
-				label: "Экспорт станций",
+				label: locale.exportTitle,
 				type: 'normal',
 				click: function() {
 					console.log("Экспорт станций");
+					$.radioDialog.show({
+						type: 'export'
+					}, function(args){
+						console.log(args);
+					});
 				}
 			}),
 			importStations = new nw.MenuItem({
-				label: "Импорт станций",
+				label: locale.importTitle,
 				type: 'normal',
 				click: function() {
 					console.log("Импорт станций");
+					$.radioDialog.show({
+						type: 'import'
+					}, function(args){
+						console.log(args);
+					});
 				}
 			}),
 			menu = new nw.Menu(),
@@ -180,6 +214,9 @@
 	menu.append(exportStations);
 	menu.append(importStations);
 	menuLi.append(addStationItem);
+	menuLi.append(separator);
+	menuLi.append(copyStationItem);
+	menuLi.append(editStationItem);
 	menuLi.append(removeStationItem);
 	menuLi.append(separator);
 	menuLi.append(exportStations);
@@ -187,6 +224,7 @@
 
 	$(document).on('click', '#radio-list span.icons', function(e){
 		e.preventDefault();
+		// play & stop radio
 		var _li = $(this).closest('li');
 		(_li.hasClass('active')) ? (
 			_li.hasClass('play') ? (
@@ -202,20 +240,77 @@
 		return !1;
 	}).on('click', '.write', function(e){
 		e.preventDefault();
-		$.insertStation.show('insert');
+		/*
+		$.radioDialog.show({
+			type: 'insert'
+		}, function(args){
+			console.log(args);
+		});
+		*/
 		return !1;
 	}).on('contextmenu', '#radio-list > li', function(e){
-		//e.preventDefault();
-		//let ev = e.originalEvent;
-		//console.log(e);
-		//menuLi.popup(parseInt(ev.x), parseInt(ev.y));
-		//return !1;
+		e.preventDefault();
+		var ev = e.originalEvent,
+			$ct = $(e.currentTarget),
+			data = $ct.data(),
+			stn = " - «" + data.name + "»";
+		editStationItem.label = locale.editTitle + stn;
+		removeStationItem.label = locale.deleteTitle + stn;
+		copyStationItem.label = locale.copyTitle + stn;
+		// copy link stream
+		copyStationItem.click = function(){
+			data.type = 'copy';
+			navigator.clipboard.writeText(data.stream).then(() => {
+				$.radioDialog.show(data, function(args){});
+			}).catch(err => {
+				console.log('Something went wrong', err);
+			});
+		};
+		// edit station item
+		editStationItem.click = function(){
+			data.type = 'edit';
+			$.radioDialog.show(data, function(args){
+				if(args.type == data.type){
+					let img = $('img', '#st_' + args.id),
+						name = $('.station-name', '#st_' + args.id),
+						has = "?" + (new Date()).getTime(),
+						_icon = ((fs.existsSync(dir + '\\' + args.id + '.png'))	? dir + '\\' + args.id + '.png' : 'favicon.png') + has;
+					if(name.hasClass('active') && name.hasClass('')){
+						// stop radio
+					}
+					img.attr({
+						alt: args.name,
+						src: _icon
+					});
+					name.text(args.name);
+					$('#st_' + args.id).data({
+						id: args.id,
+						name: args.name,
+						stream: args.stream
+					});
+					//writeFile(false);
+				}
+			});
+		};
+		// remove station item
+		removeStationItem.click = function(){
+			data.type = 'delete';
+			$.radioDialog.show(data, function(args){
+				if(args.type == data.type){
+					if($('#st_' + args.id).hasClass('active')){
+						// stop radio
+					}
+					$('#st_' + args.id).remove();
+				}
+			});
+		}
+		menuLi.popup(parseInt(ev.x), parseInt(ev.y));
+		return !1;
 	}).on('contextmenu', 'main, footer', function(e){
-		//e.preventDefault();
-		//let ev = e.originalEvent;
-		//console.log(e);
-		//menu.popup(parseInt(ev.x), parseInt(ev.y));
-		//return !1;
+		e.preventDefault();
+		let ev = e.originalEvent;
+		menu.popup(parseInt(ev.x), parseInt(ev.y));
+		return !1;
 	});
 
 	$( "#radio-list" ).sortable({

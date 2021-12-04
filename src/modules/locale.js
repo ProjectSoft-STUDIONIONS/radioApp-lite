@@ -48,8 +48,14 @@ class LocaleApp {
 	get exportTitle() {
 		return chrome.i18n.getMessage('exportTitle');
 	}
+	get exportMessage() {
+		return chrome.i18n.getMessage('exportMessage');
+	}
 	get importTitle() {
 		return chrome.i18n.getMessage('importTitle');
+	}
+	get importMessage() {
+		return chrome.i18n.getMessage('importMessage');
 	}
 	get insertName() {
 		return chrome.i18n.getMessage('insertName');

@@ -47,8 +47,14 @@
 	"exportTitle": {
 		"message": "Export radio stations"
 	},
+	"exportMessage": {
+		"message": "Would you like to save the list of radio stations?"
+	},
 	"importTitle": {
 		"message": "Import radio stations"
+	},
+	"importMessage": {
+		"message": "Would you like to upload a new list of radio stations?"
 	},
 	"insertName": {
 		"message": "Radio station name"

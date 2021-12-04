@@ -1,6 +1,19 @@
 
 !(function($){
-	const 	addListItem = function(data){
+	const 	deleteRadioPath = function (path) {
+				let files = [];
+				if( fs.existsSync(path) ) {
+					files = fs.readdirSync(path);
+					files.forEach(function(file,index){
+						let curPath = path + "/" + file;
+						if(fs.statSync(curPath).isDirectory()) {
+							deleteRadioPath(curPath);
+						}
+						fs.unlinkSync(curPath);
+					});
+				}
+			},
+			addListItem = function(data){
 				try{
 					if(data.name && data.stream){
 						let _id = data.id,
@@ -64,8 +77,9 @@
 						addListItem(st);
 					}
 
-				} catch(e){}
-				finally {
+				} catch(e){
+					//
+				} finally {
 					$("main").removeClass('loading');
 				}
 				return _json;
@@ -88,14 +102,20 @@
 				});
 				_output = JSON.stringify(json);
 				fs.writeFile(dirFile, _output, 'utf8', (err) => {
-					if(!err){
-						// Читаем файл
-						isRead && readFile();
-					}else{
-						// Закрываем программу
-						quitError(locale.appError);
-					}
+					/**
+					 * If there is no error, then we read the file, otherwise we close the program 
+					 **/
+					!err ? (isRead && readFile()) : quitError(locale.appError);
 				});
+			},
+			deleteItem = function(id){
+				$("*", "#st_" + id).unbind('click.radioDialog');
+				$("#st_" + id).remove();
+				let fav = dir + `\\${id}.png`;
+				if(fs.existsSync(fav)){
+					fs.unlinkSync(fav);
+				}
+				writeFile(false);
 			},
 			setTitle = function(title) {
 				title = title.replace(/\s+/g, ' ');
@@ -106,53 +126,71 @@
 				stations: {},
 				active: 0,
 				notify: false
-			};
+			},
+			player = new AudioPlayer(document);
 	var active = json.active,
 		notify = json.notify;
-	// Проверяем директорию и файл
+	/**
+	 * Checking the directory and file
+	 **/
 	fs.mkdir(dir, 0777, (err) => {
 		if (err) {
 			if (err.code == 'EEXIST'){
-				// Существует. Проверяем файл
+				/**
+				 * Exists. Checking the file
+				 **/
 				fs.access(dirFile, fs.constants.F_OK | fs.constants.W_OK, (err1) => {
 					if (err1) {
-						// Несуществует
+						/**
+						 * Does not exist
+						 **/
 						if(err1.code === 'ENOENT'){
-							// Запишем в файл дефолт
+							/**
+							 * Create and write default to the file
+							 **/
 							writeFile(true);
 						}else{
-							// С аттрибутами чо-то не то.
-							// Пробуем установить
+							/**
+							 * There is something wrong with the attributes.
+							 * Trying to install 
+							 **/
 							fs.chmod(dirFile, 0777, (err3) => {
 								if (err3){
-									// Закрываем программу
+									/**
+									 * Close the program 
+									 **/
 									quitError(locale.appError);
 								}else{
-									// Читаем файл
+									/**
+									 * Reading the file 
+									 **/
 									readFile();
 								}
 							});
 						}
 					} else {
-						// Читаем файл
+						/**
+						 * Reading the file 
+						 **/ 
 						readFile();
 					}
 				});
 			} else {
-				// Закрываем программу
+				/**
+				 * Close the program 
+				 **/
 				quitError(locale.appError);
 			}
 		} else {
-			// Создали и Запишем в файл дефол
+			/**
+			 * Create and write default to the file
+			 **/ 
 			writeFile(true);
 		}
 	});
-	win.on('close',function(){
-		writeFile(false);
-		nw.App.quit();
-	});
-	setTitle(locale.appName);
-	
+	/**
+	 * Context Menu Constants 
+	 **/
 	const	copyStationItem = new nw.MenuItem({
 				label: locale.copyTitle,
 				type: 'normal'
@@ -190,7 +228,14 @@
 					$.radioDialog.show({
 						type: 'export'
 					}, function(args){
-						console.log(args);
+						if(args.type == 'export'){
+							console.log(args.type);
+							/**
+							 * Export radio station's
+							 **/
+						} else {
+
+						}
 					});
 				}
 			}),
@@ -198,17 +243,25 @@
 				label: locale.importTitle,
 				type: 'normal',
 				click: function() {
-					console.log("Импорт станций");
 					$.radioDialog.show({
 						type: 'import'
 					}, function(args){
-						console.log(args);
+						if(args.type == 'import'){
+							console.log(args.type);
+							/**
+							 * Import radio station's
+							 **/
+						} else {
+
+						}
 					});
 				}
 			}),
 			menu = new nw.Menu(),
 			menuLi = new nw.Menu();
-
+	/**
+	 * Collecting the context menu
+	 **/
 	menu.append(addStationItem);
 	menu.append(separator);
 	menu.append(exportStations);
@@ -224,31 +277,32 @@
 
 	$(document).on('click', '#radio-list span.icons', function(e){
 		e.preventDefault();
-		// play & stop radio
-		var _li = $(this).closest('li');
+		/**
+		 * play & stop radio
+		 **/
+		var _li = $(this).closest('li'),
+			data = _li.data();
 		(_li.hasClass('active')) ? (
 			_li.hasClass('play') ? (
-				_li.removeClass('play preload').addClass('stop')
+				_li.removeClass('play preload').addClass('stop'),
+				player.stop()
 			) : (
-			 	_li.removeClass('stop').addClass('play preload')
+				_li.removeClass('stop').addClass('play preload'),
+				player.stream = data.stream,
+				player.play()
 			 )
 		) : (
 			$("#radio-list li").removeClass('active preload play').addClass('stop'),
-			_li.addClass('active preload play').removeClass('stop')
+			_li.addClass('active preload play').removeClass('stop'),
+			player.stream = data.stream,
+			player.play()
 		);
 		json.active = active = _li.prop('id').split('_')[1];
 		return !1;
-	}).on('click', '.write', function(e){
-		e.preventDefault();
-		/*
-		$.radioDialog.show({
-			type: 'insert'
-		}, function(args){
-			console.log(args);
-		});
-		*/
-		return !1;
 	}).on('contextmenu', '#radio-list > li', function(e){
+		/**
+		 * Context menu radio-lis li
+		 **/
 		e.preventDefault();
 		var ev = e.originalEvent,
 			$ct = $(e.currentTarget),
@@ -257,7 +311,9 @@
 		editStationItem.label = locale.editTitle + stn;
 		removeStationItem.label = locale.deleteTitle + stn;
 		copyStationItem.label = locale.copyTitle + stn;
-		// copy link stream
+		/**
+		 * copy link stream
+		 **/
 		copyStationItem.click = function(){
 			data.type = 'copy';
 			navigator.clipboard.writeText(data.stream).then(() => {
@@ -265,8 +321,11 @@
 			}).catch(err => {
 				console.log('Something went wrong', err);
 			});
+			copyStationItem.click = null;
 		};
-		// edit station item
+		/**
+		 * edit station item
+		 **/
 		editStationItem.click = function(){
 			data.type = 'edit';
 			$.radioDialog.show(data, function(args){
@@ -276,7 +335,9 @@
 						has = "?" + (new Date()).getTime(),
 						_icon = ((fs.existsSync(dir + '\\' + args.id + '.png'))	? dir + '\\' + args.id + '.png' : 'favicon.png') + has;
 					if(name.hasClass('active') && name.hasClass('')){
-						// stop radio
+						/**
+						 * stop radio
+						 **/
 					}
 					img.attr({
 						alt: args.name,
@@ -288,31 +349,54 @@
 						name: args.name,
 						stream: args.stream
 					});
-					//writeFile(false);
+					writeFile(false);
 				}
 			});
+			editStationItem.click = null;
 		};
-		// remove station item
+		/**
+		 * remove station item
+		 **/
 		removeStationItem.click = function(){
 			data.type = 'delete';
 			$.radioDialog.show(data, function(args){
 				if(args.type == data.type){
 					if($('#st_' + args.id).hasClass('active')){
-						// stop radio
+						/**
+						 * stop radio
+						 **/
 					}
 					$('#st_' + args.id).remove();
+					deleteItem(args.id);
 				}
 			});
+			removeStationItem.click = null;
 		}
 		menuLi.popup(parseInt(ev.x), parseInt(ev.y));
 		return !1;
 	}).on('contextmenu', 'main, footer', function(e){
+		/**
+		 * Context menu default
+		 **/
 		e.preventDefault();
 		let ev = e.originalEvent;
 		menu.popup(parseInt(ev.x), parseInt(ev.y));
 		return !1;
+	}).on('click', '.write', function(e){
+		e.preventDefault();
+		/**
+		 * Test Click's
+		$.radioDialog.show({
+			type: 'insert'
+		}, function(args){
+			console.log(args);
+		});
+		**/
+		return !1;
 	});
-
+	/**
+	 * Adding UI Sortable
+	 **/
 	$( "#radio-list" ).sortable({
 		axis: "y",
 		cursor: "row-resize",
@@ -322,6 +406,15 @@
 			writeFile(false);
 		}
 	});
-
-	//readFile();
+	/**
+	 * Adding a close event to nwWindow
+	 **/
+	win.on('close',function(){
+		writeFile(false);
+		nw.App.quit();
+	});
+	/**
+	 * Set App title
+	 **/
+	setTitle(locale.appName);
 }(jQuery));

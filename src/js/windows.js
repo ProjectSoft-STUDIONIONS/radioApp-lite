@@ -62,10 +62,7 @@
 	const 	tray = new nw.Tray({
 				title: locale.appName,
 				tooltip: locale.appName,
-				icon: 'favicon.png',
-				/*click: function(e){
-					console.log(e)
-				}*/
+				icon: 'favicon.png'
 			}),
 			trayMenu = new nw.Menu(),
 			tray_close = new nw.MenuItem({
@@ -92,6 +89,15 @@
 	tray.menu = trayMenu;
 	trayMenu.append(tray_mini_restore);
 	trayMenu.append(tray_close);
+	tray.on('click', function(){
+		win_state ? (
+			win.minimize(),
+			tray_mini_restore.label = "  " + locale.restore
+		) : (
+			win.show(),
+			tray_mini_restore.label = "  " + locale.minimize
+		);
+	})
 	// Open url in default browser
 	$(document).on("click", "a[target='_blank']", function(e){
 		e.preventDefault();

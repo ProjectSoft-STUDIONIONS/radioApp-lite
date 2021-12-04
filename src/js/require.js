@@ -5,6 +5,7 @@ if(nw.process.versions["nw-flavor"] == "sdk"){
 const gui = require('nw.gui'),
 	fs = require('fs'),
 	locale = require(".\\modules\\locale.js"),
+	AudioPlayer = require(".\\modules\\audioplayer.js"),
 	{ StringDecoder } = require('string_decoder'),
 	decoder = new StringDecoder('utf8'),
 	win = nw.Window.get(),

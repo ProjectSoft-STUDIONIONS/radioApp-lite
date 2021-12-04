@@ -24,14 +24,6 @@
 				</div>
 			</div>
 		</div>`,
-		_tplExp = `<div class="modal clearfix">
-			<span class="icon-close close"></span>
-			<div class="modal-dialog">
-				<div class="modal-wrapper">
-					<h2 class="modal-title text-center"></h2>
-				</div>
-			</div>
-		</div>`,
 		_tplCopy = `<div class="modal clearfix">
 			<span class="icon-close close"></span>
 			<div class="modal-dialog">
@@ -61,11 +53,18 @@
 				</div>
 			</div>
 		</div>`,
-		_tplImp = `<div class="modal clearfix">
+		_tplExpImp = `<div class="modal clearfix">
 			<span class="icon-close close"></span>
 			<div class="modal-dialog">
 				<div class="modal-wrapper">
 					<h2 class="modal-title text-center"></h2>
+					<div class="modal-inputs row">
+						<p class="container"></p>
+					</div>
+					<div class="modal-buttons">
+						<button class="control btn ok" type="button">${locale.ok}</button>
+						<button class="control btn cancel" type="button">${locale.cancel}</button>
+					</div>
 				</div>
 			</div>
 		</div>`,
@@ -77,26 +76,33 @@
 				tpl = null,
 				$this = this,
 				type = settings.type,
-				title = '';
+				title = '',
+				localeMessage = '';
 			$this.modal = null;
 			$this.name = "";
 			$this.stream = "";
 			$this.id = 0;
 			switch (type) {
 				case 'copy':
-					let copyText = locale.copyOk;
+					localeMessage = locale.copyOk;
 					tpl = $(_tplCopy).clone();
 					title = locale.copyTitle;
-					message = copyText.replace(/%name%/g, " «" + settings.name + "»");
+					message = localeMessage.replace(/%name%/g, " «" + settings.name + "»");
 					$('.modal-inputs p', tpl).text(message);
 					break;
 				case 'export':
-					tpl = $(_tplExp).clone();
+					localeMessage = locale.exportMessage;
+					tpl = $(_tplExpImp).clone();
 					title = locale.exportTitle;
+					message = localeMessage;
+					$('.modal-inputs p', tpl).text(message);
 					break;
 				case 'import':
-					tpl = $(_tplImp).clone();
+					localeMessage = locale.importMessage;
+					tpl = $(_tplExpImp).clone();
 					title = locale.importTitle;
+					message = localeMessage;
+					$('.modal-inputs p', tpl).text(message);
 					break;
 				case 'delete':
 					let deleteText = locale.deleteStation;
@@ -124,7 +130,7 @@
 					$this.id = (new Date()).getTime();
 					break;
 			}
-			$this.selector = '.stationInsert';
+			$this.selector = '.appBlock';
 			$this.type = type;
 			$this.modal = tpl;
 			btns = $('.btn, input', $this.modal);
@@ -159,16 +165,11 @@
 				id = this.id;
 			if(this.modal){
 				switch (type) {
-					case 'copy':
-						break;
-					case 'export':
-					case 'import':
-						break;
 					case 'edit':
 						id = this.id;
 						name = $.trim($('input.name', this.modal).val());
 						stream = $.trim($('input.stream', this.modal).val());
-						if(name.lengt < 3){
+						if(!name || !stream){
 							$('input.name', this.modal).focus();
 							return !1;
 						}
@@ -180,7 +181,7 @@
 						id = (new Date()).getTime();
 						name = $.trim($('input.name', this.modal).val());
 						stream = $.trim($('input.stream', this.modal).val());
-						if(!name && !stream){
+						if(!name || !stream){
 							$('input.name', this.modal).focus();
 							return !1;
 						}
@@ -195,7 +196,7 @@
 					type: type
 				};
 			}
-			return {};
+			return false;
 		},
 		keydown: function(e){
 			if(e.keyCode == 9){
@@ -229,7 +230,6 @@
 				$('.ok', self._.selector).on('click.radioDialog', function(e){
 					e.preventDefault();
 					let _ok = self._.ok();
-					console.log(_ok);
 					if(_ok){
 						callback(_ok);
 						$('.close, .cancel, .ok', self._.selector).unbind('click.radioDialog');

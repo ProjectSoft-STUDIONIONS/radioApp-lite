@@ -1,4 +1,5 @@
 !(function($, doc){
+	dialog.context = doc;
 	var defaults = {
 			type: 'insert'
 		},
@@ -16,6 +17,12 @@
 							<input class="control stream" type="text" value="" placeholder="${locale.inserStream}">
 							<span>${locale.inserStream}</span>
 						</label>
+					</div>
+					<div class="modal-crop">
+						<div class="cropie"></div>
+					</div>
+					<div class="modal-fileicon">
+						<div class="fileicon">FILE</div>
 					</div>
 					<div class="modal-buttons">
 						<button class="control btn ok" type="button">${locale.ok}</button>
@@ -68,12 +75,36 @@
 				</div>
 			</div>
 		</div>`,
+		blobToBuffer = function(blob) {
+			return new Promise(function(resolve, reject){
+				if (typeof Blob === 'undefined' || !(blob instanceof Blob)) {
+					reject('first argument must be a Blob');
+				}
+				var reader = new FileReader();
+				function onLoadEnd (e) {
+					reader.removeEventListener('loadend', onLoadEnd, false);
+					if (e.error) reject(e.error);
+					else resolve(Buffer.from(reader.result));
+				}
+				reader.addEventListener('loadend', onLoadEnd, false);
+				reader.readAsArrayBuffer(blob);
+			});
+		},
+		saveIcon = function(id, buffer){
+			var path = dir + "/" + id + '.png';
+			console.log('function saveIcon', path);
+			fs.mkdirSync(dir, {recursive: true});
+			fs.writeFileSync(path, buffer);
+		},
 		btns = null,
 		keyIndex = 0,
 		id = (new Date()).getTime(),
 		Modal = function(options){
 			var settings = $.extend( true, {}, defaults, options),
 				tpl = null,
+				$crp = null,
+				$fav = null,
+				icon = null,
 				$this = this,
 				type = settings.type,
 				title = '',
@@ -82,6 +113,7 @@
 			$this.name = "";
 			$this.stream = "";
 			$this.id = 0;
+			$this.selector = '.appBlock';
 			switch (type) {
 				case 'copy':
 					localeMessage = locale.copyOk;
@@ -130,7 +162,41 @@
 					$this.id = (new Date()).getTime();
 					break;
 			}
-			$this.selector = '.appBlock';
+			if(type=='insert' || type=='edit'){
+				$crp = $(".cropie", tpl);
+				$fav = $(".fileicon", tpl);
+				icon = dir + `\\${$this.id}.png`;
+				icon = fs.existsSync(icon) ? icon : 'favicon.png';
+				$crp.croppie({
+					viewport: {
+						width: 180,
+						height: 180,
+						type: 'circle'
+					},
+					boundary: {
+						width: 180,
+						height: 180
+					},
+					showZoomer: true,
+					enableOrientation: true,
+					mouseWheelZoom: true,
+					enableExif: true
+				}).croppie('bind', {
+					url: icon
+				});
+				$fav.on('click', function(ev){
+					ev.preventDefault();
+					dialog.openFileDialog(['.jpeg', '.jpg', '.png'], function(result){
+						if(!result)
+							return;
+						result = "file:///" + result.split('\\').join('/');
+						$crp.croppie('bind', {
+							url: result
+						});
+					});
+					return !1;
+				});
+			}
 			$this.type = type;
 			$this.modal = tpl;
 			btns = $('.btn, input', $this.modal);
@@ -162,29 +228,33 @@
 			var name = this.name,
 				stream = this.stream,
 				type = this.type,
-				id = this.id;
+				id = this.id,
+				$crp = null;
 			if(this.modal){
 				switch (type) {
+					case 'insert':
 					case 'edit':
-						id = this.id;
+						//id = type=='edit' ? this.id : (new Date()).getTime();
 						name = $.trim($('input.name', this.modal).val());
 						stream = $.trim($('input.stream', this.modal).val());
+						$crp = $('.cropie', this.modal);
 						if(!name || !stream){
 							$('input.name', this.modal).focus();
 							return !1;
 						}
+						$crp.croppie('result', 'blob').then(function(blob) {
+							console.log('SaveBlob')
+							blobToBuffer(blob).then(function(buffer){
+								saveIcon(id, buffer);
+							}).catch(function(err){
+								console.log("Station type: " + type + ",\nSaveBlob:\n", err);
+							});
+						}).catch(function(err){
+							console.log("Station type: " + type + ",\nCroppie:\n", err);
+						});
 						break;
 					case 'delete':
 						id = this.id;
-						break;
-					case 'insert':
-						id = (new Date()).getTime();
-						name = $.trim($('input.name', this.modal).val());
-						stream = $.trim($('input.stream', this.modal).val());
-						if(!name || !stream){
-							$('input.name', this.modal).focus();
-							return !1;
-						}
 						break;
 					default:
 						break;

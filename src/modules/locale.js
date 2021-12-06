@@ -72,6 +72,9 @@ class LocaleApp {
 	get ok() {
 		return chrome.i18n.getMessage('ok');
 	}
+	get addIcon() {
+		return chrome.i18n.getMessage('addIcon');
+	}
 }
 
 var _l = new LocaleApp();

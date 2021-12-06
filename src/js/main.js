@@ -13,7 +13,7 @@
 					});
 				}
 			},
-			addListItem = function(data){
+			addListItem = async function(data){
 				try{
 					if(data.name && data.stream){
 						let _id = data.id,
@@ -25,7 +25,7 @@
 							<div class="radio-item-box">
 								<div class="radio-item-icon">
 									<span class="icons"></span>
-									<span><img src="${_icon}" alt="${_name}"></span>
+									<span class="favicon"><img src="${_icon}" alt="${_name}"></span>
 								</div>
 								<div class="radio-item-wrap">
 									<span class="station-name">${_name}</span>
@@ -74,7 +74,7 @@
 					for (let prop in json.stations) {
 						let st = json.stations[prop];
 						st.id = prop;
-						addListItem(st);
+						await addListItem(st);
 					}
 
 				} catch(e){
@@ -202,9 +202,10 @@
 					$.radioDialog.show({
 						type: 'insert'
 					}, function(args){
+						console.log(args);
 						if(args.type == 'insert'){
-							addListItem(args);
 							writeFile(false);
+							addListItem(args);
 						}
 					});
 				}
@@ -330,24 +331,29 @@
 			data.type = 'edit';
 			$.radioDialog.show(data, function(args){
 				if(args.type == data.type){
-					let img = $('img', '#st_' + args.id),
+					let $li = $('#st_' + args.id),
+						img = $('img', $li),
 						name = $('.station-name', '#st_' + args.id),
 						has = "?" + (new Date()).getTime(),
 						_icon = ((fs.existsSync(dir + '\\' + args.id + '.png'))	? dir + '\\' + args.id + '.png' : 'favicon.png') + has;
-					if(name.hasClass('active') && name.hasClass('')){
-						/**
-						 * stop radio
-						 **/
-					}
-					img.attr({
-						alt: args.name,
-						src: _icon
-					});
+					
 					name.text(args.name);
 					$('#st_' + args.id).data({
 						id: args.id,
 						name: args.name,
 						stream: args.stream
+					});
+					if($li.hasClass('active') && $li.hasClass('play')){
+						/**
+						 * stop radio
+						 **/
+						player.stop();
+						player.stream = args.stream,
+						player.play();
+					}
+					img.attr({
+						alt: args.name,
+						src: _icon
 					});
 					writeFile(false);
 				}
@@ -365,6 +371,7 @@
 						/**
 						 * stop radio
 						 **/
+						 player.stop();
 					}
 					$('#st_' + args.id).remove();
 					deleteItem(args.id);
@@ -393,6 +400,26 @@
 		});
 		**/
 		return !1;
+	});
+	/**
+	 * Player events
+	 **/
+	player.addEventListener('statechange', function(e){
+		console.log(e)
+		if(e.type=='statechange'){
+			let $li = $('.radio-item.active');
+			switch(e.audioev){
+				case 'play':
+					$li.removeClass('stop').addClass('play preload');
+					break;
+				case 'playing':
+					e.bufering ?  $li.removeClass('stop').addClass('play preload') : $li.removeClass('stop preload').addClass('play');
+					break;
+				case 'stop':
+					$li.addClass('stop').removeClass('play preload');
+					break;
+			}
+		}
 	});
 	/**
 	 * Adding UI Sortable

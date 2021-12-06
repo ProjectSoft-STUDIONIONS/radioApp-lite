@@ -20,9 +20,9 @@
 					</div>
 					<div class="modal-crop">
 						<div class="cropie"></div>
-					</div>
-					<div class="modal-fileicon">
-						<div class="fileicon">FILE</div>
+						<div class="modal-fileicon">
+							<div class="fileicon icon-add-photo" title="${locale.addIcon}"></div>
+						</div>
 					</div>
 					<div class="modal-buttons">
 						<button class="control btn ok" type="button">${locale.ok}</button>
@@ -90,11 +90,10 @@
 				reader.readAsArrayBuffer(blob);
 			});
 		},
-		saveIcon = function(id, buffer){
+		saveIcon = async function(id, buffer){
 			var path = dir + "/" + id + '.png';
-			console.log('function saveIcon', path);
 			fs.mkdirSync(dir, {recursive: true});
-			fs.writeFileSync(path, buffer);
+			return fs.writeFileSync(path, buffer);
 		},
 		btns = null,
 		keyIndex = 0,
@@ -166,7 +165,7 @@
 				$crp = $(".cropie", tpl);
 				$fav = $(".fileicon", tpl);
 				icon = dir + `\\${$this.id}.png`;
-				icon = fs.existsSync(icon) ? icon : 'favicon.png';
+				icon = (fs.existsSync(icon) ? icon : 'favicon.png') + "?" + (new Date()).getTime();
 				$crp.croppie({
 					viewport: {
 						width: 180,
@@ -225,48 +224,82 @@
 			return this;
 		},
 		ok: function(){
-			var name = this.name,
-				stream = this.stream,
-				type = this.type,
-				id = this.id,
-				$crp = null;
-			if(this.modal){
-				switch (type) {
-					case 'insert':
-					case 'edit':
-						//id = type=='edit' ? this.id : (new Date()).getTime();
-						name = $.trim($('input.name', this.modal).val());
-						stream = $.trim($('input.stream', this.modal).val());
-						$crp = $('.cropie', this.modal);
-						if(!name || !stream){
-							$('input.name', this.modal).focus();
-							return !1;
-						}
-						$crp.croppie('result', 'blob').then(function(blob) {
-							console.log('SaveBlob')
-							blobToBuffer(blob).then(function(buffer){
-								saveIcon(id, buffer);
+			var self = this;
+			return new Promise(function(resolve, reject) {
+				console.log(typeof self.modal)
+				var name = self.name,
+					stream = self.stream,
+					type = self.type,
+					id = self.id,
+					$crp = null,
+					si = null;
+				if(typeof self.modal == 'object'){
+					switch (type) {
+						case 'insert':
+						case 'edit':
+							//id = type=='edit' ? this.id : (new Date()).getTime();
+							name = $.trim($('input.name', self.modal).val());
+							stream = $.trim($('input.stream', self.modal).val());
+							$crp = $('.cropie', self.modal);
+							if(!name || !stream){
+								$('input.name', self.modal).focus();
+								resolve({
+									type: 'focus',
+									message: 'Name or Stream stations'
+								});
+							}
+							$crp.croppie('result', 'blob').then(function(blob) {
+								blobToBuffer(blob).then(function(buffer){
+									var path = dir + "/" + id + '.png';
+									fs.mkdirSync(dir, {recursive: true});
+									fs.writeFileSync(path, buffer);
+									resolve({
+										name: name,
+										stream: stream,
+										id: id,
+										si: si,
+										type: type
+									});
+								}).catch(function(err){
+									reject({
+										type: 'error',
+										message: "Station type: " + type + ",\nSaveBlob: " + err
+									})
+								});
 							}).catch(function(err){
-								console.log("Station type: " + type + ",\nSaveBlob:\n", err);
+								reject({
+									type: 'error',
+									message: "Station type: " + type + ",\nCroppie:\n " + err
+								});
 							});
-						}).catch(function(err){
-							console.log("Station type: " + type + ",\nCroppie:\n", err);
-						});
-						break;
-					case 'delete':
-						id = this.id;
-						break;
-					default:
-						break;
+							break;
+						case 'delete':
+							id = self.id;
+							resolve({
+								name: name,
+								stream: stream,
+								id: id,
+								si: si,
+								type: type
+							});
+							break;
+						default:
+							resolve({
+								name: name,
+								stream: stream,
+								id: id,
+								si: si,
+								type: type
+							});
+							break;
+					}
+				}else{
+					reject({
+						type: 'error',
+						message: 'Not modal'
+					});
 				}
-				return {
-					name: name,
-					stream: stream,
-					id: id,
-					type: type
-				};
-			}
-			return false;
+			});
 		},
 		keydown: function(e){
 			if(e.keyCode == 9){
@@ -299,13 +332,19 @@
 				});
 				$('.ok', self._.selector).on('click.radioDialog', function(e){
 					e.preventDefault();
-					let _ok = self._.ok();
-					if(_ok){
-						callback(_ok);
-						$('.close, .cancel, .ok', self._.selector).unbind('click.radioDialog');
-						self.close();
-						delete self._;
-					}
+					self._.ok().then(function(data){
+						console.log(data);
+						if(data.type == 'error'){
+							console.log('error', data.message);
+						}else{
+							$('.close, .cancel, .ok', self._.selector).unbind('click.radioDialog');
+							self.close();
+							callback(data);
+							delete self._;
+						}
+					}).catch(function(data){
+						console.log(data);
+					});
 					return !1;
 				});
 			}

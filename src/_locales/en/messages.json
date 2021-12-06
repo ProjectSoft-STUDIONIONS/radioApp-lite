@@ -70,5 +70,8 @@
 	},
 	"ok": {
 		"message": "Ok"
+	},
+	"addIcon": {
+		"message": "Add radio station icon"
 	}
 }

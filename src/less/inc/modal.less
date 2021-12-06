@@ -7,6 +7,30 @@
 	* {
 		user-select: none;
 	}
+	h2 {
+		margin-top: 0;
+		margin-bottom: 10px;
+	}
+	.croppie-container .cr-slider-wrap {
+		margin-top: 0px;
+		margin-bottom: 5px;
+	}
+	&-crop {
+		position: relative;
+	}
+	&-fileicon {
+		position: absolute;
+		top: 0;
+		left: 0;
+		cursor: pointer;
+		font-size: 3.3em;
+		line-height: 0;
+		text-shadow: 0 0 0px rgba(0, 152, 255, .88);
+		transition: text-shadow .3s ease;
+		&:hover {
+			text-shadow: 0 0 5px rgba(0, 152, 255, .88);
+		}
+	}
 	.close {
 		margin: 10px;
 		cursor: pointer;
@@ -33,7 +57,7 @@
 	&-inputs {
 		flex: 1;
 		min-width: 400px;
-		margin-bottom: 20px;
+		margin-bottom: 10px;
 	}
 	&-label {
 		display: block;

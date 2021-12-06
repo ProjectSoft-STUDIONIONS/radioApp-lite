@@ -286,7 +286,7 @@ module.exports = function(grunt) {
 	});
 	grunt.registerTask('default', [
 		//'clean:all',
-		//'webfont',
+		'webfont',
 		//'ttf2woff2',
 		'less',
 		'group_css_media_queries',

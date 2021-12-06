@@ -49,6 +49,13 @@ ul#radio-list {
 			&.active {
 				background-color: #333333;
 				color: #ffffff;
+				.radio-item-icon {
+					span {
+						&.favicon {
+							box-shadow: 0 0 1px 1px #fff;
+						}
+					}
+				}
 				&.preload {
 					.radio-item-icon {
 						span {
@@ -57,6 +64,9 @@ ul#radio-list {
 									z-index: 4;
 									opacity: 1;
 								}
+							}
+							&.favicon {
+								background-color: black;
 							}
 						}
 					}
@@ -95,7 +105,7 @@ ul#radio-list {
 				cursor: pointer;
 				span {
 					display: block;
-					line-height: 1;
+					line-height: 0;
 					&.icons {
 						&,
 						&:after,
@@ -129,6 +139,13 @@ ul#radio-list {
 							transform: scale(0.0);
 							transition: all .3s ease;
 						}
+					}
+					&.favicon {
+						line-height: 0;
+						border-radius: 50%;
+						box-shadow: 0 0 1px 1px #000;
+						background-color: white;
+						transition: background-color .3s ease;
 					}
 				}
 				&:hover {

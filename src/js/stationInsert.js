@@ -4,10 +4,10 @@
 			type: 'insert'
 		},
 		_tpl = `<div class="modal clearfix">
-			<span class="icon-close close"></span>
 			<div class="modal-dialog">
 				<div class="modal-wrapper">
 					<h2 class="modal-title text-center"></h2>
+					<span class="icon-close close"></span>
 					<div class="modal-inputs row">
 						<label class="modal-label container">
 							<input class="control name" type="text" value="" placeholder="${locale.insertName}">

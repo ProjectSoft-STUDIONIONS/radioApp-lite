@@ -21,19 +21,22 @@
 	&-fileicon {
 		position: absolute;
 		top: 0;
-		left: 0;
+		right: 0;
 		cursor: pointer;
 		font-size: 3.3em;
 		line-height: 0;
-		text-shadow: 0 0 0px rgba(0, 152, 255, .88);
-		transition: text-shadow .3s ease;
+		//text-shadow: 0 0 0px rgba(0, 152, 255, .88);
+		//transition: text-shadow .3s ease;
 		&:hover {
-			text-shadow: 0 0 5px rgba(0, 152, 255, .88);
+			//text-shadow: 0 0 5px rgba(0, 152, 255, .88);
 		}
 	}
 	.close {
 		margin: 10px;
 		cursor: pointer;
+		position: absolute;
+		top: 0;
+		right: 0;
 	}
 	&-dialog {
 		flex: 1 0 auto;
@@ -44,7 +47,7 @@
 		min-width: 400px;
 	}
 	&-wrapper {
-		padding: 15px;
+		padding: 15px 15px 20px 15px;
 		align-items: center;
 		justify-content: center;
 		display: flex;
@@ -53,6 +56,7 @@
 		min-width: 100%;
 		background-color: #fff;
 		box-shadow: 0 0 20px rgba(0, 0, 0, .1);
+		position: relative;
 	}
 	&-inputs {
 		flex: 1;

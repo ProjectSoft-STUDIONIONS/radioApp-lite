@@ -226,7 +226,7 @@ module.exports = function(grunt) {
 			}
 		},
 		copy: {
-			ffmpeg: {
+			sdk: {
 				files: [
 					{
 						expand: true,
@@ -239,7 +239,11 @@ module.exports = function(grunt) {
 						cwd: "ffmpeg/win32",
 						src: "*.dll",
 						dest: ".cache/" + gc.version + "-sdk/win32"
-					},/*
+					}
+				]
+			},
+			normal: {
+				files: [
 					{
 						expand: true,
 						cwd: "ffmpeg/win32",
@@ -251,7 +255,7 @@ module.exports = function(grunt) {
 						cwd: "ffmpeg/win32",
 						src: "*.dll",
 						dest: ".cache/" + gc.version + "-normal/win32"
-					}*/
+					}
 				]
 			},
 			appcopy: {
@@ -297,7 +301,8 @@ module.exports = function(grunt) {
 		'pug',
 		//'ffmpeg_down',
 		'copy:appcopy',
-		'nwjs:sdk',
-		'copy:ffmpeg'
+		'nwjs',
+		'copy:sdk',
+		'copy:normal'
 	]);
 }

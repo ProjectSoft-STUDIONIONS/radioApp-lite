@@ -26,6 +26,8 @@ html
 				.row
 					ul#radio-list(data-title="Your Radio")
 						//include inc/radioitem.pug
+				.volume-block
+					input#volume(min="0" max="100" value="1" type="range" tabindex="-1")
 			.appBlock.hidden
 		footer.clearfix
 			.footer_wrap

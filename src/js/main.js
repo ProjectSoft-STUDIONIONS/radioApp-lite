@@ -122,6 +122,32 @@
 				$('#TitleBar-text > span').text(title);
 				win.title = title;
 			},
+			updateSessionMetaData = function() {
+				let icon;
+				if(player.isPlaying()){
+					let $li = $('li.radio-item.active'),
+						data = $li.data(),
+						id = data.id,
+						title = data.name,
+						has = (new Date()).getTime();
+					icon = (fs.existsSync(dir + '\\' + id + '.png')	? dir + '\\' + id + '.png' : 'favicon.png');
+					icon  = "data:image/png;base64," + fs.readFileSync(icon).toString('base64');
+					navigator.mediaSession.metadata = new MediaMetadata({
+						title: locale.appName,
+						artist: title,
+						album: "",
+						artwork: [{src: icon, type: "image/png", sizes: '128x128'}]
+					});
+				}else{
+					icon  = "data:image/png;base64," + fs.readFileSync('favicon.png').toString('base64');
+					navigator.mediaSession.metadata = new MediaMetadata({
+						title: locale.appName,
+						artist: title,
+						album: "",
+						artwork: [{src: icon, type: "image/png", sizes: '128x128'}]
+					});
+				}
+			},
 			json = {
 				stations: {},
 				active: 0,
@@ -419,8 +445,18 @@
 					$li.addClass('stop').removeClass('play preload');
 					break;
 			}
+			updateSessionMetaData();
 		}
 	});
+	/**
+	 * Volume range
+	 **/
+	$("#volume").on('input', function(e){
+		e.preventDefault();
+		let s = parseFloat(this.value / 100);
+		player.volume = s;
+		return !1;
+	}).trigger('input');
 	/**
 	 * Adding UI Sortable
 	 **/

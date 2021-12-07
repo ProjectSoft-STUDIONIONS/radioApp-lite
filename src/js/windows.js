@@ -12,7 +12,7 @@
 	win.moveTo(x, y);
 	win.setMinimumSize(w, 500);
 	win.resizeTo(w, 500);
-	win.setAlwaysOnTop(true);
+	//win.setAlwaysOnTop(true);
 }(window));
 (function($){
 	const 	miniBtn = $('#minimized'),

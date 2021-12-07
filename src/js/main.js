@@ -1,5 +1,6 @@
 
 !(function($){
+
 	const 	deleteRadioPath = function (path) {
 				let files = [];
 				if( fs.existsSync(path) ) {
@@ -57,20 +58,32 @@
 			},
 			readFile = async function(){
 				let file = dirFile,
+					volume = 0.5,
 					_json = {
 						stations: {},
 						active: active,
-						notify: notify
+						notify: notify,
+						volume: volume
 					};
 				$('#radio-list').empty();
 				$("main").addClass('loading');
 				try {
+					let t = 0;
 					_json = fs.readFileSync(file);
 					_json = decoder.write(_json);
 					_json = JSON.parse(_json);
 					json.stations = _json["stations"];
 					json.active = active = _json["active"] ? parseInt(_json["active"]) : active;
 					json.notify = notify = _json["notify"] ? _json["notify"] : notify;
+					_json.volume = parseFloat(_json["volume"]) ? parseFloat(_json["volume"]) : volume;
+					_json.volume = volume = Math.min(1, Math.max(0, parseFloat(_json.volume)));
+					player.volume = parseFloat(volume);
+					t = volume * 100;
+					$('html').attr({
+						style: '--background-range: ' + t + '%'
+					});
+					$('p.left').text(t + '%');
+					$("#volume").val(t);
 					for (let prop in json.stations) {
 						let st = json.stations[prop];
 						st.id = prop;
@@ -91,6 +104,7 @@
 				json.stations = {};
 				json.active = active;
 				json.notify = notify;
+				json.volume = Math.min(1, Math.max(0, parseFloat($("#volume").val() / 100)));
 				$('#radio-list li').each(function(){
 					let $this = $(this),
 						data = $this.data(),
@@ -228,7 +242,7 @@
 					$.radioDialog.show({
 						type: 'insert'
 					}, function(args){
-						console.log(args);
+						//console.log(args);
 						if(args.type == 'insert'){
 							writeFile(false);
 							addListItem(args);
@@ -251,7 +265,7 @@
 				label: locale.exportTitle,
 				type: 'normal',
 				click: function() {
-					console.log("Экспорт станций");
+					//console.log("Экспорт станций");
 					$.radioDialog.show({
 						type: 'export'
 					}, function(args){
@@ -415,17 +429,13 @@
 		let ev = e.originalEvent;
 		menu.popup(parseInt(ev.x), parseInt(ev.y));
 		return !1;
-	}).on('click', '.write', function(e){
-		e.preventDefault();
+	}).on('mousewheel', '#volume', function(e){
 		/**
-		 * Test Click's
-		$.radioDialog.show({
-			type: 'insert'
-		}, function(args){
-			console.log(args);
-		});
-		**/
-		return !1;
+		 * mousewhell Volume range
+		 **/
+		let o = e.originalEvent.wheelDelta;
+		this.value = parseFloat(this.value) + ((o > 0) ? 1 : -1);
+		this.dispatchEvent(new Event('input'));
 	});
 	/**
 	 * Player events
@@ -451,12 +461,17 @@
 	/**
 	 * Volume range
 	 **/
-	$("#volume").on('input', function(e){
+	$("#volume").on('input change', function(e){
 		e.preventDefault();
-		let s = parseFloat(this.value / 100);
+		let s = parseFloat(this.value / 100),
+			t = this.value + '%';
 		player.volume = s;
+		$('html').attr({
+			style: '--background-range: ' + t
+		});
+		$('p.left').text(t);
 		return !1;
-	}).trigger('input');
+	});
 	/**
 	 * Adding UI Sortable
 	 **/

@@ -289,9 +289,9 @@ module.exports = function(grunt) {
 		},
 	});
 	grunt.registerTask('default', [
-		//'clean:all',
+		'clean:all',
 		'webfont',
-		//'ttf2woff2',
+		'ttf2woff2',
 		'less',
 		'group_css_media_queries',
 		'cssmin',
@@ -299,10 +299,22 @@ module.exports = function(grunt) {
 		'concat',
 		'uglify',
 		'pug',
-		//'ffmpeg_down',
+		'ffmpeg_down',
 		'copy:appcopy',
 		'nwjs',
 		'copy:sdk',
 		'copy:normal'
+	]);
+	grunt.registerTask('sdk', [
+		'less',
+		'group_css_media_queries',
+		'cssmin',
+		'requirejs',
+		'concat',
+		'uglify',
+		'pug',
+		'copy:appcopy',
+		'nwjs:sdk',
+		'copy:sdk'
 	]);
 }

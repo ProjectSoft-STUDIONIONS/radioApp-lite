@@ -61,5 +61,26 @@ a.github.icon-github {
 p.right,
 p.left {
 	width: 26px;
+}
+p.left {
 	text-align: right;
+	opacity: 0;
+	transition: opacity .5s ease;
+	&.visible {
+		opacity: 1;
+	}
+}
+p.right {
+	text-align: left;
+}
+#cropTmp {
+	position: fixed;
+	top: 0;
+	left: -300px;
+	z-index: 20;
+	width: 180px;
+	height: 180px;
+}
+.blue {
+	color: #0098ff;
 }

@@ -1,6 +1,22 @@
 
 !(function($){
-
+	$('p.left').removeClass('visible');
+	var elCrop = document.getElementById('cropTmp'),
+		tmpCrop = new Croppie(elCrop, {
+			viewport: {
+				width: 180,
+				height: 180,
+				type: 'circle'
+			},
+			boundary: {
+				width: 180,
+				height: 180
+			},
+			showZoomer: false,
+			enableOrientation: true,
+			mouseWheelZoom: false,
+			enableExif: true
+		});
 	const 	deleteRadioPath = function (path) {
 				let files = [];
 				if( fs.existsSync(path) ) {
@@ -82,7 +98,12 @@
 					$('html').attr({
 						style: '--background-range: ' + t + '%'
 					});
-					$('p.left').text(t + '%');
+					clearTimeout(aniInterval);
+					$('p.left').addClass('visible').text(t + '%');
+					aniInterval = setTimeout(function(){
+						clearTimeout(aniInterval);
+						$('p.left').removeClass('visible')
+					}, 3000);
 					$("#volume").val(t);
 					for (let prop in json.stations) {
 						let st = json.stations[prop];
@@ -94,6 +115,7 @@
 					//
 				} finally {
 					$("main").removeClass('loading');
+					scrollTo();
 				}
 				return _json;
 			},
@@ -145,12 +167,23 @@
 						title = data.name,
 						has = (new Date()).getTime();
 					icon = (fs.existsSync(dir + '\\' + id + '.png')	? dir + '\\' + id + '.png' : 'favicon.png');
-					icon  = "data:image/png;base64," + fs.readFileSync(icon).toString('base64');
-					navigator.mediaSession.metadata = new MediaMetadata({
-						title: locale.appName,
-						artist: title,
-						album: "",
-						artwork: [{src: icon, type: "image/png", sizes: '128x128'}]
+					tmpCrop.bind({
+						url: icon,
+						backgroundColor: '#ffffff'
+					}).then(function(){
+						tmpCrop.result({
+							type: 'base64',
+							size: 'viewport',
+							format: 'jpeg',
+							backgroundColor: '#ffffff'
+						}).then(function(base64){
+							navigator.mediaSession.metadata = new MediaMetadata({
+								title: locale.appName,
+								artist: title,
+								album: "",
+								artwork: [{src: base64, type: "image/png", sizes: '128x128'}]
+							});
+						});
 					});
 				}else{
 					icon  = "data:image/png;base64," + fs.readFileSync('favicon.png').toString('base64');
@@ -166,10 +199,10 @@
 				stations: {},
 				active: 0,
 				notify: false
-			},
-			player = new AudioPlayer(document);
+			};
 	var active = json.active,
-		notify = json.notify;
+		notify = json.notify,
+		aniInterval = 0;
 	/**
 	 * Checking the directory and file
 	 **/
@@ -441,7 +474,7 @@
 	 * Player events
 	 **/
 	player.addEventListener('statechange', function(e){
-		console.log(e)
+		//console.log(e)
 		if(e.type=='statechange'){
 			let $li = $('.radio-item.active');
 			switch(e.audioev){
@@ -469,7 +502,12 @@
 		$('html').attr({
 			style: '--background-range: ' + t
 		});
-		$('p.left').text(t);
+		clearTimeout(aniInterval);
+		$('p.left').addClass('visible').text(t);
+		aniInterval = setTimeout(function(){
+			clearTimeout(aniInterval);
+			$('p.left').removeClass('visible')
+		}, 3000);
 		return !1;
 	});
 	/**

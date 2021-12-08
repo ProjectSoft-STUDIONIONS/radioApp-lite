@@ -14,6 +14,7 @@
 	win.resizeTo(w, 500);
 	//win.setAlwaysOnTop(true);
 }(window));
+
 (function($){
 	const 	miniBtn = $('#minimized'),
 			restoreBtn = $('#restored'),
@@ -22,10 +23,17 @@
 			minimizePath = 'M 0,5 10,5 10,6 0,6 Z',
 			restorePath = 'm 2,1e-5 0,2 -2,0 0,8 8,0 0,-2 2,0 0,-8 z m 1,1 6,0 0,6 -1,0 0,-5 -5,0 z m -2,2 6,0 0,6 -6,0 z',
 			maximizePath = 'M 0,0 0,10 10,10 10,0 Z M 1,1 9,1 9,9 1,9 Z',
-			closePath = 'M 0,0 0,0.7 4.3,5 0,9.3 0,10 0.7,10 5,5.7 9.3,10 10,10 10,9.3 5.7,5 10,0.7 10,0 9.3,0 5,4.3 0.7,0 Z';
+			closePath = 'M 0,0 0,0.7 4.3,5 0,9.3 0,10 0.7,10 5,5.7 9.3,10 10,10 10,9.3 5.7,5 10,0.7 10,0 9.3,0 5,4.3 0.7,0 Z',
+			disableDragDrop = function(e){
+				e.preventDefault();
+				e.stopPropagation();
+				return !1;
+			};
+
 	let isMaximized = false,
 		md5Previos = null,
 		win_state = true;
+
 	$(document).on('click', "#minimized, #restored, #close", function(e){
 		let eId = e.currentTarget.id;
 		if(eId == "minimized" || eId == "restored" || eId == "close"){
@@ -86,7 +94,6 @@
 					);
 				}
 			});
-	// WinTray
 	tray.menu = trayMenu;
 	trayMenu.append(tray_mini_restore);
 	trayMenu.append(tray_close);
@@ -102,11 +109,56 @@
 	// Open url in default browser
 	$(document).on("click", "a[target='_blank']", function(e){
 		e.preventDefault();
-		if (confirm(locale.goToDev)) {
+		let lng = locale.goToDev + ` ${this.href} ?`;
+		if (confirm(lng)) {
 			nw.Shell.openExternal(this.href);
 		} else {
 			alert(locale.notToDev);
 		}
 		return !1;
 	});
+	const play_stop = function(){
+			var li = $("#radio-list li.active"),
+				icon = $('span.icons', li);
+			icon.click();
+			scrollTo();
+		},
+		prev = function(){
+			var li = $("#radio-list li.active"),
+				len = $("#radio-list li").length;
+			if(li.length){
+				let $pn = li.prev();
+				if(!$pn.length){
+					$pn =  $($("#radio-list li")[len - 1]);
+				}
+				if($pn.length){
+					$("#radio-list li").removeClass('active play preload').addClass('stop');
+					player.stop();
+					$pn.addClass('active');
+					//stop();
+					play_stop();
+				}
+			}
+		},
+		next = function(){
+			var li = $("#radio-list li.active"),
+				len = $("#radio-list li").length;
+			if(li.length){
+				let $pn = li.next();
+				if(!$pn.length){
+					$pn =  $($("#radio-list li")[0]);
+				}
+				if($pn.length){
+					$("#radio-list li").removeClass('active play preload').addClass('stop');
+					player.stop();
+					$pn.addClass('active');
+					//stop();
+					play_stop();
+				}
+			}
+		}
+	window.navigator.mediaSession.setActionHandler('play', play_stop);
+	window.navigator.mediaSession.setActionHandler('pause', play_stop);
+	window.navigator.mediaSession.setActionHandler('previoustrack', prev);
+	window.navigator.mediaSession.setActionHandler('nexttrack', next);
 }(jQuery))

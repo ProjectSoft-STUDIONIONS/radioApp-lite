@@ -15,4 +15,20 @@ const gui = require('nw.gui'),
 	quitError = function(error){
 		alert(error);
 		win.close();
-	};
+	},
+	scrollTo = function(){
+		let $el = $('#radio-list > li.active');
+		if($el.length){
+			let offsetWrap = $('main > .container > .row').offset(),
+				heightWrap = $('main > .container > .row').height(),
+				offsetEl = $el.offset(),
+				topEl = (offsetEl.top - offsetWrap.top) >= 0,
+				bottomEl = (heightWrap - $el.height()) >= (offsetEl.top - offsetWrap.top);
+			if(!topEl){
+				$el[0].scrollIntoView(true);
+			}else if(!bottomEl){
+				$el[0].scrollIntoView(false);
+			}
+		}
+	},
+	player = new AudioPlayer(document);

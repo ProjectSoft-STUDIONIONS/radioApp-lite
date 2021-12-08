@@ -91,7 +91,7 @@
 					json.stations = _json["stations"];
 					json.active = active = _json["active"] ? parseInt(_json["active"]) : active;
 					json.notify = notify = _json["notify"] ? _json["notify"] : notify;
-					_json.volume = parseFloat(_json["volume"]) ? parseFloat(_json["volume"]) : volume;
+					_json.volume = parseFloat(_json["volume"]) >= 0 ? parseFloat(_json["volume"]) : volume;
 					_json.volume = volume = Math.min(1, Math.max(0, parseFloat(_json.volume)));
 					player.volume = parseFloat(volume);
 					t = volume * 100;

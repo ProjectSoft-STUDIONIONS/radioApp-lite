@@ -120,28 +120,36 @@
 				return _json;
 			},
 			writeFile = function(isRead){
-				isRead = typeof isRead === 'boolean' ? isRead : false;
-				var file = dirFile,
-					_output = "{}";
-				json.stations = {};
-				json.active = active;
-				json.notify = notify;
-				json.volume = Math.min(1, Math.max(0, parseFloat($("#volume").val() / 100)));
-				$('#radio-list li').each(function(){
-					let $this = $(this),
-						data = $this.data(),
-						id = $this.prop('id').split('_')[1];
-					json.stations[id] = {
-						name: data.name,
-						stream: data.stream
-					};
-				});
-				_output = JSON.stringify(json);
-				fs.writeFile(dirFile, _output, 'utf8', (err) => {
-					/**
-					 * If there is no error, then we read the file, otherwise we close the program 
-					 **/
-					!err ? (isRead && readFile()) : quitError(locale.appError);
+				return new Promise(function(resolve, reject){
+					isRead = typeof isRead === 'boolean' ? isRead : false;
+					var file = dirFile,
+						_output = "{}";
+					json.stations = {};
+					json.active = active;
+					json.notify = notify;
+					json.volume = Math.min(1, Math.max(0, parseFloat($("#volume").val() / 100)));
+					$('#radio-list li').each(function(){
+						let $this = $(this),
+							data = $this.data(),
+							id = $this.prop('id').split('_')[1];
+						json.stations[id] = {
+							name: data.name,
+							stream: data.stream
+						};
+					});
+					_output = JSON.stringify(json);
+					fs.writeFile(dirFile, _output, 'utf8', (err) => {
+						/**
+						 * If there is no error, then we read the file, otherwise we close the program 
+						 **/
+						if(!err){
+							isRead && readFile();
+							resolve('write');
+						}else{
+							quitError(locale.appError);
+							reject(err);
+						}
+					});
 				});
 			},
 			deleteItem = function(id){
@@ -276,9 +284,15 @@
 						type: 'insert'
 					}, function(args){
 						//console.log(args);
+						$("main").addClass('loading');
 						if(args.type == 'insert'){
-							writeFile(false);
-							addListItem(args);
+							writeFile(false).then(function(){
+								addListItem(args);
+								$("main").removeClass('loading');
+							}).catch(function(){
+								alert('Попробуйте ещё раз');
+								$("main").removeClass('loading');
+							});
 						}
 					});
 				}
@@ -428,7 +442,13 @@
 						alt: args.name,
 						src: _icon
 					});
-					writeFile(false);
+					$("main").addClass('loading');
+					writeFile(false).then(function(){
+						$("main").removeClass('loading');
+					}).catch(function(){
+						alert('Попробуйте ещё раз');
+						$("main").addClass('loading');
+					});
 				}
 			});
 			editStationItem.click = null;
@@ -456,11 +476,18 @@
 		return !1;
 	}).on('contextmenu', 'main, footer', function(e){
 		/**
-		 * Context menu default
+		 * Context menu main, footer
 		 **/
 		e.preventDefault();
 		let ev = e.originalEvent;
 		menu.popup(parseInt(ev.x), parseInt(ev.y));
+		return !1;
+	}).on('contextmenu', 'html', function(e){
+		/**
+		 * Context menu default
+		 **/
+		e.preventDefault();
+		e.stopPropagation();
 		return !1;
 	}).on('mousewheel', '#volume', function(e){
 		/**
@@ -526,8 +553,12 @@
 	 * Adding a close event to nwWindow
 	 **/
 	win.on('close',function(){
-		writeFile(false);
-		nw.App.quit();
+		$("main").addClass('loading');
+		writeFile(false).then(function(){
+			nw.App.quit();
+		}).catch(function(){
+			nw.App.quit();
+		});
 	});
 	/**
 	 * Set App title

@@ -16,17 +16,28 @@
 			enableOrientation: true,
 			mouseWheelZoom: false,
 			enableExif: true
-		});
+		}),
+		$clear_stations = $("#clear_stations"),
+		$notify = $("#notify"),
+		$loadDefault = $("#loadDefault"),
+		$settingsBlock = $('.settings-block'),
+		$okSettings = $("#okSettings"),
+		$noSettings = $("#noSettings");
 	const 	deleteRadioPath = function (path) {
 				let files = [];
 				if( fs.existsSync(path) ) {
 					files = fs.readdirSync(path);
-					files.forEach(function(file,index){
-						let curPath = path + "/" + file;
-						if(fs.statSync(curPath).isDirectory()) {
-							deleteRadioPath(curPath);
+					files.forEach(function(file,index, arr){
+						let curPath = path + "/" + file,
+							ext = ph.extname(curPath).toLowerCase();
+						if(!fs.statSync(curPath).isDirectory()) {
+							if(ext != '.json'){
+								fs.unlinkSync(curPath);
+							}
+							//deleteRadioPath(curPath);
+							//fs.unlinkSync(curPath);
 						}
-						fs.unlinkSync(curPath);
+						//fs.unlinkSync(curPath);
 					});
 				}
 			},
@@ -91,6 +102,7 @@
 					json.stations = _json["stations"];
 					json.active = active = _json["active"] ? parseInt(_json["active"]) : active;
 					json.notify = notify = _json["notify"] ? _json["notify"] : notify;
+					$notify.prop('checked', notify);
 					_json.volume = parseFloat(_json["volume"]) >= 0 ? parseFloat(_json["volume"]) : volume;
 					_json.volume = volume = Math.min(1, Math.max(0, parseFloat(_json.volume)));
 					player.volume = parseFloat(volume);
@@ -114,8 +126,10 @@
 				} catch(e){
 					//
 				} finally {
-					$("main").removeClass('loading');
-					scrollTo();
+					setTimeout(function(){
+						$("main").removeClass('loading');
+						setTimeout(scrollTo, 50);
+					}, 150);
 				}
 				return _json;
 			},
@@ -125,7 +139,7 @@
 					var file = dirFile,
 						_output = "{}";
 					json.stations = {};
-					json.active = active;
+					json.active = $('#radio-list li.active').lengt ? active : 0;
 					json.notify = notify;
 					json.volume = Math.min(1, Math.max(0, parseFloat($("#volume").val() / 100)));
 					$('#radio-list li').each(function(){
@@ -207,6 +221,92 @@
 				stations: {},
 				active: 0,
 				notify: false
+			},
+			init = function(type){
+				$('#radio-list').empty();
+				if(fs.existsSync(dir)) {
+					if(type == false){
+						fs.mkdir(dir, 0777, (err) => {
+							if (err) {
+								if (err.code == 'EEXIST'){
+									/**
+									 * Exists. Checking the file
+									 **/
+									fs.access(dirFile, fs.constants.F_OK | fs.constants.W_OK, (err1) => {
+										if (err1) {
+											/**
+											 * Does not exist
+											 **/
+											if(err1.code === 'ENOENT'){
+												/**
+												 * Create and write default to the file
+												 **/
+												writeFile(true);
+											}else{
+												/**
+												 * There is something wrong with the attributes.
+												 * Trying to install 
+												 **/
+												fs.chmod(dirFile, 0777, (err3) => {
+													if (err3){
+														/**
+														 * Close the program 
+														 **/
+														quitError(locale.appError);
+													}else{
+														/**
+														 * Reading the file 
+														 **/
+														readFile();
+													}
+												});
+											}
+										} else {
+											/**
+											 * Reading the file 
+											 **/ 
+											readFile();
+										}
+									});
+								} else {
+									/**
+									 * Close the program 
+									 **/
+									quitError(locale.appError);
+								}
+							} else {
+								/**
+								 * Create and write default to the file
+								 **/
+								writeFile(true);
+							}
+						});
+					}else if(type == true){
+						fs.rmdir(dir, {recursive: true}, (err) => {
+							if(!err){
+								fse.copy('radio', dir)
+								.then(() => {
+									init(!type);
+								})
+								.catch(err => {
+									quitError(locale.appError);
+								});
+							}else{
+								console.log(err);
+							}
+						});
+					}
+				}else{
+					fs.mkdir(dir, 0777, (error) => {
+						fse.copy('radio', dir)
+						.then(() => {
+							init(!type);
+						})
+						.catch(err => {
+							quitError(locale.appError);
+						});
+					});
+				}
 			};
 	var active = json.active,
 		notify = json.notify,
@@ -214,61 +314,7 @@
 	/**
 	 * Checking the directory and file
 	 **/
-	fs.mkdir(dir, 0777, (err) => {
-		if (err) {
-			if (err.code == 'EEXIST'){
-				/**
-				 * Exists. Checking the file
-				 **/
-				fs.access(dirFile, fs.constants.F_OK | fs.constants.W_OK, (err1) => {
-					if (err1) {
-						/**
-						 * Does not exist
-						 **/
-						if(err1.code === 'ENOENT'){
-							/**
-							 * Create and write default to the file
-							 **/
-							writeFile(true);
-						}else{
-							/**
-							 * There is something wrong with the attributes.
-							 * Trying to install 
-							 **/
-							fs.chmod(dirFile, 0777, (err3) => {
-								if (err3){
-									/**
-									 * Close the program 
-									 **/
-									quitError(locale.appError);
-								}else{
-									/**
-									 * Reading the file 
-									 **/
-									readFile();
-								}
-							});
-						}
-					} else {
-						/**
-						 * Reading the file 
-						 **/ 
-						readFile();
-					}
-				});
-			} else {
-				/**
-				 * Close the program 
-				 **/
-				quitError(locale.appError);
-			}
-		} else {
-			/**
-			 * Create and write default to the file
-			 **/ 
-			writeFile(true);
-		}
-	});
+	
 	/**
 	 * Context Menu Constants 
 	 **/
@@ -555,13 +601,65 @@
 	win.on('close',function(){
 		$("main").addClass('loading');
 		writeFile(false).then(function(){
-			nw.App.quit();
+			setTimeout(nw.App.quit, 200);
+			return !1;
 		}).catch(function(){
-			nw.App.quit();
+			setTimeout(nw.App.quit, 200);
+			return !1;
 		});
+	});
+	$("#settings").on('click', function(e){
+		e.preventDefault();
+		$settingsBlock.toggleClass('show');
+		/*
+		if(confirm("Загрузить дефолтный плейлист?")){
+			player.stop();
+			init(true);
+		}
+		*/
+		return !1;
+	});
+	$okSettings.on('click', function(e){
+		e.preventDefault();
+		$settingsBlock.removeClass('show');
+		notify = $notify.prop('checked');
+		if($loadDefault.prop('checked')){
+			player.stop();
+			deleteRadioPath(dir);
+			$("#radio-list").empty();
+			active = 0;
+			writeFile(true).then(()=> {
+				init(true);
+				writeFile(false);
+			});
+		}else if($clear_stations.prop('checked')){
+			player.stop();
+			deleteRadioPath(dir);
+			$("#radio-list").empty();
+			active = 0;
+			writeFile(true).then(()=> {
+				init(false);
+			});
+		}
+		$loadDefault.prop('checked', false);
+		$clear_stations.prop('checked', false);
+		$notify.prop('checked', notify);
+		return !1;
+	});
+	$noSettings.on('click', function(e){
+		e.preventDefault();
+		$settingsBlock.removeClass('show');
+		$loadDefault.prop('checked', false);
+		$clear_stations.prop('checked', false);
+		$notify.prop('checked', notify);
+		return !1;
 	});
 	/**
 	 * Set App title
 	 **/
 	setTitle(locale.appName);
+	/**
+	 * Run App Radio
+	 **/
+	init(false);
 }(jQuery));

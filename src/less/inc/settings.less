@@ -1,0 +1,30 @@
+.settings-block {
+	display: block;
+	position: absolute;
+	background-color: #ffffff;
+	z-index: 20000;
+	visibility: hidden;
+	top: 0;
+	bottom: 0;
+	left: 100%;
+	width: 100%;
+	height: 100%;
+	overflow-y: auto;
+	&.show {
+		left: 0;
+		visibility: visible;
+	}
+	.block-options {
+		display: flex;
+		flex: 1;
+		flex-direction: column;
+		label {
+			display: flex;
+			flex: 1;
+			flex-direction: row;
+			span {
+				margin-left: 15px;
+			}
+		}
+	}
+}

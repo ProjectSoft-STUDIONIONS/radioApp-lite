@@ -4,6 +4,8 @@ if(nw.process.versions["nw-flavor"] == "sdk"){
 }
 const gui = require('nw.gui'),
 	fs = require('fs'),
+	fse = require('fs-extra'),
+	ph = require('path'),
 	locale = require(".\\modules\\locale.js"),
 	AudioPlayer = require(".\\modules\\audioplayer.js"),
 	dialog = require(".\\modules\\nwdialog.js"),
@@ -14,7 +16,7 @@ const gui = require('nw.gui'),
 	dirFile = dir + "\\data.json",
 	quitError = function(error){
 		alert(error);
-		win.close();
+		nw.App.quit();
 	},
 	scrollTo = function(){
 		let $el = $('#radio-list > li.active');

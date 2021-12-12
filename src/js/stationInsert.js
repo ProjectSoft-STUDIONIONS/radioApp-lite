@@ -356,6 +356,7 @@
 			$(doc).unbind('keydown.radioDialog');
 			self._.close();
 			btns = null;
+			$("main").removeClass('loading');
 			return self;
 		}
 	}

@@ -195,6 +195,9 @@
 					});
 					return !1;
 				});
+				setTimeout(()=>{
+					$('input[type=range]', tpl).trigger('change');
+				}, 100);
 			}
 			$this.type = type;
 			$this.modal = tpl;

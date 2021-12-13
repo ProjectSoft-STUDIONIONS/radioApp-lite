@@ -14,18 +14,19 @@ main {
 		height: 100.1%;
 		top: 0;
 		left: 0;
-		z-index: -1;
 		background-repeat: no-repeat;
 	}
 	&:after {
 		background-image: data-uri('inc/data-uri/lazy_bg.svg');
 		background-position: center bottom;
 		background-size: cover;
+		z-index: 1;
 	}
 	&:before {
 		background-image: data-uri('inc/data-uri/favicon.png');
 		background-position: center center;
 		background-size: auto;
+		z-index: 2;
 	}
 	> .container {
 		flex: 1 0 auto;

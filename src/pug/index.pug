@@ -29,42 +29,42 @@ html
 				.row
 					ul#radio-list(data-title="Your Radio")
 						//include inc/radioitem.pug
-					.settings-block
-						h3.settingsTitle.text-center
-							|Настройки
-						.block-options
-							label
-								input#clear_stations(type="checkbox")
-								span
-									|Очистить список радиостанций
-							label
-								input#loadDefault(type="checkbox")
-								span
-									|Загрузить дефолтный плейлист.
-							label
-								input#notify(type="checkbox")
-								span
-									|Выводить сообщения о воспроизведении
-							.buttons-options
-								button#okSettings.btn(type="button")
-									|Ok
-								button#noSettings.btn(type="button")
-									|Cancel
-
 				.volume-block
 					input#volume(min="0" max="100" value="1" type="range" tabindex="-1")
 			.appBlock.hidden
 		footer.clearfix
 			.footer_wrap
 				p.ring
-					a.github.icon-github(href="https://github.com/ProjectSoft-STUDIONIONS/radioApp-lite" target="_blank", title="https://github.com/ProjectSoft-STUDIONIONS/radioApp-lite")
+					a.github.icon-github(href="https://github.com/ProjectSoft-STUDIONIONS/radioApp-lite" target="_blank", title="https://github.com/ProjectSoft-STUDIONIONS/radioApp-lite" tabindex="-1")
 				p.text-center
 					|Developed by  
-					a(href="https://projectsoft.ru/" target="_blank" title="https://projectsoft.ru/") ProjectSoft
+					a(href="https://projectsoft.ru/" target="_blank" title="https://projectsoft.ru/" tabindex="-1") ProjectSoft
 					br
 					|&copy; 2008 - all
 				p.left.write
 					|0%
+		.settings-block
+			h3.settingsTitle.text-center
+				|Настройки
+			.block-options
+				.labels
+					label
+						input#clear_stations(type="checkbox")
+						span
+							|Очистить список радиостанций
+					label
+						input#loadDefault(type="checkbox")
+						span
+							|Загрузить дефолтный плейлист.
+					label
+						input#notify(type="checkbox")
+						span
+							|Выводить сообщения о воспроизведении
+				.buttons-options
+					button#okSettings.btn(type="button")
+						|Ok
+					button#noSettings.btn(type="button")
+						|Cancel
 		#cropTmp
 		script(type="text/javascript" src="js/plugins.js")
 		script(type="text/javascript" src="js/main.js")

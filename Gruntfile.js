@@ -20,10 +20,12 @@ module.exports = function(grunt) {
 				'application/css/',
 				'application/fonts/',
 				'application/js/',
+				'application/*-lock.json',
 				'test/'
 			],
 			dev: [
-				'test/'
+				'test/',
+				'application/*-lock.json'
 			]
 		},
 		webfont: {
@@ -146,11 +148,6 @@ module.exports = function(grunt) {
 				files: {
 					'application/js/plugins.js': [
 						'test/js/plugins.js'
-						//'src/js/inc/setposition.js',
-						//'src/js/jquery.psmodal.js',
-						//'src/js/require.js',
-						//'src/js/stationitem.js',
-						//'src/js/main.viz.js'
 					],
 					'application/js/main.js': [
 						'src/js/require.js',
@@ -158,11 +155,7 @@ module.exports = function(grunt) {
 						'src/js/stationInsert.js',
 						'src/js/main.js'
 					],
-					/*'application/js/main.js': [
-						//'src/js/require.js',
-						'src/js/main.js'
-					]*/
-				}
+				},
 			},
 			modules: {
 				files: [
@@ -171,9 +164,9 @@ module.exports = function(grunt) {
 						cwd: 'src/modules',
 						src: ["**//*.js"],
 						dest: 'application/modules/'
-					}
-				]
-			}
+					},
+				],
+			},
 		},
 		pug: {
 			files: {
@@ -183,8 +176,8 @@ module.exports = function(grunt) {
 				},
 				files: {
 					"application/index.html": ['src/pug/index.pug'],
-				}
-			}
+				},
+			},
 		},
 		nwjs: {
 			sdk: {
@@ -198,9 +191,8 @@ module.exports = function(grunt) {
 					zip: true,
 					appName: pkg.appName,
 					appVersion: pkg.version
-
 				},
-				src: [__dirname+'/application/**/*']
+				src: [__dirname+'/application/**/*'],
 			},
 			normal: {
 				options: {
@@ -214,7 +206,7 @@ module.exports = function(grunt) {
 					appName: pkg.appName,
 					appVersion: pkg.version
 				},
-				src: [__dirname+'/application/**/*']
+				src: [__dirname+'/application/**/*'],
 			},
 		},
 		ffmpeg_down: {
@@ -222,8 +214,8 @@ module.exports = function(grunt) {
 				options: {
 					platforms: ["win32"],
 					dest: "ffmpeg"
-				}
-			}
+				},
+			},
 		},
 		copy: {
 			sdk: {
@@ -239,8 +231,8 @@ module.exports = function(grunt) {
 						cwd: "ffmpeg/win32",
 						src: "*.dll",
 						dest: ".cache/" + gc.version + "-sdk/win32"
-					}
-				]
+					},
+				],
 			},
 			normal: {
 				files: [
@@ -255,23 +247,11 @@ module.exports = function(grunt) {
 						cwd: "ffmpeg/win32",
 						src: "*.dll",
 						dest: ".cache/" + gc.version + "-normal/win32"
-					}
-				]
+					},
+				],
 			},
 			appcopy: {
 				files: [
-					/*{
-						expand: true,
-						cwd: "src/icon",
-						src: "**",
-						dest: "app"
-					},
-					{
-						expand: true,
-						cwd: "src/pack",
-						src: "*.radiopack",
-						dest: "app"
-					},*/
 					{
 						expand: true,
 						cwd: "src/images",
@@ -283,9 +263,9 @@ module.exports = function(grunt) {
 						cwd: "src/_locales",
 						src: "**",
 						dest: "application/_locales"
-					}
-				]
-			}
+					},
+				],
+			},
 		},
 	});
 	grunt.registerTask('default', [
@@ -306,6 +286,7 @@ module.exports = function(grunt) {
 		'copy:normal'
 	]);
 	grunt.registerTask('sdk', [
+		'clean:dev',
 		'less',
 		'group_css_media_queries',
 		'cssmin',

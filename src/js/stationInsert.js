@@ -25,8 +25,8 @@
 						</div>
 					</div>
 					<div class="modal-buttons">
-						<button class="control btn ok" type="button">${locale.ok}</button>
-						<button class="control btn cancel" type="button">${locale.cancel}</button>
+						<button class="control ok" type="button">${locale.ok}</button>
+						<button class="control cancel" type="button">${locale.cancel}</button>
 					</div>
 				</div>
 			</div>
@@ -229,7 +229,6 @@
 		ok: function(){
 			var self = this;
 			return new Promise(function(resolve, reject) {
-				console.log(typeof self.modal)
 				var name = self.name,
 					stream = self.stream,
 					type = self.type,
@@ -336,7 +335,6 @@
 				$('.ok', self._.selector).on('click.radioDialog', function(e){
 					e.preventDefault();
 					self._.ok().then(function(data){
-						console.log(data);
 						if(data.type == 'error'){
 							console.log('error', data.message);
 						}else{
@@ -355,15 +353,15 @@
 		},
 		close: function(){
 			var self = this;
-			$(self._.selector).addClass('hidden');
-			$(doc).unbind('keydown.radioDialog');
-			self._.close();
+			if(self._){
+				$(self._.selector).addClass('hidden');
+				$(doc).unbind('keydown.radioDialog');
+				self._.close();
+				delete self._;
+			}
 			btns = null;
 			$("main").removeClass('loading');
 			return self;
 		}
-	}
-	function getImage(){
-
 	}
 }(jQuery, document));

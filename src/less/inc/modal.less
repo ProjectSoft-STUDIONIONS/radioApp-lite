@@ -18,14 +18,16 @@
 	&-crop {
 		position: relative;
 		margin-bottom: 15px;
+		width: 310px
 	}
 	&-fileicon {
 		position: absolute;
 		top: 0;
-		right: 0;
+		left: calc(100% - 48.38px);
 		cursor: pointer;
 		font-size: 3.3em;
 		line-height: 0;
+		z-index: 2000;
 		//text-shadow: 0 0 0px rgba(0, 152, 255, .88);
 		//transition: text-shadow .3s ease;
 		&:hover {
@@ -111,12 +113,11 @@
 		flex-direction: row;
 		align-items: center;
 		justify-content: center;
-		.btn {
+		button.control {
 			margin-right: 15px;
 			padding-top: 0.7em;
 			padding-bottom: 0.7em;
 			flex: 1;
-			font-weight: 900;
 			&:last-child {
 				margin-right: 0;
 			}

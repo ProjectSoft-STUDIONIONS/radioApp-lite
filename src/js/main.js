@@ -142,7 +142,7 @@
 					var file = dirFile,
 						_output = "{}";
 					json.stations = {};
-					json.active = $('#radio-list li.active').lengt ? active : 0;
+					json.active = parseInt($("#radio-list li.active").length ? $("#radio-list li.active").data('id') : 0);
 					json.notify = notify;
 					json.volume = Math.min(1, Math.max(0, parseFloat($("#volume").val() / 100)));
 					$('#radio-list li').each(function(){
@@ -222,7 +222,7 @@
 			},
 			json = {
 				stations: {},
-				active: 0,
+				active: 1,
 				notify: false
 			},
 			init = function(type){
@@ -477,7 +477,7 @@
 				player.stream = data.stream,
 				player.play()
 			);
-			json.active = active = _li.prop('id').split('_')[1];
+			json.active = active = parseInt(data.id);
 			return !1;
 		}).on('contextmenu', '#radio-list > li', function(e){
 			/**
@@ -610,20 +610,15 @@
 		 **/
 		$('input[type=range]').on('input change')
 		$("#volume").on('input change', function(e){
-			//e.preventDefault();
 			let s = parseFloat(this.value / 100),
 				t = this.value + '%';
 			player.volume = s;
-			//$('html').attr({
-			//	style: '--background-range: ' + t
-			//});
 			clearTimeout(aniInterval);
 			$('p.left').addClass('visible').text(t);
 			aniInterval = setTimeout(function(){
 				clearTimeout(aniInterval);
 				$('p.left').removeClass('visible')
 			}, 3000);
-			//return !1;
 		});
 		/**
 		 * Adding UI Sortable
@@ -639,6 +634,7 @@
 		});
 		$("#settings").on('click', function(e){
 			e.preventDefault();
+			$.radioDialog.close();
 			$settingsBlock.toggleClass('show');
 			return !1;
 		});
@@ -678,4 +674,10 @@
 			return !1;
 		});
 	}, 1000);
+	$('.settingsTitle').text(locale.settingsTitle);
+	$('.settingsEmpty').text(locale.settingsEmpty);
+	$('.settingsDefault').text(locale.settingsDefault);
+	$('#okSettings').text(locale.ok);
+	$('#noSettings').text(locale.cancel);
+	//$('.settingsDefault').text(locale.settingsDefault);
 }(jQuery));

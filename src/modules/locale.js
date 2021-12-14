@@ -75,6 +75,15 @@ class LocaleApp {
 	get addIcon() {
 		return chrome.i18n.getMessage('addIcon');
 	}
+	get settingsTitle() {
+		return chrome.i18n.getMessage('settingsTitle');
+	}
+	get settingsEmpty() {
+		return chrome.i18n.getMessage('settingsEmpty');
+	}
+	get settingsDefault() {
+		return chrome.i18n.getMessage('settingsDefault');
+	}
 }
 
 var _l = new LocaleApp();

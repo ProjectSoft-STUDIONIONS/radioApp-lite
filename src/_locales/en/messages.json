@@ -73,5 +73,14 @@
 	},
 	"addIcon": {
 		"message": "Add radio station icon"
+	},
+	"settingsTitle": {
+		"message": "Settings"
+	},
+	"settingsEmpty": {
+		"message": "Clear the list of radio stations"
+	},
+	"settingsDefault": {
+		"message": "Load default playlist.\nWill delete the previously created playlist. "
 	}
 }

@@ -45,22 +45,7 @@
 				</div>
 			</div>
 		</div>`,
-		_tplDelete = `<div class="modal clearfix">
-			<span class="icon-close close"></span>
-			<div class="modal-dialog">
-				<div class="modal-wrapper">
-					<h2 class="modal-title text-center"></h2>
-					<div class="modal-inputs row">
-						<p class="container"></p>
-					</div>
-					<div class="modal-buttons">
-						<button class="control btn ok" type="button">${locale.ok}</button>
-						<button class="control btn cancel" type="button">${locale.cancel}</button>
-					</div>
-				</div>
-			</div>
-		</div>`,
-		_tplExpImp = `<div class="modal clearfix">
+		_tplDelExpImp = `<div class="modal clearfix">
 			<span class="icon-close close"></span>
 			<div class="modal-dialog">
 				<div class="modal-wrapper">
@@ -123,21 +108,21 @@
 					break;
 				case 'export':
 					localeMessage = locale.exportMessage;
-					tpl = $(_tplExpImp).clone();
+					tpl = $(_tplDelExpImp).clone();
 					title = locale.exportTitle;
 					message = localeMessage;
 					$('.modal-inputs p', tpl).text(message);
 					break;
 				case 'import':
 					localeMessage = locale.importMessage;
-					tpl = $(_tplExpImp).clone();
+					tpl = $(_tplDelExpImp).clone();
 					title = locale.importTitle;
 					message = localeMessage;
 					$('.modal-inputs p', tpl).text(message);
 					break;
 				case 'delete':
 					let deleteText = locale.deleteStation;
-					tpl = $(_tplDelete).clone();
+					tpl = $(_tplDelExpImp).clone();
 					title = locale.deleteTitle;
 					$this.id = settings.id;
 					$this.name = settings.name;
@@ -203,8 +188,7 @@
 			$this.modal = tpl;
 			btns = $('.btn, input', $this.modal);
 			$('h2', $this.modal).text(title);
-			$($this.selector).append($this.modal).removeClass('hidden');
-			$(doc).on('keydown.radioDialog', $this.keydown.bind($this));
+			$($this.selector).append($this.modal)[0].showModal();
 			$(btns[0]).focus();
 			keyIndex = 1;
 			return $this;
@@ -274,6 +258,7 @@
 									message: "Station type: " + type + ",\nCroppie:\n " + err
 								});
 							});
+
 							break;
 						case 'delete':
 							id = self.id;
@@ -302,19 +287,6 @@
 					});
 				}
 			});
-		},
-		keydown: function(e){
-			if(e.keyCode == 9){
-				e.preventDefault();
-				if(btns.length) {
-					if(keyIndex > btns.length-1){
-						keyIndex = 0;
-					}
-					btns[keyIndex].focus();
-					++keyIndex;
-				}
-				return !1;
-			}
 		}
 	});
 
@@ -354,12 +326,10 @@
 		close: function(){
 			var self = this;
 			if(self._){
-				$(self._.selector).addClass('hidden');
-				$(doc).unbind('keydown.radioDialog');
+				$(self._.selector)[0].close();
 				self._.close();
 				delete self._;
 			}
-			btns = null;
 			$("main").removeClass('loading');
 			return self;
 		}

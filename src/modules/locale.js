@@ -84,6 +84,9 @@ class LocaleApp {
 	get settingsDefault() {
 		return chrome.i18n.getMessage('settingsDefault');
 	}
+	get settingsNotify() {
+		return chrome.i18n.getMessage('settingsNotify');
+	}
 }
 
 var _l = new LocaleApp();

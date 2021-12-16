@@ -25,8 +25,7 @@ html
 					ul#radio-list(data-title="Your Radio")
 						//include inc/radioitem.pug
 				.volume-block
-					input#volume(min="0" max="100" value="1" type="range" tabindex="-1")
-			.appBlock.hidden
+					input#volume(min="0" max="100" value="1" step="1" type="range")
 		footer.clearfix
 			.footer_wrap
 				p.ring
@@ -38,19 +37,20 @@ html
 					|&copy; 2008 - all
 				p.left.write
 					|0%
-		.settings-block
+		dialog.appBlock
+		dialog.settings-block
 			h3.settingsTitle.text-center
 				|
 			.block-options
 				.labels
 					label
-						input#clear_stations(type="checkbox")
+						input#clear_stations.group1(type="checkbox")
 						span.settingsEmpty
 					label
-						input#loadDefault(type="checkbox")
+						input#loadDefault.group1(type="checkbox")
 						span.settingsDefault
 					label
-						input#notify(type="checkbox")
+						input#notify.group2(type="checkbox")
 						span.settingsNotify
 				.buttons-options
 					button#okSettings(type="button")

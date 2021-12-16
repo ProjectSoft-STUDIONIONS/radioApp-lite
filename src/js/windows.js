@@ -1,24 +1,27 @@
 //Set position
 (function(window){
 	nw.Screen.Init();
-	var w = 400,
-		h = 500,
+	var w = nw.App.manifest.window.width,
+		h = nw.App.manifest.window.height,
 		state = (localStorage.getItem('canvas_state') == "true");
-	w = state ? 600 : 400;
+	//w = state ? w : w;
 	let screen = nw.Screen.screens[0],
 		x = parseInt(screen.bounds.x + (screen.bounds.width - w) / 2) || 0,
-		y = parseInt(screen.bounds.y + (screen.bounds.height - 500) / 2) || 0;
-	win.restore();
+		y = parseInt(screen.bounds.y + (screen.bounds.height - h) / 2) || 0,
+		wid = screen.work_area.width,
+		hei = screen.work_area.height;
+	h = h > hei ? hei : h;
+	w = w > wid ? wid : w;
 	win.moveTo(x, y);
-	win.setMinimumSize(w, 500);
-	win.resizeTo(w, 500);
-	//win.setAlwaysOnTop(true);
+	win.setMinimumSize(w, h);
+	win.resizeTo(w, h);
 }(window));
 
 (function($){
 	const 	miniBtn = $('#minimized'),
 			restoreBtn = $('#restored'),
 			closeBtn = $('#close'),
+			settingsBtn = $('#settings'),
 			maxRes = $('svg path', restoreBtn),
 			minimizePath = 'M 0,5 10,5 10,6 0,6 Z',
 			restorePath = 'm 2,1e-5 0,2 -2,0 0,8 8,0 0,-2 2,0 0,-8 z m 1,1 6,0 0,6 -1,0 0,-5 -5,0 z m -2,2 6,0 0,6 -6,0 z',
@@ -46,6 +49,7 @@
 	miniBtn.attr({title: locale.minimize});
 	restoreBtn.attr({title: locale.default});
 	closeBtn.attr({title: locale.close});
+	settingsBtn.attr({title: locale.settingsTitle});
 	restoreBtn.attr({title: (isMaximized ? locale.restore : locale.default)});
 	win.on('maximize', function(e){
 		isMaximized = !0;

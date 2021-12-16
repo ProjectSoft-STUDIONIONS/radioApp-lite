@@ -27,9 +27,9 @@
 		"toolbar": true,
 		"visible": true,
 		"visible_on_all_workspaces": true,
-		"min_width": 400,
-		"min_height": 500,
-		"width": 400,
+		"min_width": 600,
+		"min_height": 520,
+		"width": 600,
 		"height": 520
 	},
 	"devDependencies": {

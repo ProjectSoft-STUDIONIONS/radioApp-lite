@@ -82,5 +82,8 @@
 	},
 	"settingsDefault": {
 		"message": "Load default playlist.\nWill delete the previously created playlist. "
+	},
+	"settingsNotify": {
+		"message": "Display a message about playback"
 	}
 }

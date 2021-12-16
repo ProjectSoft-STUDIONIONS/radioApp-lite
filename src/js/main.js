@@ -310,6 +310,18 @@
 						});
 					});
 				}
+			},
+			updateRange = function(el){
+				let min = parseFloat(el.min),
+					max = parseFloat(el.max),
+					val = parseFloat(el.value),
+					mi = 0,
+					ma = max - min,
+					v = val - min,
+					s = (v * 100) / ma;
+				$(el).attr({
+					style: '--background-range: ' +  s + '%'
+				});
 			};
 	var active = json.active,
 		notify = json.notify,
@@ -407,32 +419,12 @@
 	menuLi.append(separator);
 	menuLi.append(copyStationItem);
 	menuLi.append(editStationItem);
+	menuLi.append(separator);
 	menuLi.append(removeStationItem);
 	menuLi.append(separator);
 	menuLi.append(exportStations);
 	menuLi.append(importStations);
 
-	/**
-	 * Player events
-	 **/
-	player.addEventListener('statechange', function(e){
-		//console.log(e)
-		if(e.type=='statechange'){
-			let $li = $('.radio-item.active');
-			switch(e.audioev){
-				case 'play':
-					$li.removeClass('stop').addClass('play preload');
-					break;
-				case 'playing':
-					e.bufering ?  $li.removeClass('stop').addClass('play preload') : $li.removeClass('stop preload').addClass('play');
-					break;
-				case 'stop':
-					$li.addClass('stop').removeClass('play preload');
-					break;
-			}
-			updateSessionMetaData();
-		}
-	});
 	/**
 	 * Adding a close event to nwWindow
 	 **/
@@ -447,14 +439,17 @@
 		});
 	});
 	/**
-	 * Set App title
-	 **/
-	setTitle(locale.appName);
-	/**
 	 * Run App Radio
 	 **/
 	setTimeout(()=>{
 		init(false);
+		/* set lang */
+		$('.settingsTitle').text(locale.settingsTitle);
+		$('.settingsEmpty').text(locale.settingsEmpty);
+		$('.settingsDefault').text(locale.settingsDefault);
+		$('.settingsNotify').text(locale.settingsNotify);
+		$('#okSettings').text(locale.ok);
+		$('#noSettings').text(locale.cancel);
 		$(document).on('click', '#radio-list span.icons', function(e){
 			e.preventDefault();
 			/**
@@ -581,45 +576,47 @@
 			e.preventDefault();
 			e.stopPropagation();
 			return !1;
-		}).on('mousewheel', '#volume', function(e){
+		}).on('mousewheel', 'input[type=range]', function(e){
 			/**
-			 * mousewhell Volume range
+			 * mousewhell inputs range
 			 **/
-			let o = e.originalEvent.wheelDelta;
-			this.value = parseFloat(this.value) + ((o > 0) ? 1 : -1);
-			this.dispatchEvent(new Event('input'));
-		}).on('input change', 'input[type=range]', function(e){
-			e.preventDefault();
-			let min = parseFloat(this.min),
+			let o = e.originalEvent.wheelDelta,
+				min = parseFloat(this.min),
 				max = parseFloat(this.max),
 				val = parseFloat(this.value),
-				mi = 0,
-				ma = max - min,
-				v = val - min,
-				s = (v * 100) / ma;
-			//console.log(max - min, val - min, val)
-				//delta = max - min,
-				//s = ((delta - val - min) * 100) / delta;
-			//console.log(s);
-			$(this).attr({
-				style: '--background-range: ' +  s + '%'
-			});
-		}).trigger('change');
-		/**
-		 * Volume range
-		 **/
-		$('input[type=range]').on('input change')
-		$("#volume").on('input change', function(e){
-			let s = parseFloat(this.value / 100),
-				t = this.value + '%';
-			player.volume = s;
-			clearTimeout(aniInterval);
-			$('p.left').addClass('visible').text(t);
-			aniInterval = setTimeout(function(){
+				step = parseFloat(this.step);
+			this.value = Math.min(max, Math.max(min, (val + (o > 0 ? step : -step))));
+			this.dispatchEvent(new Event('input', {bubbles: true, composed: true}));
+		}).on('input change', 'input[type=range]', function(e){
+			/**
+			 * input or change events inputs range
+			 **/
+			updateRange(this);
+			if($(this).attr('id') == 'volume'){
+				let s = parseFloat(this.value / 100),
+					t = this.value + '%';
+				player.volume = s;
 				clearTimeout(aniInterval);
-				$('p.left').removeClass('visible')
-			}, 3000);
-		});
+				$('p.left').addClass('visible').text(t);
+				aniInterval = setTimeout(function(){
+					clearTimeout(aniInterval);
+					$('p.left').removeClass('visible')
+				}, 3000);
+			}
+		}).on('change input', 'input[type=checkbox]', function(e){
+			/**
+			 * input change Events CheckBox
+			 **/
+			$(this).hasClass('group1') && ($(this).is(':checked') && $('.group1:checkbox').not(this).prop('checked', false));
+		}).on('click', "#settings", function(e){
+			/**
+			 * settings open dialog
+			 **/
+			e.preventDefault();
+			$.radioDialog.close();
+			$settingsBlock[0].showModal();
+			return !1;
+		}).trigger('change');
 		/**
 		 * Adding UI Sortable
 		 **/
@@ -632,15 +629,14 @@
 				writeFile(false);
 			}
 		});
-		$("#settings").on('click', function(e){
-			e.preventDefault();
+		$('dialog').on('close', function(){
 			$.radioDialog.close();
-			$settingsBlock.toggleClass('show');
-			return !1;
-		});
+		})
 		$okSettings.on('click', function(e){
+			/**
+			 * Ok settings click
+			 **/
 			e.preventDefault();
-			$settingsBlock.removeClass('show');
 			notify = $notify.prop('checked');
 			if($loadDefault.prop('checked')){
 				player.stop();
@@ -660,24 +656,48 @@
 					init(false);
 				});
 			}
-			$loadDefault.prop('checked', false);
-			$clear_stations.prop('checked', false);
-			$notify.prop('checked', notify);
+			/**
+			 * Close settings
+			 **/
+			$noSettings.click();
 			return !1;
 		});
 		$noSettings.on('click', function(e){
+			/**
+			 * Cancel settings click
+			 **/
 			e.preventDefault();
-			$settingsBlock.removeClass('show');
 			$loadDefault.prop('checked', false);
 			$clear_stations.prop('checked', false);
 			$notify.prop('checked', notify);
+			$settingsBlock[0].close();
 			return !1;
 		});
 	}, 1000);
-	$('.settingsTitle').text(locale.settingsTitle);
-	$('.settingsEmpty').text(locale.settingsEmpty);
-	$('.settingsDefault').text(locale.settingsDefault);
-	$('#okSettings').text(locale.ok);
-	$('#noSettings').text(locale.cancel);
-	//$('.settingsDefault').text(locale.settingsDefault);
+	/**
+	 * Set App title
+	 **/
+	setTitle(locale.appName);
+
+	/**
+	 * Player events
+	 **/
+	player.addEventListener('statechange', function(e){
+		//console.log(e)
+		if(e.type=='statechange'){
+			let $li = $('.radio-item.active');
+			switch(e.audioev){
+				case 'play':
+					$li.removeClass('stop').addClass('play preload');
+					break;
+				case 'playing':
+					e.bufering ?  $li.removeClass('stop').addClass('play preload') : $li.removeClass('stop preload').addClass('play');
+					break;
+				case 'stop':
+					$li.addClass('stop').removeClass('play preload');
+					break;
+			}
+			updateSessionMetaData();
+		}
+	});
 }(jQuery));

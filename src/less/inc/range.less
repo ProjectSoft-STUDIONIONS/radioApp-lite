@@ -7,14 +7,21 @@
 input[type="range"] {
 	width: 100%;
 	display: block;
-	padding: 0;
-	padding-top: 5px;
+	padding-top: 10px;
+	padding-bottom: 10px;
 	&,
 	&:focus,
 	&:focus-within {
 		appearance: none;
 		background: none;
-		outline: none !important;
+	}
+	&:focus,
+	&:focus-within {
+		outline: inherit;
+		outline-width: 1px;
+		outline-style: dashed;
+		outline-color: #ff7000;
+		outline-offset: -1px;
 	}
 	&::-webkit-slider-runnable-track {
 		height: 5px;

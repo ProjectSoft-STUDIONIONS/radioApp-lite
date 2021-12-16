@@ -1,4 +1,5 @@
 package-lock.json
+*.sublime-workspace
 /*.sublime-workspace
 /.cache
 /bower_components

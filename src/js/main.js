@@ -23,25 +23,7 @@
 		$settingsBlock = $('.settings-block'),
 		$okSettings = $("#okSettings"),
 		$noSettings = $("#noSettings");
-	const 	deleteRadioPath = function (path) {
-				let files = [];
-				if( fs.existsSync(path) ) {
-					files = fs.readdirSync(path);
-					files.forEach(function(file,index, arr){
-						let curPath = path + "/" + file,
-							ext = ph.extname(curPath).toLowerCase();
-						if(!fs.statSync(curPath).isDirectory()) {
-							if(ext != '.json'){
-								fs.unlinkSync(curPath);
-							}
-							//deleteRadioPath(curPath);
-							//fs.unlinkSync(curPath);
-						}
-						//fs.unlinkSync(curPath);
-					});
-				}
-			},
-			addListItem = async function(data){
+	const 	addListItem = async function(data){
 				try{
 					if(data.name && data.stream){
 						let _id = data.id,
@@ -92,7 +74,7 @@
 						notify: notify,
 						volume: volume
 					};
-				$('#radio-list').empty();
+				clearTimeout(aniInterval);
 				$("main").addClass('loading');
 				try {
 					let t = 0;
@@ -109,30 +91,21 @@
 					t = volume * 100;
 					$("#volume").attr({
 						style: '--background-range: ' + t + '%'
-					})
-					//$('html').attr({
-					//	style: '--background-range: ' + t + '%'
-					//});
-					clearTimeout(aniInterval);
-					$('p.left').addClass('visible').text(t + '%');
-					aniInterval = setTimeout(function(){
-						clearTimeout(aniInterval);
-						$('p.left').removeClass('visible')
-					}, 3000);
-					$("#volume").val(t);
+					}).val(t);
+					$('p.left').removeClass('visible').text(t + '%');
+					$('#radio-list').empty();
 					for (let prop in json.stations) {
 						let st = json.stations[prop];
-						st.id = prop;
+						st.id = parseInt(prop);
 						await addListItem(st);
 					}
-
 				} catch(e){
 					//
 				} finally {
 					setTimeout(function(){
 						$("main").removeClass('loading');
 						setTimeout(scrollTo, 50);
-					}, 150);
+					}, 250);
 				}
 				return _json;
 			},
@@ -148,7 +121,7 @@
 					$('#radio-list li').each(function(){
 						let $this = $(this),
 							data = $this.data(),
-							id = $this.prop('id').split('_')[1];
+							id = parseInt($this.prop('id').split('_')[1]);
 						json.stations[id] = {
 							name: data.name,
 							stream: data.stream
@@ -179,13 +152,15 @@
 				writeFile(false);
 			},
 			setTitle = function(title) {
-				title = title.replace(/\s+/g, ' ');
-				$('#TitleBar-text > span').text(title);
-				win.title = title;
+				if(typeof title == 'string'){
+					title = title.replace(/\s+/g, ' ');
+					$('#TitleBar-text > span').text(title);
+					win.title = title;
+				}
 			},
 			updateSessionMetaData = function() {
 				let icon;
-				if(player.isPlaying()){
+				if(player.isPlaying() &&  $('li.radio-item.active').length){
 					let $li = $('li.radio-item.active'),
 						data = $li.data(),
 						id = data.id,
@@ -214,7 +189,7 @@
 					icon  = "data:image/png;base64," + fs.readFileSync('favicon.png').toString('base64');
 					navigator.mediaSession.metadata = new MediaMetadata({
 						title: locale.appName,
-						artist: title,
+						artist: "",
 						album: "",
 						artwork: [{src: icon, type: "image/png", sizes: '128x128'}]
 					});
@@ -295,7 +270,7 @@
 									quitError(locale.appError);
 								});
 							}else{
-								console.log(err);
+								log(err);
 							}
 						});
 					}
@@ -344,15 +319,16 @@
 					$.radioDialog.show({
 						type: 'insert'
 					}, function(args){
-						//console.log(args);
 						$("main").addClass('loading');
 						if(args.type == 'insert'){
-							writeFile(false).then(function(){
-								addListItem(args);
-								$("main").removeClass('loading');
-							}).catch(function(){
-								alert('Попробуйте ещё раз');
-								$("main").removeClass('loading');
+							addListItem(args).then(function(){
+								log('add station and writeFile')
+								writeFile(false).then(function(){
+									$("main").removeClass('loading');
+								}).catch(function(){
+									alert(locale.appRepeat);
+									$("main").removeClass('loading');
+								});
 							});
 						}
 					});
@@ -373,17 +349,36 @@
 				label: locale.exportTitle,
 				type: 'normal',
 				click: function() {
-					//console.log("Экспорт станций");
 					$.radioDialog.show({
 						type: 'export'
 					}, function(args){
 						if(args.type == 'export'){
-							console.log(args.type);
 							/**
-							 * Export radio station's
+							 * Export radio stations
 							 **/
-						} else {
+							ImpExp.ExportSattions(json).then(function(data){
+								let _output = JSON.stringify(data);
+								dialog.saveFileDialog('radio-export', '.json', function(sfile){
+									$("main").addClass('loading');
+									fs.writeFile(sfile, _output, 'utf8', (err) => {
+										/**
+										 * If there is no error,
+										 * then we read the file,
+										 * otherwise we close the program 
+										 **/
+										 $("main").removeClass('loading');
+										if(!err){
+											//isRead && readFile();
 
+										}else{
+											quitError(locale.appError);
+										}
+									});
+								});
+							}).catch(function(data){
+								log(data);
+							});
+							
 						}
 					});
 				}
@@ -396,12 +391,16 @@
 						type: 'import'
 					}, function(args){
 						if(args.type == 'import'){
-							console.log(args.type);
-							/**
-							 * Import radio station's
-							 **/
-						} else {
-
+							dialog.openFileDialog(['.json'], false, function(result){
+								player.stop();
+								$("main").addClass('loading');
+								ImpExp.ImportStations(result).then(function(data){
+									$("#radio-list").empty();
+									readFile();
+								}).catch(function(data){
+									alert(data);
+								});
+							});
 						}
 					});
 				}
@@ -494,7 +493,7 @@
 				navigator.clipboard.writeText(data.stream).then(() => {
 					$.radioDialog.show(data, function(args){});
 				}).catch(err => {
-					console.log('Something went wrong', err);
+					log('Something went wrong', err);
 				});
 				copyStationItem.click = null;
 			};
@@ -533,8 +532,8 @@
 						writeFile(false).then(function(){
 							$("main").removeClass('loading');
 						}).catch(function(){
-							alert('Попробуйте ещё раз');
-							$("main").addClass('loading');
+							alert(locale.appRepeat);
+							$("main").removeClass('loading');
 						});
 					}
 				});
@@ -561,7 +560,7 @@
 			}
 			menuLi.popup(parseInt(ev.x), parseInt(ev.y));
 			return !1;
-		}).on('contextmenu', 'main, footer', function(e){
+		}).on('contextmenu', 'main', function(e){
 			/**
 			 * Context menu main, footer
 			 **/
@@ -569,7 +568,7 @@
 			let ev = e.originalEvent;
 			menu.popup(parseInt(ev.x), parseInt(ev.y));
 			return !1;
-		}).on('contextmenu', 'html', function(e){
+		}).on('contextmenu', 'main', function(e){
 			/**
 			 * Context menu default
 			 **/
@@ -595,10 +594,11 @@
 			if($(this).attr('id') == 'volume'){
 				let s = parseFloat(this.value / 100),
 					t = this.value + '%';
-				player.volume = s;
+				player.volume = json.volume = s;
 				clearTimeout(aniInterval);
 				$('p.left').addClass('visible').text(t);
 				aniInterval = setTimeout(function(){
+					writeFile(false);
 					clearTimeout(aniInterval);
 					$('p.left').removeClass('visible')
 				}, 3000);
@@ -640,20 +640,23 @@
 			notify = $notify.prop('checked');
 			if($loadDefault.prop('checked')){
 				player.stop();
-				deleteRadioPath(dir);
-				$("#radio-list").empty();
-				active = 0;
-				writeFile(true).then(()=> {
-					init(true);
-					writeFile(false);
+				ImpExp.DeleteRadioPath(dir).then(function(){
+					$("#radio-list").empty();
+					active = 0;
+					writeFile(true).then(()=> {
+						init(true);
+						writeFile(false);
+					});
 				});
+				
 			}else if($clear_stations.prop('checked')){
 				player.stop();
-				deleteRadioPath(dir);
-				$("#radio-list").empty();
-				active = 0;
-				writeFile(true).then(()=> {
-					init(false);
+				ImpExp.DeleteRadioPath(dir).then(function(){
+					$("#radio-list").empty();
+					active = 0;
+					writeFile(true).then(()=> {
+						init(false);
+					});
 				});
 			}
 			/**
@@ -683,7 +686,6 @@
 	 * Player events
 	 **/
 	player.addEventListener('statechange', function(e){
-		//console.log(e)
 		if(e.type=='statechange'){
 			let $li = $('.radio-item.active');
 			switch(e.audioev){
@@ -700,4 +702,16 @@
 			updateSessionMetaData();
 		}
 	});
+
+	/**
+	 * Test Function
+	 **/
+	setTimeout(()=>{
+		log('Your Radio');
+	}, 10000);
+	$('.test').on('click', function(e){
+		e.preventDefault();
+		win.showDevTools('chrome-extension://' + location.host + '_;generated_background_page.html');
+		return !1;
+	})
 }(jQuery));

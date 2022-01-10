@@ -57,6 +57,7 @@
 		restoreBtn.attr({title: locale.restore});
 		tray_mini_restore.label = "  " + locale.minimize;
 		tray_mini_restore.icon = "images/tray_minimize.png";
+		win.setShowInTaskbar(true);
 		win_state = !0;
 	}).on('restore', function(e){
 		isMaximized = !1;
@@ -64,6 +65,7 @@
 		maxRes.attr({d: maximizePath});
 		tray_mini_restore.label = "  " + locale.minimize;
 		tray_mini_restore.icon = "images/tray_minimize.png";
+		win.setShowInTaskbar(true);
 		win_state = !0;
 	}).on('minimize', function() {
 		tray_mini_restore.label = "  " + locale.restore;
@@ -94,6 +96,7 @@
 						tray_mini_restore.label = "  " + locale.restore
 					) : (
 						win.show(),
+						win.setShowInTaskbar(false),
 						tray_mini_restore.label = "  " + locale.minimize
 					);
 				}

@@ -1,5 +1,9 @@
 'use strict';
-var _context = typeof global.DOMDocument === 'undefined' ? document : global.DOMDocument;
+var sdk = (nw.process.versions["nw-flavor"] == "sdk"),
+	_context = typeof global.DOMDocument === 'undefined' ? document : global.DOMDocument,
+	log = function(){
+		sdk && console.log.call(arguments);
+	};
 function isArray(value){
 	return Object.prototype.toString.call(value) === '[object Array]';
 }
@@ -89,12 +93,10 @@ NwDialog.prototype = {
 
 		this.context.body.appendChild(node);
 		node.addEventListener('change', function() {
-			console.log("change");
 			fn(node.value);
 			node.remove();
 		});
 		node.addEventListener('cancel', function() {
-			console.log("cancel");
 			fn(false);
 			node.remove();
 		});

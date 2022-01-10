@@ -308,7 +308,7 @@
 					e.preventDefault();
 					self._.ok().then(function(data){
 						if(data.type == 'error'){
-							console.log('error', data.message);
+							log('error', data.message);
 						}else{
 							$('.close, .cancel, .ok', self._.selector).unbind('click.radioDialog');
 							self.close();
@@ -316,7 +316,7 @@
 							delete self._;
 						}
 					}).catch(function(data){
-						console.log(data);
+						log(data);
 					});
 					return !1;
 				});

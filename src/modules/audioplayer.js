@@ -1,4 +1,8 @@
 var EventDispatcher = require(__dirname + '/eventdispatcher.js'),
+	sdk = (nw.process.versions["nw-flavor"] == "sdk"),
+	log = function(){
+		sdk && console.log.call(arguments);
+	},
 	_isPlaying = false,
 	_isProgress = false,
 	_net = false,

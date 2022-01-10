@@ -6,6 +6,9 @@ class LocaleApp {
 	get appError() {
 		return chrome.i18n.getMessage('appError');
 	}
+	get appRepeat() {
+		return chrome.i18n.getMessage('appRepeat');
+	}
 	get notStations() {
 		return chrome.i18n.getMessage('notStations');
 	}

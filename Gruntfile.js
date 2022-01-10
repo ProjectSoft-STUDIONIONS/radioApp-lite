@@ -21,6 +21,7 @@ module.exports = function(grunt) {
 				'application/fonts/',
 				'application/js/',
 				'application/*-lock.json',
+				'application/*.sublime-*',
 				'test/'
 			],
 			dev: [
@@ -183,7 +184,7 @@ module.exports = function(grunt) {
 			sdk: {
 				options: {
 					platforms: ['win32'],
-					winIco: 'application/fav.ico',
+					winIco: 'application/favicon.ico',
 					buildDir: __dirname+'/build/sdk',
 					flavor: 'sdk',
 					version: gc.version,
@@ -197,7 +198,7 @@ module.exports = function(grunt) {
 			normal: {
 				options: {
 					platforms: ['win32'],
-					winIco: 'application/fav.ico',
+					winIco: 'application/favicon.ico',
 					buildDir: __dirname+'/build/normal',
 					flavor: 'normal',
 					version: gc.version,
@@ -263,7 +264,7 @@ module.exports = function(grunt) {
 						cwd: "src/_locales",
 						src: "**",
 						dest: "application/_locales"
-					},
+					}
 				],
 			},
 		},
@@ -297,5 +298,19 @@ module.exports = function(grunt) {
 		'copy:appcopy',
 		'nwjs:sdk',
 		'copy:sdk'
+	]);
+	grunt.registerTask('speed', [
+		'clean:dev',
+		'less',
+		'group_css_media_queries',
+		'cssmin',
+		'requirejs',
+		'concat',
+		'uglify',
+		'pug',
+		'copy:appcopy',
+		'nwjs',
+		'copy:sdk',
+		'copy:normal'
 	]);
 }

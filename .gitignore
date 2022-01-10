@@ -2,6 +2,7 @@ package-lock.json
 *.sublime-workspace
 /*.sublime-workspace
 /.cache
+/setup
 /bower_components
 /node_modules
 /ffmpeg

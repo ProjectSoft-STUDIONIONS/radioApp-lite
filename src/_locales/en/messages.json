@@ -5,6 +5,9 @@
 	"appError": {
 		"message": "ERROR!\nPlease reinstall the program!"
 	},
+	"appRepeat": {
+		"message": "Try again"
+	},
 	"notStations": {
 		"message": "No radio stations"
 	},

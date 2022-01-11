@@ -26,6 +26,7 @@ PrivilegesRequired=admin
 OutputDir=setup
 OutputBaseFilename=YourRadioLiteSetup
 SetupIconFile=application\favicon.ico
+UninstallDisplayIcon={app}\{#RadioAppExeName}
 Compression=none
 ; lzma
 ; SolidCompression=yes

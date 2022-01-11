@@ -7,9 +7,7 @@
 			"file_exclude_patterns": [
 				"*.sublime-project",
 				"*.sublime-workspace",
-				"package.json",
 				"*-lock.json",
-				"bower.json",
 				"radioapp.template"
 			],
 			"folder_exclude_patterns": [

@@ -15,5 +15,5 @@ package-lock.json
 /application/node_modules
 /application/js
 /application/modules
-/application/index.html
+/application/*.html
 /application/favicon.*

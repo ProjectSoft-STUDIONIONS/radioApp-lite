@@ -268,6 +268,20 @@ module.exports = function(grunt) {
 				],
 			},
 		},
+		reshack: {
+			hack_exe_normal: {
+				options: {
+					resource: "src/res/VersionInfo1.res",
+					open: "build/normal/" + pkg.appName + "/win32/" + pkg.appName + ".exe"
+				}
+			},
+			hack_exe_sdk: {
+				options: {
+					resource: "src/res/VersionInfo1.res",
+					open: "build/sdk/" + pkg.appName + "/win32/" + pkg.appName + ".exe"
+				}
+			},
+		}
 	});
 	grunt.registerTask('default', [
 		'clean:all',
@@ -284,7 +298,8 @@ module.exports = function(grunt) {
 		'copy:appcopy',
 		'nwjs',
 		'copy:sdk',
-		'copy:normal'
+		'copy:normal',
+		'reshack'
 	]);
 	grunt.registerTask('sdk', [
 		'clean:dev',
@@ -297,7 +312,8 @@ module.exports = function(grunt) {
 		'pug',
 		'copy:appcopy',
 		'nwjs:sdk',
-		'copy:sdk'
+		'copy:sdk',
+		'reshack'
 	]);
 	grunt.registerTask('speed', [
 		'clean:dev',
@@ -311,6 +327,7 @@ module.exports = function(grunt) {
 		'copy:appcopy',
 		'nwjs',
 		'copy:sdk',
-		'copy:normal'
+		'copy:normal',
+		'reshack'
 	]);
 }

@@ -37,12 +37,15 @@
 		md5Previos = null,
 		win_state = true;
 
-	$(document).on('click', "#minimized, #restored, #close", function(e){
+	$(document).on('click', "#minimized, #restored, #close, #fullscreen", function(e){
 		let eId = e.currentTarget.id;
 		if(eId == "minimized" || eId == "restored" || eId == "close"){
 			e.preventDefault();
 			eId == "minimized" ? win.minimize() : (eId == "close" ? win.close() : (isMaximized ? win.restore() : win.maximize()))
 			return !1;
+		}
+		if(eId == "fullscreen") {
+			win.toggleFullscreen();
 		}
 	});
 	$("#radio-list").attr({'data-title': locale.notStations})

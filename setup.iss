@@ -27,11 +27,13 @@ OutputDir=setup
 OutputBaseFilename=YourRadioLiteSetup
 SetupIconFile=application\favicon.ico
 UninstallDisplayIcon={app}\{#RadioAppExeName}
-Compression=none
-; lzma
-; SolidCompression=yes
+Compression=lzma
+SolidCompression=yes
+; lzma none 
 WizardStyle=modern
 CloseApplications=force
+MissingRunOnceIdsWarning=no
+UsedUserAreasWarning=no
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
@@ -40,9 +42,11 @@ Name: "russian"; MessagesFile: "compiler:Languages\Russian.isl"
 [CustomMessages]
 english.RunProgramm=Launch application «Your Radio»  
 russian.RunProgramm=Çàïóñòèòü «Âàøå Ðàäèî»
+english.StopProgramm=Stop «Your Radio»...
+russian.StopProgramm=Ñòîï «Âàøå Ðàäèî»...
 
 [Tasks]
-Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"
+; Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"
 
 [Files]
 Source: "build\normal\YourRadio\win32\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
@@ -55,8 +59,9 @@ Type: filesandordirs; Name: {autopf}\{#RadioAppName}
 Type: filesandordirs; Name: {localappdata}\YourRadio
 
 [UninstallRun]
-Filename: {sys}\taskkill.exe; Parameters: "/F /IM YourRadio.exe /T"; Flags: skipifdoesntexist runhidden waituntilterminated; StatusMsg: "Stop Your Radio..."
+Filename: {sys}\taskkill.exe; Parameters: "/F /IM YourRadio.exe /T"; Flags: skipifdoesntexist runhidden waituntilterminated; StatusMsg: "{cm:StopProgramm}"
 
 [Icons]
 Name: "{autoprograms}\{#RadioAppName}"; Filename: "{app}\{#RadioAppExeName}"
-Name: "{autodesktop}\{#RadioAppName}"; Filename: "{app}\{#RadioAppExeName}"; Tasks: desktopicon
+Name: "{autodesktop}\{#RadioAppName}"; Filename: "{app}\{#RadioAppExeName}"
+; Tasks: desktopicon

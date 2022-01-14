@@ -5,7 +5,6 @@
 			"path": ".",
 			"name": "WebKit App Radio",
 			"file_exclude_patterns": [
-				"*.sublime-project",
 				"*.sublime-workspace",
 				"*-lock.json",
 				"radioapp.template",

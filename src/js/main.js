@@ -22,7 +22,9 @@
 		$loadDefault = $("#loadDefault"),
 		$settingsBlock = $('.settings-block'),
 		$okSettings = $("#okSettings"),
-		$noSettings = $("#noSettings");
+		$noSettings = $("#noSettings"),
+		parser = null,
+		getMetaInterval = 0;
 	const 	addListItem = async function(data){
 				try{
 					if(data.name && data.stream){
@@ -297,6 +299,28 @@
 				$(el).attr({
 					style: '--background-range: ' +  s + '%'
 				});
+			},
+			setParser = function(){
+				console.log('init parser');
+				clearTimeout(getMetaInterval);
+				icy.get(player.stream, function (res) {
+					// log any "metadata" events that happen
+					res.on('metadata', function (metadata) {
+						let parsed = icy.parse(metadata),
+							$text = $('#TitleBar-text span'),
+							_title = $.trim(parsed.StreamTitle);
+						if(_title.length > 5){
+							if(player.isPlaying()){
+								$text.text(_title);
+							}else{
+								$text.text(locale.appName);
+							}
+						}else{
+							$text.text(locale.appName);
+						}
+						player.isPlaying() && (getMetaInterval = setTimeout(setParser, 4000));
+					});
+				});
 			};
 	var active = json.active,
 		notify = json.notify,
@@ -455,11 +479,14 @@
 			 * play & stop radio
 			 **/
 			var _li = $(this).closest('li'),
-				data = _li.data();
+				data = _li.data(),
+				$text = $('#TitleBar-text span');
 			(_li.hasClass('active')) ? (
 				_li.hasClass('play') ? (
+					clearTimeout(getMetaInterval),
 					_li.removeClass('play preload').addClass('stop'),
-					player.stop()
+					player.stop(),
+					$text.text(locale.appName)
 				) : (
 					_li.removeClass('stop').addClass('play preload'),
 					player.stream = data.stream,
@@ -522,7 +549,7 @@
 							 **/
 							player.stop();
 							player.stream = args.stream,
-							player.play();
+							player.play()
 						}
 						img.attr({
 							alt: args.name,
@@ -564,17 +591,10 @@
 			/**
 			 * Context menu main, footer
 			 **/
-			e.preventDefault();
-			let ev = e.originalEvent;
-			menu.popup(parseInt(ev.x), parseInt(ev.y));
-			return !1;
-		}).on('contextmenu', 'main', function(e){
-			/**
-			 * Context menu default
-			 **/
-			e.preventDefault();
-			e.stopPropagation();
-			return !1;
+			//e.preventDefault();
+			//let ev = e.originalEvent;
+			//menu.popup(parseInt(ev.x), parseInt(ev.y));
+			//return !1;
 		}).on('mousewheel', 'input[type=range]', function(e){
 			/**
 			 * mousewhell inputs range
@@ -687,16 +707,29 @@
 	 **/
 	player.addEventListener('statechange', function(e){
 		if(e.type=='statechange'){
-			let $li = $('.radio-item.active');
+			let $li = $('.radio-item.active'),
+				$text = $('#TitleBar-text span');
 			switch(e.audioev){
 				case 'play':
 					$li.removeClass('stop').addClass('play preload');
+					clearTimeout(getMetaInterval);
 					break;
 				case 'playing':
-					e.bufering ?  $li.removeClass('stop').addClass('play preload') : $li.removeClass('stop preload').addClass('play');
+					// icy ?
+					e.bufering ?  (
+						$li.removeClass('stop').addClass('play preload'),
+						clearTimeout(getMetaInterval),
+						console.log('set locale.appName event'),
+						$text.text(locale.appName)
+					) : (
+						$li.removeClass('stop preload').addClass('play'),
+						getMetaInterval = setTimeout(setParser, 1000)
+					);
 					break;
 				case 'stop':
+					clearTimeout(getMetaInterval);
 					$li.addClass('stop').removeClass('play preload');
+					$text.text(locale.appName);
 					break;
 			}
 			updateSessionMetaData();

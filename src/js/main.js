@@ -305,23 +305,27 @@
 				clearTimeout(getMetaInterval);
 				icy.get(player.stream, function (res) {
 					// log any "metadata" events that happen
+					var data = $('#radio-list li.active').data(),
+						_title = '';
+					if(player.isPlaying()){
+						setTitle(locale.appName + (data.name ? ' | ' + data.name : ''));
+					}else{
+						setTitle(locale.appName)
+					}
 					res.on('metadata', function (metadata) {
-						let parsed = icy.parse(metadata),
-							$text = $('#TitleBar-text span'),
-							data = $('#radio-list li.active').data(),
-							_title = $.trim(parsed.StreamTitle);
-						console.log(data);
+						let parsed = icy.parse(metadata);
+						_title = $.trim(parsed.StreamTitle)
 						if(_title.length > 5){
 							if(player.isPlaying()){
-								$text.text(_title + (data.name ? ' | ' + data.name : ''));
+								setTitle(_title + (data.name ? ' | ' + data.name : ''));
 							}else{
 								$text.text(locale.appName);
 							}
 						}else{
 							if(player.isPlaying()){
-								$text.text(locale.appName + (data.name ? ' | ' + data.name : ''));
+								setTitle(locale.appName + (data.name ? ' | ' + data.name : ''));
 							}else{
-								$text.text(locale.appName)
+								setTitle(locale.appName)
 							}
 						}
 						player.isPlaying() && (getMetaInterval = setTimeout(setParser, 4000));
@@ -339,12 +343,14 @@
 	 * Context Menu Constants 
 	 **/
 	const	copyStationItem = new nw.MenuItem({
-				label: locale.copyTitle,
-				type: 'normal'
+				label: '   ' + locale.copyTitle,
+				type: 'normal',
+				icon: 'images/copy.png'
 			}),
 			addStationItem = new nw.MenuItem({
-				label: locale.insertTitle,
+				label: '   ' + locale.insertTitle,
 				type: 'normal',
+				icon: 'images/add.png',
 				click: function() {
 					$.radioDialog.show({
 						type: 'insert'
@@ -365,19 +371,22 @@
 				}
 			}),
 			editStationItem = new nw.MenuItem({
-				label: locale.editTitle,
-				type: 'normal'
+				label: '   ' + locale.editTitle,
+				type: 'normal',
+				icon: 'images/edit.png'
 			}),
 			removeStationItem = new nw.MenuItem({
-				label: locale.deleteTitle,
-				type: 'normal'
+				label: '   ' + locale.deleteTitle,
+				type: 'normal',
+				icon: 'images/delete.png'
 			}),
 			separator = nw.MenuItem({
 				type: 'separator'
 			}),
 			exportStations = new nw.MenuItem({
-				label: locale.exportTitle,
+				label: '   ' + locale.exportTitle,
 				type: 'normal',
+				icon: 'images/export.png',
 				click: function() {
 					$.radioDialog.show({
 						type: 'export'
@@ -414,8 +423,9 @@
 				}
 			}),
 			importStations = new nw.MenuItem({
-				label: locale.importTitle,
+				label: '   ' + locale.importTitle,
 				type: 'normal',
+				icon: 'images/import.png',
 				click: function() {
 					$.radioDialog.show({
 						type: 'import'
@@ -517,9 +527,9 @@
 				$ct = $(e.currentTarget),
 				data = $ct.data(),
 				stn = " - «" + data.name + "»";
-			editStationItem.label = locale.editTitle + stn;
-			removeStationItem.label = locale.deleteTitle + stn;
-			copyStationItem.label = locale.copyTitle + stn;
+			editStationItem.label = '   ' + locale.editTitle + stn;
+			removeStationItem.label = '   ' + locale.deleteTitle + stn;
+			copyStationItem.label = '   ' + locale.copyTitle + stn;
 			/**
 			 * copy link stream
 			 **/
@@ -727,7 +737,6 @@
 					e.bufering ?  (
 						$li.removeClass('stop').addClass('play preload'),
 						clearTimeout(getMetaInterval),
-						console.log('set locale.appName event'),
 						$text.text(locale.appName)
 					) : (
 						$li.removeClass('stop preload').addClass('play'),

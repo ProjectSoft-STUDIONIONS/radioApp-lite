@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define RadioAppName "Your Radio Lite"
-#define RadioAppVersion "1.0"
+#define RadioAppVersion "1.0.1"
 #define RadioAppPublisher "ProjectSoft"
 #define RadioAppURL "https://github.com/ProjectSoft-STUDIONIONS/radioApp-lite"
 #define RadioAppExeName "YourRadio.exe"
@@ -40,8 +40,8 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "russian"; MessagesFile: "compiler:Languages\Russian.isl"
 
 [CustomMessages]
-english.RunProgramm=Launch application «Your Radio»  
-russian.RunProgramm=Запустить «Ваше Радио»
+english.RunProgramm=Launch application «Your Radio v{#RadioAppVersion}»  
+russian.RunProgramm=Запустить «Ваше Радио v{#RadioAppVersion}»
 english.StopProgramm=Stop «Your Radio»...
 russian.StopProgramm=Стоп «Ваше Радио»...
 

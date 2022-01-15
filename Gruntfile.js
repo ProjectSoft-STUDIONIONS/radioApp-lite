@@ -271,13 +271,13 @@ module.exports = function(grunt) {
 		reshack: {
 			hack_exe_normal: {
 				options: {
-					resource: "src/res/VersionInfo1.res",
+					resource: "src/res/Icon1.res",
 					open: "build/normal/" + pkg.appName + "/win32/" + pkg.appName + ".exe"
 				}
 			},
 			hack_exe_sdk: {
 				options: {
-					resource: "src/res/VersionInfo1.res",
+					resource: "src/res/Icon1.res",
 					open: "build/sdk/" + pkg.appName + "/win32/" + pkg.appName + ".exe"
 				}
 			},

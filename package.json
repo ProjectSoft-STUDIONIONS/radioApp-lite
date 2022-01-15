@@ -1,7 +1,7 @@
 {
   "name": "webkit-app-radio",
   "appName": "YourRadio",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "WebKit радио плеер. Самостоятельное добавление радио потока. Импорт/Экспорт плейлиста радиостанций.",
   "main": "Gruntfile.js",
   "scripts": {

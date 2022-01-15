@@ -24,7 +24,8 @@
 		$okSettings = $("#okSettings"),
 		$noSettings = $("#noSettings"),
 		parser = null,
-		getMetaInterval = 0;
+		getMetaInterval = 0,
+		notifyInterval = 0;
 	const 	addListItem = async function(data){
 				try{
 					if(data.name && data.stream){
@@ -166,7 +167,7 @@
 					let $li = $('li.radio-item.active'),
 						data = $li.data(),
 						id = data.id,
-						title = data.name,
+						title = data.streamMeta || data.name,
 						has = (new Date()).getTime();
 					icon = (fs.existsSync(dir + '\\' + id + '.png')	? dir + '\\' + id + '.png' : 'favicon.png');
 					tmpCrop.bind({
@@ -180,8 +181,8 @@
 							backgroundColor: '#ffffff'
 						}).then(function(base64){
 							navigator.mediaSession.metadata = new MediaMetadata({
-								title: locale.appName,
-								artist: title,
+								title: title,
+								artist: data.name + ' | ' + locale.appName,
 								album: "",
 								artwork: [{src: base64, type: "image/png", sizes: '128x128'}]
 							});
@@ -306,31 +307,61 @@
 				icy.get(player.stream, function (res) {
 					// log any "metadata" events that happen
 					var data = $('#radio-list li.active').data(),
-						_title = '';
+						_title = data.streamMeta ? (data.streamMeta.length > 5 ? data.streamMeta : data.name) : data.name,
+						icon = (fs.existsSync(dir + '\\' + data.id + '.png')	? dir + '\\' + data.id + '.png' : 'favicon.png');
 					if(player.isPlaying()){
-						setTitle(locale.appName + (data.name ? ' | ' + data.name : ''));
+						$('#radio-list li.active').data('streamMeta', _title);
 					}else{
-						setTitle(locale.appName)
+						$('#TitleBar-text > span').text(locale.appName);
 					}
 					res.on('metadata', function (metadata) {
-						let parsed = icy.parse(metadata);
-						_title = $.trim(parsed.StreamTitle)
-						if(_title.length > 5){
+						let parsed = icy.parse(metadata),
+							$_title = $.trim(parsed.StreamTitle) + '';
+						if($_title.length > 5){
 							if(player.isPlaying()){
-								setTitle(_title + (data.name ? ' | ' + data.name : ''));
+								if($_title != _title){
+									$('#radio-list li.active').data('streamMeta', $_title);
+									$('#TitleBar-text > span').text($_title + ' | ' + locale.appName);
+									// Отправить сообщение для отображения
+									console.log('set notify');
+									spawnNotification(locale.appName, icon, $_title + "\n" + data.name);
+								}
 							}else{
-								$text.text(locale.appName);
+								$('#radio-list li.active').data('streamMeta', '');
+								$('#TitleBar-text > span').text(locale.appName);
 							}
 						}else{
 							if(player.isPlaying()){
-								setTitle(locale.appName + (data.name ? ' | ' + data.name : ''));
+								$('#TitleBar-text > span').text(data.name + ' | ' + locale.appName);
 							}else{
-								setTitle(locale.appName)
+								$('#TitleBar-text > span').text(locale.appName);
 							}
+							$('#radio-list li.active').data('streamMeta', '');
 						}
-						player.isPlaying() && (getMetaInterval = setTimeout(setParser, 4000));
+						updateSessionMetaData();
 					});
+					player.isPlaying() && (getMetaInterval = setTimeout(setParser, 2000));
 				});
+			},
+			// Вывод оповещения браузера
+			spawnNotification = function(body, icon, title) {
+				var options = {
+					body: body,
+					icon: icon
+				};
+				spawnNotificationClose();
+				var opt = {
+					type: "basic",
+					title: body,
+					message: title,
+					iconUrl: icon
+				};
+				notify && chrome.notifications.create('your-radio-webkit', opt, function(){});
+			},
+			spawnNotificationClose = function() {
+				notify && chrome.notifications.clear(
+					'your-radio-webkit'
+				);
 			};
 	var active = json.active,
 		notify = json.notify,
@@ -338,7 +369,11 @@
 	/**
 	 * Checking the directory and file
 	 **/
-	
+	chrome.notifications.getPermissionLevel(
+		function(e){
+			console.log(e);
+		}
+	);
 	/**
 	 * Context Menu Constants 
 	 **/
@@ -500,21 +535,24 @@
 			(_li.hasClass('active')) ? (
 				_li.hasClass('play') ? (
 					clearTimeout(getMetaInterval),
+					$('#radio-list li.active').data('streamMeta', ''),
 					_li.removeClass('play preload').addClass('stop'),
 					player.stop(),
 					$text.text(locale.appName)
 				) : (
 					_li.removeClass('stop').addClass('play preload'),
 					player.stream = data.stream,
-					$text.text(locale.appName + (data.name ? ' | ' + data.name : '')),
-					player.play()
-				 )
+					$('#radio-list li.active').data('streamMeta', ''),
+					player.play(),
+					$text.text(data.name + ' | ' + locale.appName)
+				)
 			) : (
 				$("#radio-list li").removeClass('active preload play').addClass('stop'),
 				_li.addClass('active preload play').removeClass('stop'),
 				player.stream = data.stream,
-				$text.text(locale.appName + (data.name ? ' | ' + data.name : '')),
-				player.play()
+				$('#radio-list li.active').data('streamMeta', ''),
+				player.play(),
+				$text.text(data.name + ' | ' + locale.appName)
 			);
 			json.active = active = parseInt(data.id);
 			return !1;
@@ -725,8 +763,7 @@
 	 **/
 	player.addEventListener('statechange', function(e){
 		if(e.type=='statechange'){
-			let $li = $('.radio-item.active'),
-				$text = $('#TitleBar-text span');
+			let $li = $('.radio-item.active');
 			switch(e.audioev){
 				case 'play':
 					$li.removeClass('stop').addClass('play preload');
@@ -736,8 +773,7 @@
 					// icy ?
 					e.bufering ?  (
 						$li.removeClass('stop').addClass('play preload'),
-						clearTimeout(getMetaInterval),
-						$text.text(locale.appName)
+						clearTimeout(getMetaInterval)
 					) : (
 						$li.removeClass('stop preload').addClass('play'),
 						getMetaInterval = setTimeout(setParser, 1000)
@@ -746,7 +782,6 @@
 				case 'stop':
 					clearTimeout(getMetaInterval);
 					$li.addClass('stop').removeClass('play preload');
-					$text.text(locale.appName);
 					break;
 			}
 			updateSessionMetaData();

@@ -308,15 +308,21 @@
 					res.on('metadata', function (metadata) {
 						let parsed = icy.parse(metadata),
 							$text = $('#TitleBar-text span'),
+							data = $('#radio-list li.active').data(),
 							_title = $.trim(parsed.StreamTitle);
+						console.log(data);
 						if(_title.length > 5){
 							if(player.isPlaying()){
-								$text.text(_title);
+								$text.text(_title + (data.name ? ' | ' + data.name : ''));
 							}else{
 								$text.text(locale.appName);
 							}
 						}else{
-							$text.text(locale.appName);
+							if(player.isPlaying()){
+								$text.text(locale.appName + (data.name ? ' | ' + data.name : ''));
+							}else{
+								$text.text(locale.appName)
+							}
 						}
 						player.isPlaying() && (getMetaInterval = setTimeout(setParser, 4000));
 					});
@@ -490,12 +496,14 @@
 				) : (
 					_li.removeClass('stop').addClass('play preload'),
 					player.stream = data.stream,
+					$text.text(locale.appName + (data.name ? ' | ' + data.name : '')),
 					player.play()
 				 )
 			) : (
 				$("#radio-list li").removeClass('active preload play').addClass('stop'),
 				_li.addClass('active preload play').removeClass('stop'),
 				player.stream = data.stream,
+				$text.text(locale.appName + (data.name ? ' | ' + data.name : '')),
 				player.play()
 			);
 			json.active = active = parseInt(data.id);
@@ -591,10 +599,10 @@
 			/**
 			 * Context menu main, footer
 			 **/
-			//e.preventDefault();
-			//let ev = e.originalEvent;
-			//menu.popup(parseInt(ev.x), parseInt(ev.y));
-			//return !1;
+			e.preventDefault();
+			let ev = e.originalEvent;
+			menu.popup(parseInt(ev.x), parseInt(ev.y));
+			return !1;
 		}).on('mousewheel', 'input[type=range]', function(e){
 			/**
 			 * mousewhell inputs range

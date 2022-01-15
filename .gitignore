@@ -8,6 +8,7 @@ package-lock.json
 /ffmpeg
 /build
 /test
+/tests
 /application/_locales
 /application/css
 /application/fonts

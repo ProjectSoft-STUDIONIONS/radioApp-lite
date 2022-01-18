@@ -92,9 +92,9 @@ class LocaleApp {
 	}
 }
 
-var _l = new LocaleApp();
+var locale = new LocaleApp();
 if(typeof exports == "undefined"){
-	window.locale = _l;
+	window.locale = locale;
 }else{
-	module.exports = _l;
+	module.exports = locale;
 }

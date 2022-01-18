@@ -148,10 +148,10 @@
 			deleteItem = function(id){
 				$("*", "#st_" + id).unbind('click.radioDialog');
 				$("#st_" + id).remove();
-				let fav = dir + `\\${id}.png`;
-				if(fs.existsSync(fav)){
-					fs.unlinkSync(fav);
-				}
+				let fav = dir + `\\${id}.png`,
+					big = dir + `\\${id}_big.png`;
+				fs.existsSync(fav) && fs.unlinkSync(fav);
+				fs.existsSync(big) && fs.unlinkSync(big);
 				writeFile(false);
 			},
 			setTitle = function(title) {
@@ -302,46 +302,58 @@
 				});
 			},
 			setParser = function(){
-				console.log('init parser');
+				console.log('init parser ' + getMetaInterval);
 				clearTimeout(getMetaInterval);
+				var $tileBar = $('#TitleBar-text > span'),
+					data = $('#radio-list li.active').data();
 				icy.get(player.stream, function (res) {
 					// log any "metadata" events that happen
-					var data = $('#radio-list li.active').data(),
-						_title = data.streamMeta ? (data.streamMeta.length > 5 ? data.streamMeta : data.name) : data.name,
+					var _title = data.streamMeta ? (data.streamMeta.length > 5 ? data.streamMeta : data.name) : data.name,
 						icon = (fs.existsSync(dir + '\\' + data.id + '.png')	? dir + '\\' + data.id + '.png' : 'favicon.png');
 					if(player.isPlaying()){
-						$('#radio-list li.active').data('streamMeta', _title);
+						$('#radio-list li#st_' + data.id).data('streamMeta', _title);
 					}else{
-						$('#TitleBar-text > span').text(locale.appName);
+						$tileBar.text(locale.appName);
 					}
 					res.on('metadata', function (metadata) {
 						let parsed = icy.parse(metadata),
 							$_title = $.trim(parsed.StreamTitle) + '';
+						console.log(parsed);
 						if($_title.length > 5){
 							if(player.isPlaying()){
 								if($_title != _title){
-									$('#radio-list li.active').data('streamMeta', $_title);
-									$('#TitleBar-text > span').text($_title + ' | ' + locale.appName);
 									// Отправить сообщение для отображения
-									console.log('set notify');
-									spawnNotification(locale.appName, icon, $_title + "\n" + data.name);
+									if(data.id == $('#radio-list li.active').data('id')){
+										$('#radio-list li#st_' + data.id).data('streamMeta', $_title);
+										$tileBar.text($_title + ' | ' + data.name + ' | ' + locale.appName);
+										spawnNotification(locale.appName, icon, $_title + "\n" + data.name);
+									}
 								}
 							}else{
-								$('#radio-list li.active').data('streamMeta', '');
-								$('#TitleBar-text > span').text(locale.appName);
+								$tileBar.text(locale.appName);
+								$('#radio-list li').each(function(){$(this).data('streamMeta', '')});
 							}
 						}else{
 							if(player.isPlaying()){
-								$('#TitleBar-text > span').text(data.name + ' | ' + locale.appName);
+								$tileBar.text(data.name + ' | ' + locale.appName);
 							}else{
-								$('#TitleBar-text > span').text(locale.appName);
+								$tileBar.text(locale.appName);
 							}
-							$('#radio-list li.active').data('streamMeta', '');
+							$('#radio-list li').each(function(){$(this).data('streamMeta', '')});
 						}
 						updateSessionMetaData();
+					}).on('error', function(err){
+						$('#radio-list li').each(function(){$(this).data('streamMeta', '')});
+						player.isPlaying() ? (
+							getMetaInterval = setTimeout(setParser, 2000),
+							$tileBar.text(data.name + ' | ' + locale.appName)
+						) : (
+							$tileBar.text(locale.appName)
+						);
 					});
-					player.isPlaying() && (getMetaInterval = setTimeout(setParser, 2000));
 				});
+				player.isPlaying() && (getMetaInterval = setTimeout(setParser, 5000));
+				
 			},
 			// Вывод оповещения браузера
 			spawnNotification = function(body, icon, title) {
@@ -351,10 +363,11 @@
 				};
 				spawnNotificationClose();
 				var opt = {
-					type: "basic",
+					type: "image",
 					title: body,
 					message: title,
-					iconUrl: icon
+					iconUrl: 'favicon.png',
+					imageUrl: icon
 				};
 				notify && chrome.notifications.create('your-radio-webkit', opt, function(){});
 			},
@@ -362,6 +375,9 @@
 				notify && chrome.notifications.clear(
 					'your-radio-webkit'
 				);
+			},
+			onMetaData = function(metadata){
+
 			};
 	var active = json.active,
 		notify = json.notify,
@@ -538,21 +554,22 @@
 					$('#radio-list li.active').data('streamMeta', ''),
 					_li.removeClass('play preload').addClass('stop'),
 					player.stop(),
-					$text.text(locale.appName)
+					$text.text(locale.appName),
+					$('#radio-list li').each(function(){$(this).data('streamMeta', '');})
 				) : (
 					_li.removeClass('stop').addClass('play preload'),
 					player.stream = data.stream,
-					$('#radio-list li.active').data('streamMeta', ''),
-					player.play(),
-					$text.text(data.name + ' | ' + locale.appName)
+					$('#radio-list li').each(function(){$(this).data('streamMeta', '');}),
+					$text.text(data.name + ' | ' + locale.appName),
+					player.play()
 				)
 			) : (
 				$("#radio-list li").removeClass('active preload play').addClass('stop'),
 				_li.addClass('active preload play').removeClass('stop'),
 				player.stream = data.stream,
-				$('#radio-list li.active').data('streamMeta', ''),
-				player.play(),
-				$text.text(data.name + ' | ' + locale.appName)
+				$('#radio-list li').each(function(){$(this).data('streamMeta', '');}),
+				$text.text(data.name + ' | ' + locale.appName),
+				player.play()
 			);
 			json.active = active = parseInt(data.id);
 			return !1;
@@ -772,16 +789,17 @@
 				case 'playing':
 					// icy ?
 					e.bufering ?  (
-						$li.removeClass('stop').addClass('play preload'),
-						clearTimeout(getMetaInterval)
+						$li.removeClass('stop').addClass('play preload')
 					) : (
-						$li.removeClass('stop preload').addClass('play'),
-						getMetaInterval = setTimeout(setParser, 1000)
+						$li.removeClass('stop preload').addClass('play')
 					);
+					setParser();
 					break;
 				case 'stop':
 					clearTimeout(getMetaInterval);
 					$li.addClass('stop').removeClass('play preload');
+					$('#TitleBar-text span').text(locale.appName);
+					$('#radio-list li').each(function(){$(this).data('streamMeta', '');});
 					break;
 			}
 			updateSessionMetaData();
@@ -791,9 +809,6 @@
 	/**
 	 * Test Function
 	 **/
-	setTimeout(()=>{
-		log('Your Radio');
-	}, 10000);
 	$('.test').on('click', function(e){
 		e.preventDefault();
 		win.showDevTools('chrome-extension://' + location.host + '_;generated_background_page.html');

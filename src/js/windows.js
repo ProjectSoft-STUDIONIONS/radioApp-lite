@@ -1,22 +1,3 @@
-//Set position
-(function(window){
-	nw.Screen.Init();
-	var w = nw.App.manifest.window.width,
-		h = nw.App.manifest.window.height,
-		state = (localStorage.getItem('canvas_state') == "true");
-	//w = state ? w : w;
-	let screen = nw.Screen.screens[0],
-		x = parseInt(screen.bounds.x + (screen.bounds.width - w) / 2) || 0,
-		y = parseInt(screen.bounds.y + (screen.bounds.height - h) / 2) || 0,
-		wid = screen.work_area.width,
-		hei = screen.work_area.height;
-	h = h > hei ? hei : h;
-	w = w > wid ? wid : w;
-	win.moveTo(x, y);
-	win.setMinimumSize(w, h);
-	win.resizeTo(w, h);
-}(window));
-
 (function($){
 	const 	miniBtn = $('#minimized'),
 			restoreBtn = $('#restored'),
@@ -171,4 +152,24 @@
 	window.navigator.mediaSession.setActionHandler('pause', play_stop);
 	window.navigator.mediaSession.setActionHandler('previoustrack', prev);
 	window.navigator.mediaSession.setActionHandler('nexttrack', next);
+
+	/**
+	 * Set position
+	 */
+	nw.Screen.Init();
+	var w = nw.App.manifest.window.width,
+		h = nw.App.manifest.window.height,
+		state = (localStorage.getItem('canvas_state') == "true");
+	//w = state ? w : w;
+	let screen = nw.Screen.screens[0],
+		x = parseInt(screen.bounds.x + (screen.bounds.width - w) / 2) || 0,
+		y = parseInt(screen.bounds.y + (screen.bounds.height - h) / 2) || 0,
+		wid = screen.work_area.width,
+		hei = screen.work_area.height;
+	h = h > hei ? hei : h;
+	w = w > wid ? wid : w;
+	win.restore();
+	win.moveTo(x, y);
+	win.setMinimumSize(w, h);
+	win.resizeTo(w, h);
 }(jQuery))

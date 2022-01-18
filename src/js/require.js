@@ -39,3 +39,4 @@ const gui = require('nw.gui'),
 	},
 	player = new AudioPlayer(document);
 dialog.context = document;
+var parser = require(".\\modules\\Parser.js");

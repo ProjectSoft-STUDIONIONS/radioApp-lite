@@ -3,6 +3,7 @@
 	var defaults = {
 			type: 'insert'
 		},
+		imageIcon = 'favicon.png',
 		_tpl = `<div class="modal clearfix">
 			<div class="modal-dialog">
 				<div class="modal-wrapper">
@@ -150,7 +151,8 @@
 				$crp = $(".cropie", tpl);
 				$fav = $(".fileicon", tpl);
 				icon = dir + `\\${$this.id}.png`;
-				icon = (fs.existsSync(icon) ? icon : 'favicon.png') + "?" + (new Date()).getTime();
+				imageIcon = dir + `\\${$this.id}_big.png`;
+				icon = (fs.existsSync(imageIcon) ? imageIcon : (fs.existsSync(icon) ? icon : 'favicon.png')) + "?" + (new Date()).getTime();
 				$crp.croppie({
 					viewport: {
 						width: 180,
@@ -168,6 +170,7 @@
 				}).croppie('bind', {
 					url: icon
 				});
+				console.log($crp);
 				$fav.on('click', function(ev){
 					ev.preventDefault();
 					dialog.openFileDialog(['.jpeg', '.jpg', '.png'], function(result){

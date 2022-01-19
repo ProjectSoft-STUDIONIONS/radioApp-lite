@@ -7,6 +7,7 @@
 		_tpl = `<div class="modal clearfix">
 			<div class="modal-dialog">
 				<div class="modal-wrapper">
+					<div class="cropie_big"></div>
 					<h2 class="modal-title text-center"></h2>
 					<span class="icon-close close"></span>
 					<div class="modal-inputs row">
@@ -76,11 +77,6 @@
 				reader.readAsArrayBuffer(blob);
 			});
 		},
-		saveIcon = async function(id, buffer){
-			var path = dir + "/" + id + '.png';
-			fs.mkdirSync(dir, {recursive: true});
-			return fs.writeFileSync(path, buffer);
-		},
 		btns = null,
 		keyIndex = 0,
 		id = (new Date()).getTime(),
@@ -88,6 +84,7 @@
 			var settings = $.extend( true, {}, defaults, options),
 				tpl = null,
 				$crp = null,
+				$bigCrp = null,
 				$fav = null,
 				icon = null,
 				$this = this,
@@ -149,6 +146,7 @@
 			}
 			if(type=='insert' || type=='edit'){
 				$crp = $(".cropie", tpl);
+				$bigCrp = $('.cropie_big', tpl);
 				$fav = $(".fileicon", tpl);
 				icon = dir + `\\${$this.id}.png`;
 				imageIcon = dir + `\\${$this.id}_big.png`;
@@ -164,13 +162,29 @@
 						height: 180
 					},
 					showZoomer: true,
-					enableOrientation: true,
 					mouseWheelZoom: true,
 					enableExif: true
 				}).croppie('bind', {
 					url: icon
 				});
-				console.log($crp);
+				$bigCrp.croppie({
+					viewport: {
+						width: 360,
+						height: 180,
+						type: 'square'
+					},
+					boundary: {
+						width: 360,
+						height: 180
+					},
+					showZoomer: false,
+					mouseWheelZoom: false,
+					enableExif: false,
+					enableZoomenableZoom: false,
+					
+				}).croppie('bind', {
+					url: icon
+				});
 				$fav.on('click', function(ev){
 					ev.preventDefault();
 					dialog.openFileDialog(['.jpeg', '.jpg', '.png'], function(result){
@@ -178,6 +192,9 @@
 							return;
 						result = "file:///" + result.split('\\').join('/');
 						$crp.croppie('bind', {
+							url: result
+						});
+						$bigCrp.croppie('bind', {
 							url: result
 						});
 					});
@@ -221,6 +238,7 @@
 					type = self.type,
 					id = self.id,
 					$crp = null,
+					$bigCrp = null,
 					si = null;
 				if(typeof self.modal == 'object'){
 					switch (type) {
@@ -230,6 +248,7 @@
 							name = $.trim($('input.name', self.modal).val());
 							stream = $.trim($('input.stream', self.modal).val());
 							$crp = $('.cropie', self.modal);
+							$bigCrp = $('.cropie_big', self.modal)
 							if(!name || !stream){
 								$('input.name', self.modal).focus();
 								resolve({
@@ -242,12 +261,19 @@
 									var path = dir + "/" + id + '.png';
 									fs.mkdirSync(dir, {recursive: true});
 									fs.writeFileSync(path, buffer);
-									resolve({
-										name: name,
-										stream: stream,
-										id: id,
-										si: si,
-										type: type
+									$bigCrp.croppie('result', 'blob').then(function(blob1) {
+										blobToBuffer(blob1).then(function(buffer1){
+											path = dir + "/" + id + '_big.png';
+											fs.mkdirSync(dir, {recursive: true});
+											fs.writeFileSync(path, buffer1);
+											resolve({
+												name: name,
+												stream: stream,
+												id: id,
+												si: si,
+												type: type
+											});
+										});
 									});
 								}).catch(function(err){
 									reject({

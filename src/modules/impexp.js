@@ -56,7 +56,9 @@ ExportSattions = function(json){
 		for (let prop in json.stations) {
 			json.stations[prop].id = parseInt(prop);
 			let icon = (fs.existsSync(dir + '\\' + prop + '.png')	? dir + '\\' + prop + '.png' : 'favicon.png');
+			let image = (fs.existsSync(dir + '\\' + prop + '_big.png')	? dir + '\\' + prop + '_big.png' : icon);
 			json.stations[prop].favicon = "data:image/png;base64," + fs.readFileSync(icon).toString('base64');
+			json.stations[prop].image = "data:image/png;base64," + fs.readFileSync(image).toString('base64');
 		}
 		resolve(json);
 	});
@@ -89,7 +91,8 @@ ImportStations = function(file){
 						 * read stations
 						 **/
 						for (let prop in _json["stations"]) {
-							let base64 = _json["stations"][prop].favicon;
+							let base64 = _json["stations"][prop].favicon,
+								image_base64 = _json["stations"][prop].image;
 							if(regex.test(base64)){
 								json.stations[prop] = {
 									id: _json["stations"][prop].id,
@@ -100,6 +103,9 @@ ImportStations = function(file){
 								 * Save Favicon station
 								 **/
 								fs.writeFileSync(dir + `/${_json["stations"][prop].id}.png`, base64.split('data:image/png;base64,')[1], {encoding: 'base64'});
+								if(regex.test(image_base64)){
+									fs.writeFileSync(dir + `/${_json["stations"][prop].id}_big.png`, image_base64.split('data:image/png;base64,')[1], {encoding: 'base64'});
+								}
 							}
 						}
 						fs.writeFileSync(dirFile, JSON.stringify(json), {encoding: 'utf8'});

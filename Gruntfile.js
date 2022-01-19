@@ -294,6 +294,23 @@ module.exports = function(grunt) {
 		'concat',
 		'uglify',
 		'pug',
+		'copy:appcopy',
+		'nwjs',
+		'copy:sdk',
+		'copy:normal',
+		'reshack'
+	]);
+	grunt.registerTask('build', [
+		'clean:all',
+		'webfont',
+		'ttf2woff2',
+		'less',
+		'group_css_media_queries',
+		'cssmin',
+		'requirejs',
+		'concat',
+		'uglify',
+		'pug',
 		'ffmpeg_down',
 		'copy:appcopy',
 		'nwjs',

@@ -6,7 +6,7 @@
 			viewport: {
 				width: 180,
 				height: 180,
-				type: 'circle'
+				type: 'square'
 			},
 			boundary: {
 				width: 180,
@@ -25,7 +25,8 @@
 		$noSettings = $("#noSettings"),
 		parser = null,
 		getMetaInterval = 0,
-		notifyInterval = 0;
+		notifyInterval = 0,
+		previosStream = '';
 	const 	addListItem = async function(data){
 				try{
 					if(data.name && data.stream){
@@ -169,15 +170,16 @@
 						id = data.id,
 						title = data.streamMeta || data.name,
 						has = (new Date()).getTime();
-					icon = (fs.existsSync(dir + '\\' + id + '.png')	? dir + '\\' + id + '.png' : 'favicon.png');
+					icon = (fs.existsSync(dir + '\\' + id + '.png')	? dir + '\\' + id + '.png' : 'favicon.png'),
+					big = (fs.existsSync(dir + '\\' + id + '_big.png')	? dir + '\\' + id + '_big.png' : icon);
 					tmpCrop.bind({
-						url: icon,
+						url: big,
 						backgroundColor: '#ffffff'
 					}).then(function(){
 						tmpCrop.result({
 							type: 'base64',
 							size: 'viewport',
-							format: 'jpeg',
+							format: 'png',
 							backgroundColor: '#ffffff'
 						}).then(function(base64){
 							navigator.mediaSession.metadata = new MediaMetadata({
@@ -302,14 +304,15 @@
 				});
 			},
 			setParser = function(){
-				console.log('init parser ' + getMetaInterval);
 				clearTimeout(getMetaInterval);
 				var $tileBar = $('#TitleBar-text > span'),
 					data = $('#radio-list li.active').data();
 				icy.get(player.stream, function (res) {
-					// log any "metadata" events that happen
 					var _title = data.streamMeta ? (data.streamMeta.length > 5 ? data.streamMeta : data.name) : data.name,
-						icon = (fs.existsSync(dir + '\\' + data.id + '.png')	? dir + '\\' + data.id + '.png' : 'favicon.png');
+						// Icon 180x180
+						icon = (fs.existsSync(dir + '\\' + data.id + '.png') ? dir + '\\' + data.id + '.png' : 'favicon.png');
+					// Big icon 360x180
+					icon = (fs.existsSync(dir + '\\' + data.id + '_big.png') ? dir + '\\' + data.id + '_big.png' : icon);
 					if(player.isPlaying()){
 						$('#radio-list li#st_' + data.id).data('streamMeta', _title);
 					}else{
@@ -318,18 +321,20 @@
 					res.on('metadata', function (metadata) {
 						let parsed = icy.parse(metadata),
 							$_title = $.trim(parsed.StreamTitle) + '';
-						console.log(parsed);
+						console.log($_title);
 						if($_title.length > 5){
 							if(player.isPlaying()){
-								if($_title != _title){
+								if($_title != previosStream){
 									// Отправить сообщение для отображения
 									if(data.id == $('#radio-list li.active').data('id')){
+										previosStream = $_title;
 										$('#radio-list li#st_' + data.id).data('streamMeta', $_title);
 										$tileBar.text($_title + ' | ' + data.name + ' | ' + locale.appName);
-										spawnNotification(locale.appName, icon, $_title + "\n" + data.name);
+										spawnNotification(locale.appName, icon, previosStream + "\n" + data.name);
 									}
 								}
 							}else{
+								previosStream = '';
 								$tileBar.text(locale.appName);
 								$('#radio-list li').each(function(){$(this).data('streamMeta', '')});
 							}
@@ -788,6 +793,7 @@
 					break;
 				case 'playing':
 					// icy ?
+					spawnNotificationClose();
 					e.bufering ?  (
 						$li.removeClass('stop').addClass('play preload')
 					) : (
@@ -800,6 +806,7 @@
 					$li.addClass('stop').removeClass('play preload');
 					$('#TitleBar-text span').text(locale.appName);
 					$('#radio-list li').each(function(){$(this).data('streamMeta', '');});
+					previosStream = '';
 					break;
 			}
 			updateSessionMetaData();

@@ -1,5 +1,6 @@
 
 !(function($){
+	const regex = /^data:image\/png;base64,iVBORw0KGgo/;
 	$('p.left').removeClass('visible');
 	var elCrop = document.getElementById('cropTmp'),
 		tmpCrop = new Croppie(elCrop, {
@@ -34,12 +35,36 @@
 							_name = data.name,
 							_stream = data.stream,
 							has = "?" + (new Date()).getTime(),
-							_icon = ((fs.existsSync(dir + '\\' + _id + '.png'))	? dir + '\\' + _id + '.png' : 'favicon.png') + has,
-							_tmp = $(`<li id="st_${_id}" class="radio-item stop">
+							_imageIcon = data.favicon || false,
+							_imageBig = data.image || false,
+							_icon = ((fs.existsSync(dir + '\\' + _id + '.png'))	? dir + '\\' + _id + '.png' : false);
+						if(!_icon){
+							try{
+								if(_imageIcon && regex.test(_imageIcon)){
+									let strIcon = _imageIcon.split(",")[1],
+										buffer1 = Buffer.from(strIcon, "base64");
+									fs.writeFileSync(dir + '\\' + _id + '.png', buffer1);
+									_icon = dir + '\\' + _id + '.png';
+								}
+							}catch(e){
+								console.log(`Error _imageIcon ${_id}`, e);
+							}
+							try{
+								if(_imageBig && regex.test(_imageBig)){
+									let strImage = _imageBig.split(",")[1],
+										buffer2 = Buffer.from(strImage, "base64");
+									fs.writeFileSync(dir + '\\' + _id + '_big.png', buffer2);
+								}
+							}catch(e){
+								console.log(`Error _imageBig ${_id}`, e);
+							}
+						}
+						_icon = (!_icon) ? 'favicon.png' : _icon;
+						let _tmp = $(`<li id="st_${_id}" class="radio-item stop">
 							<div class="radio-item-box">
 								<div class="radio-item-icon">
 									<span class="icons"></span>
-									<span class="favicon"><img src="${_icon}" alt="${_name}"></span>
+									<span class="favicon"><img src="${_icon + has}" alt="${_name}"></span>
 								</div>
 								<div class="radio-item-wrap">
 									<span class="station-name">${_name}</span>

@@ -47,7 +47,7 @@
 									_icon = dir + '\\' + _id + '.png';
 								}
 							}catch(e){
-								console.log(`Error _imageIcon ${_id}`, e);
+								log(`Error _imageIcon ${_id}`, e);
 							}
 							try{
 								if(_imageBig && regex.test(_imageBig)){
@@ -56,7 +56,7 @@
 									fs.writeFileSync(dir + '\\' + _id + '_big.png', buffer2);
 								}
 							}catch(e){
-								console.log(`Error _imageBig ${_id}`, e);
+								log(`Error _imageBig ${_id}`, e);
 							}
 						}
 						_icon = (!_icon) ? 'favicon.png' : _icon;
@@ -184,7 +184,6 @@
 				if(typeof title == 'string'){
 					title = title.replace(/\s+/g, ' ');
 					$('#TitleBar-text > span').text(title);
-					win.title = title;
 				}
 			},
 			updateSessionMetaData = function() {
@@ -330,8 +329,7 @@
 			},
 			setParser = function(){
 				clearTimeout(getMetaInterval);
-				var $tileBar = $('#TitleBar-text > span'),
-					data = $('#radio-list li.active').data();
+				var data = $('#radio-list li.active').data();
 				icy.get(player.stream, function (res) {
 					var _title = data.streamMeta ? (data.streamMeta.length > 5 ? data.streamMeta : data.name) : data.name,
 						// Icon 180x180
@@ -341,12 +339,12 @@
 					if(player.isPlaying()){
 						$('#radio-list li#st_' + data.id).data('streamMeta', _title);
 					}else{
-						$tileBar.text(locale.appName);
+						setTitle(locale.appName);
 					}
 					res.on('metadata', function (metadata) {
 						let parsed = icy.parse(metadata),
 							$_title = $.trim(parsed.StreamTitle) + '';
-						console.log($_title);
+						log($_title);
 						if($_title.length > 5){
 							if(player.isPlaying()){
 								if($_title != previosStream){
@@ -354,20 +352,22 @@
 									if(data.id == $('#radio-list li.active').data('id')){
 										previosStream = $_title;
 										$('#radio-list li#st_' + data.id).data('streamMeta', $_title);
-										$tileBar.text($_title + ' | ' + data.name + ' | ' + locale.appName);
+										setTitle($_title + ' | ' + data.name + ' | ' + locale.appName);
 										spawnNotification(locale.appName, icon, previosStream + "\n" + data.name);
 									}
 								}
+								getMetaInterval = setTimeout(setParser, 5000);
 							}else{
 								previosStream = '';
-								$tileBar.text(locale.appName);
+								setTitle(locale.appName);
 								$('#radio-list li').each(function(){$(this).data('streamMeta', '')});
 							}
 						}else{
 							if(player.isPlaying()){
-								$tileBar.text(data.name + ' | ' + locale.appName);
+								setTitle(data.name + ' | ' + locale.appName);
+								getMetaInterval = setTimeout(setParser, 5000);
 							}else{
-								$tileBar.text(locale.appName);
+								setTitle(locale.appName);
 							}
 							$('#radio-list li').each(function(){$(this).data('streamMeta', '')});
 						}
@@ -376,14 +376,12 @@
 						$('#radio-list li').each(function(){$(this).data('streamMeta', '')});
 						player.isPlaying() ? (
 							getMetaInterval = setTimeout(setParser, 2000),
-							$tileBar.text(data.name + ' | ' + locale.appName)
+							setTitle(data.name + ' | ' + locale.appName)
 						) : (
-							$tileBar.text(locale.appName)
+							setTitle.text(locale.appName)
 						);
 					});
 				});
-				player.isPlaying() && (getMetaInterval = setTimeout(setParser, 5000));
-				
 			},
 			// Вывод оповещения браузера
 			spawnNotification = function(body, icon, title) {
@@ -417,7 +415,7 @@
 	 **/
 	chrome.notifications.getPermissionLevel(
 		function(e){
-			console.log(e);
+			log(e);
 		}
 	);
 	/**
@@ -804,7 +802,6 @@
 	 * Set App title
 	 **/
 	setTitle(locale.appName);
-
 	/**
 	 * Player events
 	 **/

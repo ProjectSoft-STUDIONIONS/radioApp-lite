@@ -16,7 +16,7 @@ const gui = require('nw.gui'),
 	decoder = new StringDecoder('utf8'),
 	ImpExp = require('.\\modules\\impexp.js'),
 	log = function(){
-		sdk && console.log.call(arguments);
+		sdk && console.log(...arguments);
 	},
 	quitError = function(error){
 		alert(error);

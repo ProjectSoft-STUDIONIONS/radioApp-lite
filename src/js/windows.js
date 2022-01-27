@@ -1,4 +1,5 @@
 (function($){
+	
 	const 	miniBtn = $('#minimized'),
 			restoreBtn = $('#restored'),
 			closeBtn = $('#close'),
@@ -10,7 +11,6 @@
 			closePath = 'M 0,0 0,0.7 4.3,5 0,9.3 0,10 0.7,10 5,5.7 9.3,10 10,10 10,9.3 5.7,5 10,0.7 10,0 9.3,0 5,4.3 0.7,0 Z',
 			disableDragDrop = function(e){
 				e.preventDefault();
-				e.stopPropagation();
 				return !1;
 			};
 
@@ -18,6 +18,8 @@
 		md5Previos = null,
 		win_state = true;
 
+	$(window).on('dragover dragenter dragleave dragend', disableDragDrop);
+	
 	$(document).on('click', "#minimized, #restored, #close, #fullscreen", function(e){
 		let eId = e.currentTarget.id;
 		if(eId == "minimized" || eId == "restored" || eId == "close"){
@@ -172,4 +174,5 @@
 	win.moveTo(x, y);
 	win.setMinimumSize(w, h);
 	win.resizeTo(w, h);
+	win.title = locale.appName;
 }(jQuery))

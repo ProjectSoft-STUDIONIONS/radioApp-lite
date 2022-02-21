@@ -1,4 +1,3 @@
-// npm install --legacy-peer-deps
 module.exports = function(grunt) {
 
 	require('load-grunt-tasks')(grunt);
@@ -282,6 +281,16 @@ module.exports = function(grunt) {
 					open: "build/sdk/" + pkg.appName + "/win32/" + pkg.appName + ".exe"
 				}
 			},
+		},
+		exec: {
+			// Compiling install file
+			iscc :{
+				command: 'iscc setup.iss'
+			},
+			// Run YourRadio
+			run: {
+				cmd: 'start ' + __dirname + '/build/sdk/YourRadio/win32/YourRadio.exe'
+			}
 		}
 	});
 	grunt.registerTask('default', [
@@ -299,25 +308,8 @@ module.exports = function(grunt) {
 		'nwjs',
 		'copy:sdk',
 		'copy:normal',
-		'reshack'
-	]);
-	grunt.registerTask('build', [
-		'clean:all',
-		'webfont',
-		'ttf2woff2',
-		'less',
-		'group_css_media_queries',
-		'cssmin',
-		'requirejs',
-		'concat',
-		'uglify',
-		'pug',
-		'ffmpeg_down',
-		'copy:appcopy',
-		'nwjs',
-		'copy:sdk',
-		'copy:normal',
-		'reshack'
+		'reshack',
+		'exec:iscc'
 	]);
 	grunt.registerTask('sdk', [
 		'clean:dev',
@@ -331,21 +323,7 @@ module.exports = function(grunt) {
 		'copy:appcopy',
 		'nwjs:sdk',
 		'copy:sdk',
-		'reshack'
-	]);
-	grunt.registerTask('speed', [
-		'clean:dev',
-		'less',
-		'group_css_media_queries',
-		'cssmin',
-		'requirejs',
-		'concat',
-		'uglify',
-		'pug',
-		'copy:appcopy',
-		'nwjs',
-		'copy:sdk',
-		'copy:normal',
-		'reshack'
+		'reshack',
+		'exec:run'
 	]);
 }

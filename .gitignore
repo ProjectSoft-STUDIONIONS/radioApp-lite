@@ -1,6 +1,5 @@
 package-lock.json
 *.sublime-workspace
-*.bak
 /*.sublime-workspace
 /.cache
 /setup
@@ -18,3 +17,4 @@ package-lock.json
 /application/js
 /application/modules
 /application/*.html
+/application/favicon.*

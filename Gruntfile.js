@@ -34,6 +34,7 @@ module.exports = function(grunt) {
 				src: 'src/glyph/*.svg',
 				dest: 'application/fonts',
 				options: {
+					engine: 'node',
 					hashes: false,
 					destLess: 'src/less/fonts',
 					relativeFontPath: "/fonts/",
@@ -310,6 +311,23 @@ module.exports = function(grunt) {
 		'copy:normal',
 		'reshack',
 		'exec:iscc'
+	]);
+	grunt.registerTask('build', [
+		'clean:all',
+		'webfont',
+		'ttf2woff2',
+		'less',
+		'group_css_media_queries',
+		'cssmin',
+		'requirejs',
+		'concat',
+		'uglify',
+		'pug',
+		'copy:appcopy',
+		'nwjs',
+		'copy:sdk',
+		'copy:normal',
+		'reshack'
 	]);
 	grunt.registerTask('sdk', [
 		'clean:dev',

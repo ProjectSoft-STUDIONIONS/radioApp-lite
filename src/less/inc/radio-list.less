@@ -57,6 +57,9 @@ ul#radio-list {
 					}
 				}
 				&.preload {
+					background-size: 300% 100%;
+					background-image: linear-gradient(to right, #333333, #cccccc, #333333);
+					animation: backgroundAnimate 3s linear infinite;
 					.radio-item-icon {
 						span {
 							&.icons {
@@ -248,5 +251,16 @@ ul#radio-list li.play {
 				color: lime;
 			}
 		}
+	}
+}
+@keyframes backgroundAnimate {
+	0% {
+		background-position: -150% 100%;
+	}
+	50% {
+		background-position: 50% 100%;
+	}
+	0% {
+		background-position: 150% 100%;
 	}
 }

@@ -12,3 +12,40 @@
 	margin-right: -15px;
 	position: relative;
 }
+.visual {
+	display: none;
+}
+.appVisual {
+	main {
+		>.container {
+			> .visual {
+				display: block;
+				margin-left: -15px;
+				margin-right: -15px;
+				position: relative;
+				overflow: hidden;
+				height: 0px;
+				padding-bottom: 100px;
+				background-color: black;
+				canvas {
+					position: absolute;
+					top: 0;
+					left: 0;
+					bottom: 0;
+					right: 0;
+					width: 100%;
+					height: 100%;
+				}
+			}
+			> .row {
+				 height: ~'calc(100% - 127px)';
+			}
+		}
+	}
+	ul {
+		&#radio-list {
+			//max-height: ~'calc(100% - 100px)';
+			//height:  ~'calc(100% - 100px)';
+		}
+	}
+}

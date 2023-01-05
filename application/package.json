@@ -34,7 +34,8 @@
 	},
 	"devDependencies": {
 		"fs-extra": "^10.0.0",
-		"icy": "git+https://github.com/TooTallNate/node-icy.git"
+		"icy": "git+https://github.com/TooTallNate/node-icy.git",
+		"string_decoder": "^1.3.0"
 	},
 	"dependencies": {}
 }

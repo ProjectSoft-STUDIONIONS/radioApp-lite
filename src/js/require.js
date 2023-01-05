@@ -2,6 +2,7 @@
 const sdk = (nw.process.versions["nw-flavor"] == "sdk");
 sdk &&  nw.Window.get().showDevTools();
 const gui = require('nw.gui'),
+	full = (nw.App.argv.indexOf('--full') >= 0),
 	win = nw.Window.get(),
 	dir = nw.App.dataPath + "\\radio",
 	dirFile = dir + "\\data.json",

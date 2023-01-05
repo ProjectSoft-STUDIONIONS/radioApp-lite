@@ -29,7 +29,7 @@
     "grunt-ttf2woff2": "^1.0.1",
     "grunt-webfont": "^1.7.2",
     "load-grunt-tasks": "^5.1.0",
-    "time-grunt": "^2.0.0",
+    "time-grunt": "git+https://github.com/ProjectSoft-STUDIONIONS/time-grunt.git",
     "ttf2woff2": "^4.0.4"
   }
 }

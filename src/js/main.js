@@ -1,6 +1,11 @@
 
 !(function($){
 	const regex = /^data:image\/png;base64,iVBORw0KGgo/;
+	const canvas = $("<canvas></canvas>")[0];
+	const divCan = $("<div></div>", {
+		class: "visual",
+	});
+	divCan.append(canvas);
 	$('p.left').removeClass('visible');
 	var elCrop = document.getElementById('cropTmp'),
 		tmpCrop = new Croppie(elCrop, {
@@ -568,6 +573,7 @@
 		$('.settingsNotify').text(locale.settingsNotify);
 		$('#okSettings').text(locale.ok);
 		$('#noSettings').text(locale.cancel);
+
 		$(document).on('click', '#radio-list span.icons', function(e){
 			e.preventDefault();
 			/**
@@ -797,6 +803,10 @@
 			$settingsBlock[0].close();
 			return !1;
 		});
+		if(full){
+			$("main > .container").prepend(divCan);
+			$('body').addClass('appVisual');
+		}
 	}, 1000);
 	/**
 	 * Set App title

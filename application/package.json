@@ -33,8 +33,8 @@
 		"height": 520
 	},
 	"devDependencies": {
-		"fs-extra": "^10.0.0",
-		"icy": "git+https://github.com/TooTallNate/node-icy.git",
+		"fs-extra": "^11.1.0",
+		"icy": "^2.1.0",
 		"string_decoder": "^1.3.0"
 	},
 	"dependencies": {}

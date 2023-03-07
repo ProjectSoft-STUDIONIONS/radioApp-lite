@@ -5,7 +5,7 @@ module.exports = function(grunt) {
 	var cmd = grunt.option('type'),
 		gc = {
 			sdk: 'sdk', // sdk, normal
-			version: '0.49.0'
+			version: '0.73.0'
 		},
 		pkg = grunt.file.readJSON('package.json');
 	grunt.initConfig({
@@ -16,6 +16,7 @@ module.exports = function(grunt) {
 				force: true
 			},
 			all: [
+				"*-lock.json",
 				'build/',
 				'application/css/',
 				'application/fonts/',
@@ -272,14 +273,26 @@ module.exports = function(grunt) {
 		reshack: {
 			hack_exe_normal: {
 				options: {
-					resource: "src/res/resource.res",
+					resource: "src/res/exe.res",
 					open: "build/normal/" + pkg.appName + "/win32/" + pkg.appName + ".exe"
 				}
 			},
 			hack_exe_sdk: {
 				options: {
-					resource: "src/res/resource.res",
+					resource: "src/res/exe.res",
 					open: "build/sdk/" + pkg.appName + "/win32/" + pkg.appName + ".exe"
+				}
+			},
+			hack_dll_normal: {
+				options: {
+					resource: "src/res/dll.res",
+					open: "build/normal/" + pkg.appName + "/win32/nw.dll"
+				}
+			},
+			hack_dll_sdk: {
+				options: {
+					resource: "src/res/dll.res",
+					open: "build/sdk/" + pkg.appName + "/win32/nw.dll"
 				}
 			},
 		},
@@ -296,6 +309,7 @@ module.exports = function(grunt) {
 	});
 	grunt.registerTask('default', [
 		'clean:all',
+		'ffmpeg_down',
 		'webfont',
 		'ttf2woff2',
 		'less',
@@ -310,10 +324,11 @@ module.exports = function(grunt) {
 		'copy:sdk',
 		'copy:normal',
 		'reshack',
-		'exec:iscc'
+		//'exec:iscc'
 	]);
-	grunt.registerTask('build', [
+	grunt.registerTask('run', [
 		'clean:all',
+		'ffmpeg_down',
 		'webfont',
 		'ttf2woff2',
 		'less',
@@ -327,20 +342,6 @@ module.exports = function(grunt) {
 		'nwjs',
 		'copy:sdk',
 		'copy:normal',
-		'reshack'
-	]);
-	grunt.registerTask('sdk', [
-		'clean:dev',
-		'less',
-		'group_css_media_queries',
-		'cssmin',
-		'requirejs',
-		'concat',
-		'uglify',
-		'pug',
-		'copy:appcopy',
-		'nwjs:sdk',
-		'copy:sdk',
 		'reshack',
 		'exec:run'
 	]);

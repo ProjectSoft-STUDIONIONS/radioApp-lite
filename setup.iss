@@ -1,5 +1,5 @@
 #define RadioAppName "Your Radio Lite"
-#define RadioAppVersion "1.0.1"
+#define RadioAppVersion "2.0.0"
 #define RadioAppPublisher "ProjectSoft"
 #define RadioAppURL "https://github.com/ProjectSoft-STUDIONIONS/radioApp-lite"
 #define RadioAppExeName "YourRadio.exe"

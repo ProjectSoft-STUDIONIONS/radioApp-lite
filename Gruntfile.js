@@ -324,7 +324,7 @@ module.exports = function(grunt) {
 		'copy:sdk',
 		'copy:normal',
 		'reshack',
-		//'exec:iscc'
+		'exec:iscc'
 	]);
 	grunt.registerTask('run', [
 		'clean:all',

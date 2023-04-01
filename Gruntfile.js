@@ -28,6 +28,14 @@ module.exports = function(grunt) {
 			dev: [
 				'test/',
 				'application/*-lock.json'
+			],
+			vk: [
+				'build/sdk/YourRadio/win32/vk_*',
+				'build/normal/YourRadio/win32/vk_*',
+				'build/sdk/YourRadio/win32/vulkan*',
+				'build/normal/YourRadio/win32/vulkan*',
+				'build/sdk/YourRadio/win32/swiftshader',
+				'build/normal/YourRadio/win32/swiftshader',
 			]
 		},
 		webfont: {
@@ -174,8 +182,8 @@ module.exports = function(grunt) {
 		pug: {
 			files: {
 				options: {
-					pretty: '',// '\t',
-					separator: '',// '\n'
+					pretty: '\t',// '\t',
+					separator: '\n',// '\n'
 				},
 				files: {
 					"application/index.html": ['src/pug/index.pug'],
@@ -192,6 +200,8 @@ module.exports = function(grunt) {
 					version: gc.version,
 					cacheDir: __dirname+'/.cache',
 					zip: true,
+					company: "ProjectSoft",  
+					description:  "https://projectsoft.ru/",
 					appName: pkg.appName,
 					appVersion: pkg.version
 				},
@@ -206,6 +216,8 @@ module.exports = function(grunt) {
 					version: gc.version,
 					cacheDir: __dirname+'/.cache',
 					zip: true,
+					company: "ProjectSoft",  
+					description:  "https://projectsoft.ru/",
 					appName: pkg.appName,
 					appVersion: pkg.version
 				},
@@ -303,7 +315,7 @@ module.exports = function(grunt) {
 			},
 			// Run YourRadio
 			run: {
-				cmd: 'start ' + __dirname + '/build/sdk/YourRadio/win32/YourRadio.exe'
+				command: 'start /wait ' + __dirname + '/build/sdk/YourRadio/win32/YourRadio.exe'
 			}
 		}
 	});
@@ -323,6 +335,7 @@ module.exports = function(grunt) {
 		'nwjs',
 		'copy:sdk',
 		'copy:normal',
+		'clean:vk',
 		'reshack',
 		'exec:iscc'
 	]);
@@ -342,6 +355,7 @@ module.exports = function(grunt) {
 		'nwjs',
 		'copy:sdk',
 		'copy:normal',
+		'clean:vk',
 		'reshack',
 		'exec:run'
 	]);

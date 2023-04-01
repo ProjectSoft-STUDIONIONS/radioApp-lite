@@ -30,5 +30,22 @@
 				"application/radio"
 			]
 		}
+	],
+	"build_systems":
+	[
+		{
+			"name": "Build Project",
+			"working_dir": "$project_path",
+			"shell_cmd": "grunt -v default && echo Finish Build Project",
+			"file_patterns": [
+				"*.less",
+				"*.js",
+				"*.pug",
+				"*.json",
+				"*.svg",
+				"*.template",
+				"*.sublime-project"
+			]
+		}
 	]
 }

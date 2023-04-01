@@ -1,5 +1,5 @@
 #define RadioAppName "Your Radio Lite"
-#define RadioAppVersion "2.0.0"
+#define RadioAppVersion "2.0.2"
 #define RadioAppPublisher "ProjectSoft"
 #define RadioAppURL "https://github.com/ProjectSoft-STUDIONIONS/radioApp-lite"
 #define RadioAppExeName "YourRadio.exe"
@@ -35,10 +35,10 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "russian"; MessagesFile: "compiler:Languages\Russian.isl"
 
 [CustomMessages]
-english.RunProgramm=Launch application «Your Radio v{#RadioAppVersion}»  
-russian.RunProgramm=Запустить «Ваше Радио v{#RadioAppVersion}»
-english.StopProgramm=Stop «Your Radio»...
-russian.StopProgramm=Стоп «Ваше Радио»...
+english.RunProgramm=Launch application Your Radio v{#RadioAppVersion}  
+russian.RunProgramm=Р—Р°РїСѓСЃС‚РёС‚СЊ РїСЂРёР»РѕР¶РµРЅРёРµ Р’Р°С€Рµ Р Р°РґРёРѕ v{#RadioAppVersion}
+english.StopProgramm=Stop Your Radio...
+russian.StopProgramm=РћСЃС‚Р°РЅРѕРІРёС‚СЊ Р’Р°С€Рµ Р Р°РґРёРѕ...
 
 [Files]
 Source: "build\normal\YourRadio\win32\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs

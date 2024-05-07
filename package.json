@@ -5,7 +5,8 @@
   "description": "WebKit радио плеер. Самостоятельное добавление радио потока. Импорт/Экспорт плейлиста радиостанций.",
   "main": "Gruntfile.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "inst": "npm install --legacy-peer-deps"
   },
   "author": "ProjectSoft <projectsoft2009@yandex.ru>",
   "license": "MIT",
@@ -22,14 +23,20 @@
     "grunt-contrib-watch": "1.1.0",
     "grunt-exec": "3.0.0",
     "grunt-group-css-media-queries": "1.0.1",
-    "grunt-nw-builder": "3.1.0",
     "grunt-nwjs-ffmpeg-download": "git+https://github.com/STUDIONIONS/grunt-nwjs-ffmpeg-download.git",
     "grunt-replace": "2.0.2",
     "grunt-reshack": "git+https://github.com/STUDIONIONS/grunt-reshack.git",
     "grunt-ttf2woff2": "^1.0.1",
-    "grunt-webfont": "1.7.2",
+    "grunt-webfont": "1.7.0",
     "load-grunt-tasks": "5.1.0",
     "time-grunt": "git+https://github.com/ProjectSoft-STUDIONIONS/time-grunt.git",
     "ttf2woff2": "4.0.4"
+  },
+  "dependencies": {
+    "grunt-nw-builder": "^4.7.1"
+  },
+  
+  "overrides": {
+    "graceful-fs": "^4.2.11"
   }
 }

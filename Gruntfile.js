@@ -5,7 +5,7 @@ module.exports = function(grunt) {
 	var cmd = grunt.option('type'),
 		gc = {
 			sdk: 'sdk', // sdk, normal
-			version: '0.73.0'
+			version: '0.87.0' // '0.73.0'
 		},
 		pkg = grunt.file.readJSON('package.json');
 	grunt.initConfig({
@@ -41,14 +41,14 @@ module.exports = function(grunt) {
 		webfont: {
 			radioapp: {
 				src: 'src/glyph/*.svg',
-				dest: 'application/fonts',
+				dest: 'src/font',
 				options: {
 					engine: 'node',
 					hashes: false,
 					destLess: 'src/less/fonts',
 					relativeFontPath: "/fonts/",
 					font: 'radioapp',
-					types: 'woff2',
+					types: 'ttf',
 					fontFamilyName: 'Radio App',
 					stylesheets: ['less'],
 					syntax: 'bootstrap',
@@ -321,7 +321,7 @@ module.exports = function(grunt) {
 	});
 	grunt.registerTask('default', [
 		'clean:all',
-		'ffmpeg_down',
+		//'ffmpeg_down',
 		'webfont',
 		'ttf2woff2',
 		'less',
@@ -336,12 +336,12 @@ module.exports = function(grunt) {
 		'copy:sdk',
 		'copy:normal',
 		'clean:vk',
-		'reshack',
+		//'reshack',
 		'exec:iscc'
 	]);
 	grunt.registerTask('run', [
 		'clean:all',
-		'ffmpeg_down',
+		//'ffmpeg_down',
 		'webfont',
 		'ttf2woff2',
 		'less',
@@ -356,7 +356,7 @@ module.exports = function(grunt) {
 		'copy:sdk',
 		'copy:normal',
 		'clean:vk',
-		'reshack',
+		//'reshack',
 		'exec:run'
 	]);
 }

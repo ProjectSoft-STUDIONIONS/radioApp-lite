@@ -1,13 +1,10 @@
 <% for (var glyphIdx = 0; glyphIdx < glyphs.length; glyphIdx++) { %>@<%= classPrefix %><%= glyphs[glyphIdx] %>: "<% if (addLigatures) { %><%= glyphs[glyphIdx] %><% } else { %>\<%= codepoints[glyphIdx] %><% } %>";
 <% } %><% if (fontfaceStyles) { %>
 @font-face {
-	font-family:"<%= fontFamilyName %>";
-	<% if (fontSrc1) { %>
-	src:<%= fontSrc1 %>;
-	<% }%>
-	src:<%= fontSrc2 %>;
-	font-weight:normal;
-	font-style:normal;
+	font-family: "<%= fontFamilyName %>";
+	src: url("/fonts/radioapp.woff2") format("woff2");;
+	font-weight: normal;
+	font-style: normal;
 	font-display: swap;
 }
 <% } %>

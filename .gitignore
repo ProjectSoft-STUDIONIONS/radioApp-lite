@@ -1,4 +1,6 @@
 package-lock.json
+*-lock.js
+*.nw
 *.sublime-workspace
 /*.sublime-workspace
 /.cache

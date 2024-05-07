@@ -1,5 +1,5 @@
 #define RadioAppName "Your Radio Lite"
-#define RadioAppVersion "2.0.2"
+#define RadioAppVersion "2.0.3"
 #define RadioAppPublisher "ProjectSoft"
 #define RadioAppURL "https://github.com/ProjectSoft-STUDIONIONS/radioApp-lite"
 #define RadioAppExeName "YourRadio.exe"
@@ -36,23 +36,25 @@ Name: "russian"; MessagesFile: "compiler:Languages\Russian.isl"
 
 [CustomMessages]
 english.RunProgramm=Launch application Your Radio v{#RadioAppVersion}  
-russian.RunProgramm=Р—Р°РїСѓСЃС‚РёС‚СЊ РїСЂРёР»РѕР¶РµРЅРёРµ Р’Р°С€Рµ Р Р°РґРёРѕ v{#RadioAppVersion}
+russian.RunProgramm=Запустить приложение Ваше Радио v{#RadioAppVersion}  
+english.ProgramName=Your Radio
+russian.ProgramName=Ваше Радио
 english.StopProgramm=Stop Your Radio...
-russian.StopProgramm=РћСЃС‚Р°РЅРѕРІРёС‚СЊ Р’Р°С€Рµ Р Р°РґРёРѕ...
+russian.StopProgramm=Остановить Ваше Радио...
 
 [Files]
-Source: "build\normal\YourRadio\win32\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "build\normal\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Run]
 Filename: "{app}\{#RadioAppExeName}"; Flags: postinstall nowait skipifsilent; Description: "{cm:RunProgramm}";
 
 [UninstallDelete]
-Type: filesandordirs; Name: {autopf}\{#RadioAppName}
-Type: filesandordirs; Name: {localappdata}\YourRadio
+Type: filesandordirs; Name: {autopf}\{cm:ProgramName}
+Type: filesandordirs; Name: {localappdata}\YourRadio      
 
 [UninstallRun]
 Filename: {sys}\taskkill.exe; Parameters: "/F /IM YourRadio.exe /T"; Flags: skipifdoesntexist runhidden waituntilterminated; StatusMsg: "{cm:StopProgramm}"
 
 [Icons]
-Name: "{autoprograms}\{#RadioAppName}"; Filename: "{app}\{#RadioAppExeName}"
-Name: "{autodesktop}\{#RadioAppName}"; Filename: "{app}\{#RadioAppExeName}"
+Name: "{autoprograms}\{cm:ProgramName}"; Filename: "{app}\{#RadioAppExeName}"
+Name: "{autodesktop}\{cm:ProgramName}"; Filename: "{app}\{#RadioAppExeName}"

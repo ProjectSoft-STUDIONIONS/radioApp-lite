@@ -9,6 +9,7 @@ package-lock.json
 /node_modules
 /ffmpeg
 /build
+/bin
 /test
 /tests
 /application/_locales

@@ -4,7 +4,7 @@
 	"author": "ProjectSoft",
 	"license": "MIT",
 	"homepage": "https://projectsoft.ru/",
-	"version": "2.0.2",
+	"version": "2.0.3",
 	"nodejs": true,
 	"winIco": "favicon.ico",
 	"chromium-args": "--child-clean-exit --ignore-certificate-errors --disk-cache-size=1 --media-cache-size=1 --disable-web-security --use-strict=true",
@@ -19,7 +19,7 @@
 		"frame": false,
 		"kiosk_emulation": true,
 		"icon": "favicon.png",
-		"id": "new-radioapp",
+		"id": "radioapp-lite",
 		"mac_icon": "favicon.png",
 		"position": "center",
 		"resizable": true,
@@ -32,10 +32,10 @@
 		"width": 600,
 		"height": 520
 	},
-	"devDependencies": {
-		"fs-extra": "^11.1.0",
-		"icy": "^2.1.0",
-		"string_decoder": "^1.3.0"
-	},
-	"dependencies": {}
+	"devDependencies": {},
+	"dependencies": {
+		"fs-extra": "latest",
+		"icy": "latest",
+		"string_decoder": "latest"
+	}
 }

@@ -4,7 +4,7 @@
 	"author": "ProjectSoft",
 	"license": "MIT",
 	"homepage": "https://projectsoft.ru/",
-	"version": "2.0.3",
+	"version": "3.0.0",
 	"nodejs": true,
 	"winIco": "favicon.ico",
 	"chromium-args": "--child-clean-exit --ignore-certificate-errors --disk-cache-size=1 --media-cache-size=1 --disable-web-security --use-strict=true",

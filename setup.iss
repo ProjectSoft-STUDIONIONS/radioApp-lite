@@ -1,5 +1,5 @@
 #define RadioAppName "Your Radio Lite"
-#define RadioAppVersion "2.0.3"
+#define RadioAppVersion "3.0.0"
 #define RadioAppPublisher "ProjectSoft"
 #define RadioAppURL "https://github.com/ProjectSoft-STUDIONIONS/radioApp-lite"
 #define RadioAppExeName "YourRadio.exe"
@@ -43,7 +43,7 @@ english.StopProgramm=Stop Your Radio...
 russian.StopProgramm=Остановить Ваше Радио...
 
 [Files]
-Source: "build\normal\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "build\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Run]
 Filename: "{app}\{#RadioAppExeName}"; Flags: postinstall nowait skipifsilent; Description: "{cm:RunProgramm}";

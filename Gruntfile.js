@@ -3,6 +3,7 @@ module.exports = function(grunt) {
 	require('load-grunt-tasks')(grunt);
 	require('time-grunt')(grunt);
 	require('./modules/Downloader.js')(grunt);
+	require('./modules/Build.js')(grunt);
 	const path = require('path');
 	var cmd = grunt.option('type'),
 		gc = {
@@ -13,14 +14,12 @@ module.exports = function(grunt) {
 	grunt.initConfig({
 		globalConfig: gc,
 		pkg: pkg,
-		downloader: {
-			down: {}
-		},
 		clean: {
 			options: {
 				force: true
 			},
 			all: [
+				"build/**/*",
 				"*-lock.json",
 				'application/css/',
 				'application/fonts/',
@@ -29,25 +28,12 @@ module.exports = function(grunt) {
 				'application/*.sublime-*',
 				'test/'
 			],
-			dev: [
-				"*-lock.json",
-				'test/',
-				'application/*.sublime-*',
-				'application/*-lock.json'
-			],
 			vk: [
+				'build/YourRadio.exe',
 				'build/vk_*',
 				'build/vulkan*',
 				'build/swiftshader',
 			]
-		},
-		ffmpeg_down: {
-			start: {
-				options: {
-					platforms: ["win32"],
-					dest: "ffmpeg"
-				},
-			},
 		},
 		copy: {
 			build: {
@@ -66,14 +52,8 @@ module.exports = function(grunt) {
 					},
 					{
 						expand: true,
-						cwd: `.cache/${gc.version}/${gc.sdk}`,
+						cwd: `.cache/${gc.version}`,
 						src: "**",
-						dest: "build/"
-					},
-					{
-						expand: true,
-						cwd: "ffmpeg/win32",
-						src: "*.dll",
 						dest: "build/"
 					},
 				]
@@ -227,29 +207,43 @@ module.exports = function(grunt) {
 				},
 			},
 		},
+		downloader: {
+			down: {
+				options: {
+					version: false,
+					sdk: false
+				}
+			}
+		},
 		zip: {
 			ziped: {
 				router: function (filepath) {
 					return filepath.split('/').slice(1).join('/');
 				},
 				src: ['application/**/*'],
-				dest: 'bild/package.nw'
+				dest: 'build/package.nw'
 			}
 		},
 		unzip: {
-			unziped: {
+			unzip_001: {
 				router: function (filepath) {
 					return filepath.split('/').slice(1).join('/');
 				},
 				src: `.cache/v${gc.version}.zip`,
 				dest: `.cache/${gc.version}/`
+			},
+			unzip_002: {
+				src: `.cache/ffmpeg.zip`,
+				dest: `.cache/${gc.version}/`
+			},
+		},
+		buildnw: {
+			build: {
+
 			}
 		}
 	});
 	grunt.registerTask('default', [
-		'downloader',
-		'unzip'
-		/*
 		'clean:all',
 		'webfont',
 		'ttf2woff2',
@@ -259,10 +253,13 @@ module.exports = function(grunt) {
 		'concat',
 		'uglify',
 		'pug',
-		// download nwjs
-		// download ffmpeg
+		'downloader',
+		'unzip',
 		'copy',
 		'zip',
+		'clean:vk',
+		'buildnw'
+		/*
 		// build YourRadio
 		// resource haker
 		'clean:dev',

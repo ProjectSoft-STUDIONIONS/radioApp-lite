@@ -9,6 +9,7 @@ package-lock.json
 /node_modules
 /ffmpeg
 /build
+/bild
 /bin
 /test
 /tests

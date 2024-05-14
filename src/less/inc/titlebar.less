@@ -1,5 +1,4 @@
 #TitleBar {
-	color-scheme: dark;
 	-webkit-user-select: none;
 	-webkit-app-region: drag;
 	display: flex;
@@ -10,7 +9,6 @@
 	box-shadow: 0 0 2px #000;
 	width: 100%;
 	overflow: hidden;
-	//background-color: #171814;
 	line-height: 1;
 	&-icon,
 	&-buttons {
@@ -47,7 +45,6 @@
 			width: 100%;
 			font-family: 'sans-serif';
 			font-size: small;
-			//color: #e0e4e5;
 			line-height: 1.5;
 		}
 	}
@@ -58,7 +55,6 @@
 		flex-wrap: nowrap;
 		align-items: stretch;
 		justify-content: space-between;
-		//box-shadow: 0 0 1px 1px #000;
 		user-select: none;
 		span {
 			display: flex;
@@ -79,33 +75,39 @@
 			}
 			svg {
 				pointer-events: none;
-				/*
-				stroke: #ffffff;
-				fill: #ffffff;
-				*/
 				width: 10px;
 				height: 10px;
 			}
+		}
+	}
+}
+// Тёмная тема "Тёмная" - Дефолт
+#TitleBar {
+	background-color: #171814;
+	&-text {
+		span {
+			color: #e0e4e5;
+		}
+	}
+	&-buttons {
+		span {
+			svg {
+				stroke: #ffffff;
+				fill: #ffffff;
+			}
 			&:hover {
-				/*
 				background-color: #2e2f2b;
-				*/
 			}
 			&#close {
 				&:hover {
-					/*
 					background-color: #e81123;
-					svg {
-						stroke: #ffffff;
-						fill: #ffffff;
-					}
-					*/
 				}
 			}
 		}
 	}
 }
-@media (prefers-color-scheme: light) {
+// Светлая тема "Светлая"
+.light {
 	#TitleBar {
 		background-color: #ffffff;
 		&-text {
@@ -133,33 +135,6 @@
 							stroke: #ffffff;
 							fill: #ffffff;
 						}
-					}
-				}
-			}
-		}
-	}
-}
-
-@media (prefers-color-scheme: dark) {
-	#TitleBar {
-		background-color: #171814;
-		&-text {
-			span {
-				color: #e0e4e5;
-			}
-		}
-		&-buttons {
-			span {
-				svg {
-					stroke: #ffffff;
-					fill: #ffffff;
-				}
-				&:hover {
-					background-color: #2e2f2b;
-				}
-				&#close {
-					&:hover {
-						background-color: #e81123;
 					}
 				}
 			}

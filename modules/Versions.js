@@ -12,6 +12,7 @@ module.exports = function(grunt) {
 		versApp.version = version;
 		versApp.buildDate = grunt.template.date(new Date().getTime(), 'dd mmmm yyyy HH:ss:MM');
 		let str = JSON.stringify(versApp, null, "\t");
+		grunt.file.copy("LICENSE", "application/LICENSE");
 		grunt.file.write("application/package.json", `${str}`);
 		done();
 	});

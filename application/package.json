@@ -5,7 +5,7 @@
 	"license": "MIT",
 	"homepage": "https://projectsoft.ru/",
 	"version": "3.0.1",
-	"buildDate": "14 May 2024 14:23:26",
+	"buildDate": "14 May 2024 14:53:46",
 	"nodejs": true,
 	"winIco": "favicon.ico",
 	"chromium-args": "--child-clean-exit --ignore-certificate-errors --disk-cache-size=1 --media-cache-size=1 --disable-web-security --use-strict=true",

@@ -20,4 +20,5 @@ package-lock.json
 /application/node_modules
 /application/js
 /application/modules
+/application/LICENSE
 /application/*.html

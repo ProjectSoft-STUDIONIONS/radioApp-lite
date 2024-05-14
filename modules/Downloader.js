@@ -58,60 +58,23 @@ module.exports = function(grunt) {
 		return exists;
 	}
 
+	async function removeFile(file) {
+		let exists = true;
+		let fl = await fileExists(file);
+		if(fl) {
+			try {
+				await fs.promises.unlink(file); 
+			} catch {
+				exists = false;
+			}
+		}
+		return exists;
+	}
+
 	function getManifest(){
 		return new Promise(async function(resolve, reject){
-			let cah = await fileExists(".cache/");
+			let cah = await removeFile(".cache/manifest.json");
 			if(cah){
-				fs.rmSync(".cache/", {recursive: true, force: true});
-				fs.mkdirSync(".cache/", {recursive: true});
-			}
-			const { DownloaderHelper } = require('node-downloader-helper');
-			const progress = new cliProgress.SingleBar({
-				stopOnComplete: true,
-				hideCursor: false,
-				autopadding: true,
-				barsize: 50
-			},{
-				format: formatBar,
-				barCompleteChar: '\u2588',
-				barIncompleteChar: '\u2592'
-			});
-			console.log('Download MANIFEST');
-			progress.start(100, 0);
-			const dl = new DownloaderHelper('https://nwjs.io/versions.json', ".cache/", {
-				fileName: 'manifest.json'
-            });
-			dl.on('response', function(res){
-				console.log('response');
-			});
-			dl.on('end', function() {
-				progress.stop();
-				resolve();
-			});
-			dl.on('error', function(err){
-				progress.stop();
-				console.log('Download Failed', err);
-				reject(err);
-			});
-			dl.on('progress', function(data){
-				progress.update(parseInt(data.progress));
-			});
-			dl.start().catch(function(err) {
-				progress.stop();
-				reject(err);
-			});
-		});
-		
-	}
-	function getFlavor() {
-		return new Promise(async function(resolve, reject){
-			const file = fs.readFileSync(".cache/manifest.json", {encoding: 'utf8'}),
-				flv = options.sdk ? '-sdk' : '';
-			try {
-				let obj = JSON.parse(file),
-					path = options.version ? `v${options.version}` : obj.stable;
-				versions = path.slice(1);
-				let url = `https://dl.nwjs.io/${path}/nwjs${flv}-${path}-win-ia32.zip`;
 				const { DownloaderHelper } = require('node-downloader-helper');
 				const progress = new cliProgress.SingleBar({
 					stopOnComplete: true,
@@ -123,13 +86,121 @@ module.exports = function(grunt) {
 					barCompleteChar: '\u2588',
 					barIncompleteChar: '\u2592'
 				});
-				console.log(`Download NWJS nwjs${flv}-${path}-win-ia32.zip`);
+				grunt.log.oklns(['Download MANIFEST']);
 				progress.start(100, 0);
-				const dl = new DownloaderHelper(url, ".cache/", {
-					fileName: `${path}.zip`
+				const dl = new DownloaderHelper('https://nwjs.io/versions.json', ".cache/", {
+					fileName: 'manifest.json'
 				});
 				dl.on('response', function(res){
-					console.log('response');
+					//console.log('response');
+				});
+				dl.on('end', function() {
+					progress.stop();
+					resolve();
+				});
+				dl.on('error', function(err){
+					progress.stop();
+					grunt.log.errorlns('Download Failed', err);
+					reject(err);
+				});
+				dl.on('progress', function(data){
+					progress.update(parseInt(data.progress));
+				});
+				dl.start().catch(function(err) {
+					progress.stop();
+					reject(err);
+				});
+			}else{
+				reject();
+			}
+		});
+	}
+	function getFlavor() {
+		return new Promise(async function(resolve, reject){
+			let cah = await fileExists(".cache/manifest.json");
+			if(cah){
+				const file = fs.readFileSync(".cache/manifest.json", {encoding: 'utf8'}),
+					flv = options.sdk ? '-sdk' : '',
+					dir = options.sdk ? 'sdk' : 'normal';
+				try {
+					let obj = JSON.parse(file),
+						path = options.version ? `v${options.version}` : obj.stable;
+					versions = path.slice(1);
+					let url = `https://dl.nwjs.io/${path}/nwjs${flv}-${path}-win-ia32.zip`,
+						output = `${dir}.zip`,
+						nwfile = await removeFile(`.cache/${output}`);
+					if (nwfile) {
+						const { DownloaderHelper } = require('node-downloader-helper');
+						const progress = new cliProgress.SingleBar({
+							stopOnComplete: true,
+							hideCursor: false,
+							autopadding: true,
+							barsize: 50
+						},{
+							format: formatBar,
+							barCompleteChar: '\u2588',
+							barIncompleteChar: '\u2592'
+						});
+						grunt.log.oklns([`Download NWJS -> ${url}`]);
+						progress.start(100, 0);
+						const dl = new DownloaderHelper(url, ".cache/", {
+							fileName: output
+						});
+						dl.on('response', function(res){
+							//console.log('response');
+						});
+						dl.on('end', function() {
+							progress.stop();
+							resolve();
+						});
+						dl.on('error', function(err){
+							progress.stop();
+							grunt.log.errorlns('Download Failed', err);
+							reject(err);
+						});
+						dl.on('progress', function(data){
+							progress.update(parseInt(data.progress));
+						});
+						dl.start().catch(function(err) {
+							reject(err);
+						});
+					}else{
+						reject();
+					}
+				}catch(e){
+					reject(e);
+				}
+			} else {
+				reject();
+			}
+			
+		});
+	}
+	function getFFMPEG() {
+		// 0.87.0-win-ia32.zip
+		return new Promise(async function(resolve, reject){
+			const url = `https://github.com/nwjs-ffmpeg-prebuilt/nwjs-ffmpeg-prebuilt/releases/download/${versions}/${versions}-win-ia32.zip`;
+			const out = `ffmpeg.zip`;
+			let ffmpegfile = await removeFile(`.cache/${out}`);
+			if(ffmpegfile){
+				const { DownloaderHelper } = require('node-downloader-helper');
+				const progress = new cliProgress.SingleBar({
+					stopOnComplete: true,
+					hideCursor: false,
+					autopadding: true,
+					barsize: 50
+				},{
+					format: formatBar,
+					barCompleteChar: '\u2588',
+					barIncompleteChar: '\u2592'
+				});
+				grunt.log.oklns([`Download FFMPEG ${versions}`]);
+				progress.start(100, 0);
+				const dl = new DownloaderHelper(url, ".cache/", {
+					fileName: out
+				});
+				dl.on('response', function(res){
+					//console.log('response');
 				});
 				dl.on('end', function() {
 					progress.stop();
@@ -138,7 +209,7 @@ module.exports = function(grunt) {
 				});
 				dl.on('error', function(err){
 					progress.stop();
-					console.log('Download Failed', err);
+					grunt.log.errorlns('Download Failed', err);
 					reject(err);
 				});
 				dl.on('progress', function(data){
@@ -147,52 +218,9 @@ module.exports = function(grunt) {
 				dl.start().catch(function(err) {
 					reject(err);
 				});
-			}catch(e){
-				reject(e);
+			}else{
+				reject();
 			}
-		});
-	}
-	function getFFMPEG() {
-		// 0.87.0-win-ia32.zip
-		return new Promise(async function(resolve, reject){
-			const url = `https://github.com/nwjs-ffmpeg-prebuilt/nwjs-ffmpeg-prebuilt/releases/download/${versions}/${versions}-win-ia32.zip`;
-			const out = `ffmpeg.zip`;
-			console.log(url);
-			const { DownloaderHelper } = require('node-downloader-helper');
-			const progress = new cliProgress.SingleBar({
-				stopOnComplete: true,
-				hideCursor: false,
-				autopadding: true,
-				barsize: 50
-			},{
-				format: formatBar,
-				barCompleteChar: '\u2588',
-				barIncompleteChar: '\u2592'
-			});
-			console.log(`Download FFMPEG ${versions}`);
-			progress.start(100, 0);
-			const dl = new DownloaderHelper(url, ".cache/", {
-				fileName: out
-			});
-			dl.on('response', function(res){
-				console.log('response');
-			});
-			dl.on('end', function() {
-				progress.stop();
-				// UNZIPED
-				resolve();
-			});
-			dl.on('error', function(err){
-				progress.stop();
-				console.log('Download Failed', err);
-				reject(err);
-			});
-			dl.on('progress', function(data){
-				progress.update(parseInt(data.progress));
-			});
-			dl.start().catch(function(err) {
-				reject(err);
-			});
 		});
 	}
 	grunt.registerMultiTask('downloader', 'Download NW.JS', async function() {

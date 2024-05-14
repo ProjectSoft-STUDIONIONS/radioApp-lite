@@ -1,16 +1,30 @@
 module.exports = function(grunt) {
-
+	const target = grunt.option('target') || 'normal';
+	switch(target){
+		case 'normal':
+		case 'sdk':
+			break;
+		default:
+			grunt.fail.fatal("Параметр --target должен быть равным normal или sdk");
+			return;
+			break;
+	}
+	grunt.loadNpmTasks('innosetup-compiler');
 	require('load-grunt-tasks')(grunt);
 	require('time-grunt')(grunt);
 	require('./modules/Downloader.js')(grunt);
 	require('./modules/Build.js')(grunt);
+	require('./modules/Versions.js')(grunt);
 	const path = require('path');
-	var cmd = grunt.option('type'),
-		gc = {
-			sdk: 'normal', // sdk, normal
-			version: '0.87.0' // '0.73.0'
+	var gc = {
+			sdk: target,
+			version: false // Нужная версия, либо false для загрузки последней версии
 		},
+		flv = '',
 		pkg = grunt.file.readJSON('package.json');
+
+	flv = gc.sdk == 'normal' ? '' : '-sdk';
+	console.log(grunt.template.date(new Date().getTime(), 'yyyy-mm-dd'));
 	grunt.initConfig({
 		globalConfig: gc,
 		pkg: pkg,
@@ -52,7 +66,7 @@ module.exports = function(grunt) {
 					},
 					{
 						expand: true,
-						cwd: `.cache/${gc.version}`,
+						cwd: `.cache/${gc.sdk}`,
 						src: "**",
 						dest: "build/"
 					},
@@ -207,11 +221,18 @@ module.exports = function(grunt) {
 				},
 			},
 		},
+		version_edit: {
+			default: {
+				options: {
+					pkg: pkg,
+				}
+			}
+		},
 		downloader: {
 			down: {
 				options: {
 					version: false,
-					sdk: false
+					sdk: gc.sdk == 'normal' ? false : true
 				}
 			}
 		},
@@ -229,40 +250,70 @@ module.exports = function(grunt) {
 				router: function (filepath) {
 					return filepath.split('/').slice(1).join('/');
 				},
-				src: `.cache/v${gc.version}.zip`,
-				dest: `.cache/${gc.version}/`
+				src: `.cache/${gc.sdk}.zip`,
+				dest: `.cache/${gc.sdk}/`
 			},
 			unzip_002: {
 				src: `.cache/ffmpeg.zip`,
-				dest: `.cache/${gc.version}/`
+				dest: `.cache/${gc.sdk}/`
 			},
 		},
 		buildnw: {
 			build: {
 
 			}
+		},
+		innosetup: {
+			default: {
+				options: {
+					gui: false,
+					verbose: true,
+				},
+				script: __dirname + "/setup.iss"
+			}
+		},
+		exec: {
+			// Compiling install file
+			// Run YourRadio
+			run: {
+				command: __dirname + '/build/nw.exe ' + __dirname + '/application'
+			}
 		}
 	});
-	grunt.registerTask('default', [
-		'clean:all',
-		'webfont',
-		'ttf2woff2',
-		'less',
-		'cssmin',
-		'requirejs',
-		'concat',
-		'uglify',
-		'pug',
-		'downloader',
-		'unzip',
-		'copy',
-		'zip',
-		'clean:vk',
-		'buildnw'
-		/*
-		// build YourRadio
-		// resource haker
-		'clean:dev',
-		*/
-	]);
+	const tasks = gc.sdk == 'normal' ? [
+			'clean:all',
+			'webfont',
+			'ttf2woff2',
+			'less',
+			'cssmin',
+			'requirejs',
+			'concat',
+			'uglify',
+			'pug',
+			'downloader', // При первом запуске должен быть раскомментирован. Если меняется sdk - тоже должен быть раскомментирован
+			'unzip',
+			'version_edit',
+			'copy',
+			'zip',
+			'clean:vk',
+			'buildnw',
+			"innosetup",
+		] : [
+			'clean:all',
+			'webfont',
+			'ttf2woff2',
+			'less',
+			'cssmin',
+			'requirejs',
+			'concat',
+			'uglify',
+			'pug',
+			'downloader', // При первом запуске должен быть раскомментирован. Если меняется sdk - тоже должен быть раскомментирован
+			'unzip',
+			'version_edit',
+			'copy',
+			'clean:vk',
+			"exec:run",
+		];
+	grunt.registerTask('default', tasks);
 }

@@ -2,25 +2,8 @@ module.exports = function(grunt) {
 	const fs = require("fs");
 	const path = require("path");
 	const rcedit = require("rcedit");
-	const {spawn, execFileSync} = require("child_process");
-	function copying() {
-		return new Promise(function(resolve, reject){
-			const pth = path.resolve(__dirname, "..", "build")
-			const ls = spawn('build.cmd', [pth]);
-			ls.stdout.on('data', (data) => {
-				//console.log(`${data}`);
-			});
 
-			ls.stderr.on('data', (data) => {
-				reject(`stderr: ${data}`);
-			});
-
-			ls.on('close', (code) => {
-				resolve();
-			});
-		});
-	}
-	function resourceEdit(){
+	const resourceEdit = function(){
 		return new Promise(async function(resolve, reject){
 			const app = grunt.file.readJSON('application/package.json');
 			const rcEditOptions = {
@@ -33,7 +16,7 @@ module.exports = function(grunt) {
 					"FileDescription": "Ваше Радио. Облегчённая версия.",
 					"FileVersion": app.version,
 					"InternalName": app.name,
-					"LegalCopyright": "Copyright 2024",
+					"LegalCopyright": "Copyright ProjectSoft 2008 - all right reserved",
 					"LegalTrademarks": app.author,
 					"OriginalFilename": app.name,
 					"PrivateBuild": app.name,
@@ -43,14 +26,15 @@ module.exports = function(grunt) {
 				},
 			};
 			await rcedit('build/nw.exe', rcEditOptions);
+			await fs.renameSync('build/nw.exe', 'build/YourRadio.exe')
 			resolve();
 		});
 	}
+	
 	grunt.registerMultiTask('buildnw', 'Build NW.JS', async function() {
 		var done = this.async();
 		options = this.options();
 		await resourceEdit();
-		await copying();
 		done();
 	});
 };

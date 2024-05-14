@@ -1,4 +1,4 @@
-
+// --user-data-dir=%APPDATA%\\YourRadio
 !(function($){
 	const regex = /^data:image\/png;base64,iVBORw0KGgo/;
 	const canvas = $("<canvas></canvas>")[0];

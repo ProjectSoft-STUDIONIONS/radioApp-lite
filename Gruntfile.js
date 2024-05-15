@@ -98,8 +98,7 @@ module.exports = function(grunt) {
 						baseClass: '',
 						classPrefix: 'icon-'
 					},
-					//embed: ['woff2'],
-					template: 'src/radioapp.template'
+					template: 'src/radioapp.less'
 				}
 			}
 		},

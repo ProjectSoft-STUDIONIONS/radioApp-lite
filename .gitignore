@@ -3,7 +3,9 @@ package-lock.json
 *.nw
 *.sublime-workspace
 /*.sublime-workspace
-/.cache
+/.cache/*.zip
+/.cache/**/*
+!/.cache/*.json
 /setup
 /bower_components
 /node_modules

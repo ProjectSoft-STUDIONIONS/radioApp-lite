@@ -47,6 +47,12 @@ module.exports = function(grunt) {
 			
 			var barStr = _colors.white('|') + _colors.cyan(bar + ' ' + autopadding(percentage, 3) + '%') + "  " + _colors.white('|') + "  " + elapsedTime;
 			return barStr;
+		},
+		rightpad = function(str, len, ch = false) {
+			str = String(str);
+			if (!ch && ch !== 0)
+				ch = ' ';
+			return str.padEnd(len, ch);
 		};
 	async function fileExists(filePath) {
 		let exists = true;
@@ -61,9 +67,22 @@ module.exports = function(grunt) {
 	async function removeFile(file) {
 		let exists = true;
 		let fl = await fileExists(file);
-		if(fl) {
+		if(fl){
 			try {
-				await fs.promises.unlink(file); 
+				fs.unlinkSync(file);
+			} catch {
+				exists = false;
+			}
+		}
+		return exists;
+	}
+
+	async function createDirectory(dir) {
+		let exists = true;
+		let fl = await fileExists(dir);
+		if(!fl) {
+			try {
+				fs.mkdirSync(dir, {recursive: true});
 			} catch {
 				exists = false;
 			}
@@ -86,7 +105,7 @@ module.exports = function(grunt) {
 					barCompleteChar: '\u2588',
 					barIncompleteChar: '\u2592'
 				});
-				grunt.log.oklns(['Download MANIFEST']);
+				grunt.log.oklns([`${rightpad('Download MANIFEST', 18, ' ')} -> https://nwjs.io/versions.json`]);
 				progress.start(100, 0);
 				const dl = new DownloaderHelper('https://nwjs.io/versions.json', ".cache/", {
 					fileName: 'manifest.json'
@@ -141,7 +160,7 @@ module.exports = function(grunt) {
 							barCompleteChar: '\u2588',
 							barIncompleteChar: '\u2592'
 						});
-						grunt.log.oklns([`Download NWJS -> ${url}`]);
+						grunt.log.oklns([`${rightpad('Download NWJS', 18, ' ')} -> ${url}`]);
 						progress.start(100, 0);
 						const dl = new DownloaderHelper(url, ".cache/", {
 							fileName: output
@@ -194,7 +213,7 @@ module.exports = function(grunt) {
 					barCompleteChar: '\u2588',
 					barIncompleteChar: '\u2592'
 				});
-				grunt.log.oklns([`Download FFMPEG ${versions}`]);
+				grunt.log.oklns([`${rightpad('Download FFMPEG', 18, ' ')} -> ${url}`]);
 				progress.start(100, 0);
 				const dl = new DownloaderHelper(url, ".cache/", {
 					fileName: out
@@ -226,6 +245,7 @@ module.exports = function(grunt) {
 	grunt.registerMultiTask('downloader', 'Download NW.JS', async function() {
 		var done = this.async();
 		options = this.options();
+		await createDirectory('.cache/');
 		getManifest().then(async function(){
 			getFlavor().then(async function(){
 				getFFMPEG().then(async function(){

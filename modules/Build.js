@@ -11,9 +11,9 @@ module.exports = function(grunt) {
 				"file-version": app.version,
 				"product-version": app.version,
 				"version-string": {
-					"Comments": "Ваше Радио. Облегчённая версия.",
+					"Comments": app.comments,
 					"CompanyName": app.author,
-					"FileDescription": "Ваше Радио. Облегчённая версия.",
+					"FileDescription": app.description,
 					"FileVersion": app.version,
 					"InternalName": app.name,
 					"LegalCopyright": "Copyright ProjectSoft 2008 - all right reserved",

@@ -1,11 +1,12 @@
 {
 	"name": "YourRadio",
 	"main": "index.html",
+	"comments": "Ваше Радио. Облегчённая версия.",
 	"author": "ProjectSoft",
 	"license": "MIT",
 	"homepage": "https://projectsoft.ru/",
 	"version": "3.0.1",
-	"buildDate": "15 May 2024 17:22:51",
+	"buildDate": "19 May 2024 12:41:22",
 	"nodejs": true,
 	"winIco": "favicon.ico",
 	"chromium-args": "--child-clean-exit --ignore-certificate-errors --disk-cache-size=1 --media-cache-size=1 --disable-web-security --use-strict=true",
@@ -38,5 +39,6 @@
 		"fs-extra": "latest",
 		"icy": "latest",
 		"string_decoder": "latest"
-	}
+	},
+	"description": "Ваше Радио. Облегчённая версия. Самостоятельное добавление радио потока. Импорт/Экспорт плейлиста радиостанций."
 }

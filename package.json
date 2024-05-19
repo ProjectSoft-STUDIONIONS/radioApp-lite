@@ -2,7 +2,8 @@
 	"name": "webkit-app-radio",
 	"appName": "YourRadio",
 	"version": "3.0.1",
-	"description": "WebKit радио плеер. Самостоятельное добавление радио потока. Импорт/Экспорт плейлиста радиостанций.",
+	"description": "Ваше Радио. Облегчённая версия. Самостоятельное добавление радио потока. Импорт/Экспорт плейлиста радиостанций.",
+	"comments": "Ваше Радио. Облегчённая версия.",
 	"main": "Gruntfile.js",
 	"scripts": {
 		"preinstall": "npm i -g less pug-cli && bower install && cd application && npm i && cd ../ && grunt -v",

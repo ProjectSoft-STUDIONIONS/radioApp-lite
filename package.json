@@ -6,7 +6,7 @@
 	"comments": "Ваше Радио. Облегчённая версия.",
 	"main": "Gruntfile.js",
 	"scripts": {
-		"preinstall": "npm i -g less pug-cli && bower install && cd application && npm i",
+		"preinstall": "npm i -g less pug-cli bower && bower install && cd application && npm i",
 		"test": "grunt --target=sdk",
 		"build": "grunt --target=normal"
 	},

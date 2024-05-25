@@ -1,6 +1,7 @@
 package-lock.json
 *-lock.js
 *.nw
+*.bat
 *.sublime-workspace
 /*.sublime-workspace
 /.cache/*.zip
@@ -15,6 +16,7 @@ package-lock.json
 /bin
 /test
 /tests
+/src/butterchurn
 /application/_locales
 /application/css
 /application/fonts

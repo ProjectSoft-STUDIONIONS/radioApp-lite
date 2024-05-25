@@ -1,4 +1,4 @@
-#include "version.iss"  
+п»ї#include "version.iss"  
 
 #define RadioAppName "Your Radio Lite"
 #define RadioAppPublisher "ProjectSoft"
@@ -37,11 +37,11 @@ Name: "russian"; MessagesFile: "compiler:Languages\Russian.isl"
 
 [CustomMessages]
 english.RunProgramm=Launch application Your Radio v{#RadioAppVersion}  
-russian.RunProgramm=Запустить приложение Ваше Радио v{#RadioAppVersion}  
+russian.RunProgramm=Р—Р°РїСѓСЃС‚РёС‚СЊ РїСЂРёР»РѕР¶РµРЅРёРµ Р’Р°С€Рµ Р Р°РґРёРѕ v{#RadioAppVersion}  
 english.ProgramName=Your Radio
-russian.ProgramName=Ваше Радио
+russian.ProgramName=Р’Р°С€Рµ Р Р°РґРёРѕ
 english.StopProgramm=Stop Your Radio...
-russian.StopProgramm=Остановить Ваше Радио...
+russian.StopProgramm=РћСЃС‚Р°РЅРѕРІРёС‚СЊ Р’Р°С€Рµ Р Р°РґРёРѕ...
 
 [Files]
 Source: "build\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs

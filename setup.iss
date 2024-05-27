@@ -3,6 +3,8 @@
 #define RadioAppName "Your Radio Lite"
 #define RadioAppPublisher "ProjectSoft"
 #define RadioAppURL "https://github.com/ProjectSoft-STUDIONIONS/radioApp-lite"
+#define RadioAppSupportURL "https://github.com/ProjectSoft-STUDIONIONS/radioApp-lite/issues"
+#define RadioAppUpdateURL "https://github.com/ProjectSoft-STUDIONIONS/radioApp-lite/releases/latest"
 #define RadioAppExeName "YourRadio.exe"
 
 [Setup]
@@ -12,8 +14,8 @@ AppVersion={#RadioAppVersion}
 AppVerName={#RadioAppName} {#RadioAppVersion}
 AppPublisher={#RadioAppPublisher}
 AppPublisherURL={#RadioAppURL}
-AppSupportURL={#RadioAppURL}
-AppUpdatesURL={#RadioAppURL}
+AppSupportURL={#RadioAppSupportURL}
+AppUpdatesURL={#RadioAppUpdateURL}
 AppCopyright={#RadioAppPublisher}
 VersionInfoVersion={#RadioAppVersion}
 DefaultDirName={autopf}\{#RadioAppName}

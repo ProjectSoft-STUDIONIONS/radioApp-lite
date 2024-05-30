@@ -28,22 +28,21 @@ jobs:
         env:
           GITHUB_EVENT_NAME: ${{ github.event_name }}
         run: bash .github/workflows/is_latest.sh >> $GITHUB_ENV
+      - name: Get NWJS version
+        run: |
+          echo "NW=$(curl -s https://nwjs.io/versions | jq -r '.latest' | sed 's/v//')" >> $GITHUB_ENV
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: [20.x]
-      - name: Get NWJS version
-        run: |
-          echo "NW=$(curl -s https://nwjs.io/versions | jq -r '.latest' | sed 's/v//')" >> $GITHUB_ENV
-      - name: npm install, build
         run: |
           npm i
           npm run build
-      - name: Upload windows binaries to release
-        uses: svenstaro/upload-release-action@v2
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: setup/*.exe
-          tag: ${{ env.GITHUB_EVENT_NAME }}
-          overwrite: true
-          file_glob: true
+      # - name: Upload windows binaries to release
+      #   uses: svenstaro/upload-release-action@v2
+      #   with:
+      #     repo_token: ${{ secrets.GITHUB_TOKEN }}
+      #     file: setup/*.exe
+      #     tag: ${{ env.GITHUB_EVENT_NAME }}
+      #     overwrite: true
+      #     file_glob: true

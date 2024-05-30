@@ -26,16 +26,56 @@ jobs:
         run: bash ./is_latest.sh ${{ github.event_name }}
         env:
           GITHUB_EVENT_NAME: ${{ github.event_name }}
-  build-release:
+  build-win:
     needs: [ is-latest ]
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: powershell
+    steps:
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 16
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Copy to C drive
+        run: cp D:\a C:\ -Recurse
+      - name: Support long paths
+        run: git config --system core.longpaths true
+      - name: npm install, build
+        working-directory: "C:/a/${{ github.event.repository.name }}/${{ github.event.repository.name }}"
+        run: |
+          pwd
+          npm install
+          npm run build
+      - name: Upload the artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: win
+          path: 'c:/a/**/setup/*.exe'
+  build-release:
+    needs: [ build-win ]
     name: "Build Release"
-    runs-on: "windows-latest"
+    runs-on: "ubuntu-latest"
     steps:
       - name: Get NWJS version
         run: |
-          if ( "${{ github.event_name }}" = "workflow_dispatch" ) then
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             echo "NW=${{ github.event.inputs.version }}" >> $GITHUB_ENV
           else
             echo "NW=$(curl -s https://nwjs.io/versions | jq -r '.latest' | sed 's/v//')" >> $GITHUB_ENV
           fi
-          echo $GITHUB_ENV
+
+      - name: Display structure of files
+        run: ls -R
+        working-directory: setup/
+
+      - name: Upload windows binaries to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: setup/*.exe
+          tag: ${{ env.NW }}
+          overwrite: true
+          file_glob: true

@@ -22,7 +22,6 @@ jobs:
       - name: Get NWJS node-version
         run: echo This event
         if: ${{ github.event_name == 'workflow_dispatch'}}
-          if "${{ github.event_name }}" = "workflow_dispatch" then
         run: echo "NW=${{ github.event.inputs.version }}" >> $GITHUB_ENV
       - uses: actions/checkout@v4
       - run: mkdir build && mkdir setup

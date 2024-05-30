@@ -18,63 +18,32 @@ concurrency:
 jobs:
   is-latest:
     runs-on: windows-latest
+    defaults:
+      run:
+        shell: powershell
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
       - name: Check if latest
-        working-directory: .github/workflows
-        run: bash ./is_latest.sh ${{ github.event_name }}
         env:
           GITHUB_EVENT_NAME: ${{ github.event_name }}
-  build-win:
-    needs: [ is-latest ]
-    runs-on: windows-latest
-    defaults:
-      run:
-        shell: powershell
-    steps:
+        run: bash .github/workflows/is_latest.sh >> $GITHUB_ENV
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 16
-      - name: Checkout code
-        uses: actions/checkout@v4
-      - name: Support long paths
-        run: git config --system core.longpaths true
-      - name: npm install, build
-        run: |
-          pwd
-          npm i
-          npm run build
-      - name: Upload the artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          path: 'setup/*.exe'
-  build-release:
-    needs: [ build-win ]
-    name: "Build Release"
-    runs-on: "window-latest"
-    defaults:
-      run:
-        shell: powershell
-    steps:
+          node-version: [20.x]
       - name: Get NWJS version
         run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            echo "NW=${{ github.event.inputs.version }}" >> $GITHUB_ENV
-          else
-            echo "NW=$(curl -s https://nwjs.io/versions | jq -r '.latest' | sed 's/v//')" >> $GITHUB_ENV
-          fi
-
-      - name: Display structure of files
-        run: ls -R
-        working-directory: setup/
-
+          echo "NW=$(curl -s https://nwjs.io/versions | jq -r '.latest' | sed 's/v//')" >> $GITHUB_ENV
+      - name: npm install, build
+        run: |
+          npm i
+          npm run build
       - name: Upload windows binaries to release
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: setup/*.exe
-          tag: ${{ env.NW }}
+          tag: ${{ env.GITHUB_EVENT_NAME }}
           overwrite: true
           file_glob: true

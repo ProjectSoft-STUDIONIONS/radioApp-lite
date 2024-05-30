@@ -29,9 +29,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-      - name: Чек версии
-        run: |
-          bash .github/workflows/is_latest.sh
       - name: Build
         run: |
           npm i

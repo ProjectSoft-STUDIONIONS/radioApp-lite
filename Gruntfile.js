@@ -1,14 +1,16 @@
 module.exports = function(grunt) {
-	const target = grunt.option('target') || 'normal';
-	switch(target){
-		case 'normal':
-		case 'sdk':
-			break;
-		default:
-			grunt.fail.fatal("Параметр --target должен быть равным normal или sdk");
-			return;
-			break;
-	}
+	process.removeAllListeners('warning');
+	require('dotenv').config();
+	// target=true - nwjs sdk = nortmal
+	// target=false - nwjs sdk = sdk
+	// update=true - произвести скачивание nwjs и ffmpeg
+	// update=false - не производить скачивание nwjs и ffmpeg
+	// В корне проекта присутствие файла .env обязятельно
+	// Параметры NWJS_TARGET и NWJS_UPDATE должны быть заданы. 
+	// При первом запуске или смене SDK NWJS_UPDATE должен быть равен 1
+	const target = process.env.NWJS_TARGET == "1" ? true : false,
+		update = process.env.NWJS_UPDATE == "1" ? true : false;
+	console.log(target, update)
 	grunt.loadNpmTasks('innosetup-compiler');
 	require('load-grunt-tasks')(grunt);
 	require('time-grunt')(grunt);
@@ -17,7 +19,7 @@ module.exports = function(grunt) {
 	require('./modules/Versions.js')(grunt);
 	const path = require('path');
 	var gc = {
-			sdk: target,
+			sdk: target ? 'normal' : 'sdk',
 			version: false // Нужная версия, либо false для загрузки последней версии
 		},
 		flv = '',
@@ -279,40 +281,21 @@ module.exports = function(grunt) {
 			}
 		}
 	});
-	const tasks = gc.sdk == 'normal' ? [
-			'clean:all',
-			'webfont',
-			'ttf2woff2',
-			'less',
-			'cssmin',
-			'requirejs',
-			'concat',
-			'uglify',
-			'pug',
-			'downloader', // При первом запуске должен быть раскомментирован. Если меняется sdk - тоже должен быть раскомментирован
-			'unzip',
-			'version_edit',
-			'copy',
-			'zip',
-			'clean:vk',
-			'buildnw',
-			"innosetup",
-		] : [
-			'clean:all',
-			'webfont',
-			'ttf2woff2',
-			'less',
-			'cssmin',
-			'requirejs',
-			'concat',
-			'uglify',
-			'pug',
-			'downloader', // При первом запуске должен быть раскомментирован. Если меняется sdk - тоже должен быть раскомментирован
-			'unzip',
-			'version_edit',
-			'copy',
-			'clean:vk',
-			"exec:run",
-		];
+	const tasks = [
+		'clean:all',
+		'webfont',
+		'ttf2woff2',
+		'less',
+		'cssmin',
+		'requirejs',
+		'concat',
+		'uglify',
+		'pug',
+	];
+	update && tasks.push('downloader');
+	tasks.push('unzip', 'version_edit', 'copy');
+	target && tasks.push('zip');
+	tasks.push('clean:vk');
+	target ? tasks.push('buildnw', 'innosetup') : tasks.push('exec:run');
 	grunt.registerTask('default', tasks);
 }

@@ -10,13 +10,15 @@ module.exports = function(grunt) {
 	// При первом запуске или смене SDK NWJS_UPDATE должен быть равен 1
 	const target = process.env.NWJS_TARGET == "1" ? true : false,
 		update = process.env.NWJS_UPDATE == "1" ? true : false;
-	console.log(target, update)
+	console.log(target, update);
+
 	grunt.loadNpmTasks('innosetup-compiler');
 	require('load-grunt-tasks')(grunt);
 	require('time-grunt')(grunt);
 	require('./modules/Downloader.js')(grunt);
 	require('./modules/Build.js')(grunt);
 	require('./modules/Versions.js')(grunt);
+	require('./modules/GithubAction.js')(grunt);
 	const path = require('path');
 	var gc = {
 			sdk: target ? 'normal' : 'sdk',
@@ -279,10 +281,14 @@ module.exports = function(grunt) {
 			run: {
 				command: __dirname + '/build/nw.exe ' + __dirname + '/application'
 			}
+		},
+		github_action: {
+			get: {}
 		}
 	});
 	const tasks = [
-		'clean:all',
+		'github_action',
+		/*'clean:all',
 		'webfont',
 		'ttf2woff2',
 		'less',
@@ -290,12 +296,12 @@ module.exports = function(grunt) {
 		'requirejs',
 		'concat',
 		'uglify',
-		'pug',
+		'pug',*/
 	];
-	update && tasks.push('downloader');
-	tasks.push('unzip', 'version_edit', 'copy');
-	target && tasks.push('zip');
-	tasks.push('clean:vk');
-	target ? tasks.push('buildnw', 'innosetup') : tasks.push('exec:run');
+	//update && tasks.push('downloader');
+	//tasks.push('unzip', 'version_edit', 'copy');
+	//target && tasks.push('zip');
+	//tasks.push('clean:vk');
+	//target ? tasks.push('buildnw', 'innosetup') : tasks.push('exec:run');
 	grunt.registerTask('default', tasks);
 }

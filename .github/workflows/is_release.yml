@@ -1,5 +1,4 @@
-name: TEST
-
+name: TEST RELEASE
 on:
   release:
     types: [ created ]

@@ -19,7 +19,7 @@
 		"ansi-colors": "latest",
 		"async": "latest",
 		"cli-progress": "latest",
-		"dotenv": "^16.4.5",
+		"dotenv": "latest",
 		"grunt": "latest",
 		"grunt-contrib-clean": "latest",
 		"grunt-contrib-concat": "latest",
@@ -39,6 +39,7 @@
 		"less-plugin-clean-css": "latest",
 		"load-grunt-tasks": "latest",
 		"node-downloader-helper": "latest",
+		"node-fetch": "1.6.3",
 		"rcedit": "latest",
 		"time-grunt": "github:ProjectSoft-STUDIONIONS/time-grunt",
 		"ttf2woff2": "latest"

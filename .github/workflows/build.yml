@@ -10,18 +10,13 @@ jobs:
   build:
     name: Build
     runs-on: windows-latest
-    strategy:
-      matrix:
-        node-version: [20.x]
-
     steps:
       - uses: actions/checkout@v4
       - run: mkdir build && mkdir setup
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
-          node-version: [18.x]
-
+          node-version: [20.x]
       - name: Build
         run: |
           npm i

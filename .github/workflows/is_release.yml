@@ -33,7 +33,7 @@ jobs:
     steps:
       - name: Get NWJS version
         run: |
-          if ( "${{ github.event_name }}" = "workflow_dispatch" ); then
+          if ( "${{ github.event_name }}" = "workflow_dispatch" ) then
             echo "NW=${{ github.event.inputs.version }}" >> $GITHUB_ENV
           else
             echo "NW=$(curl -s https://nwjs.io/versions | jq -r '.latest' | sed 's/v//')" >> $GITHUB_ENV

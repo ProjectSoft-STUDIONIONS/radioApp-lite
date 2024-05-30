@@ -53,7 +53,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: win
-          path: 'c:/a/**/setup/*.exe'
+          path: 'c:/a/${{ github.event.repository.name }}/${{ github.event.repository.name }}/setup/*.exe'
   build-release:
     needs: [ build-win ]
     name: "Build Release"

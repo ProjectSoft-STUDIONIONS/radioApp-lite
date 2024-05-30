@@ -20,7 +20,9 @@ jobs:
         node-version: [20.x]
     steps:
       - name: Get NWJS version
-        run: echo "NW=${{ github.event.inputs.version }}" >> $GITHUB_ENV
+        run: |
+          echo "NW=${{ github.event.inputs.version }}" >> $GITHUB_ENV
+          echo "repository variable : ${{ env.NW }}"
       - uses: actions/checkout@v4
       - run: mkdir build && mkdir setup
       - name: Use Node.js ${{ matrix.node-version }}

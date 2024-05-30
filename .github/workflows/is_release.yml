@@ -1,0 +1,28 @@
+name: TEST
+
+on:
+  release:
+    types: [ created ]
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version number to build'
+        required: true
+        default: '0.88.0'
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  is-latest:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Check if latest
+        working-directory: .github/workflows
+        run: bash ./is_latest.sh ${{ github.event_name }}
+        env:
+          GITHUB_EVENT_NAME: ${{ github.event_name }}

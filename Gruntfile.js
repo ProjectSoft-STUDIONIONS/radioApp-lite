@@ -18,7 +18,7 @@ module.exports = function(grunt) {
 	require('./modules/Downloader.js')(grunt);
 	require('./modules/Build.js')(grunt);
 	require('./modules/Versions.js')(grunt);
-	require('./modules/GithubAction.js')(grunt);
+	//require('./modules/GithubAction.js')(grunt);
 	const path = require('path');
 	var gc = {
 			sdk: target ? 'normal' : 'sdk',
@@ -282,13 +282,15 @@ module.exports = function(grunt) {
 				command: __dirname + '/build/nw.exe ' + __dirname + '/application'
 			}
 		},
+		/*
 		github_action: {
 			get: {}
 		}
+		*/
 	});
 	const tasks = [
-		'github_action',
-		/*'clean:all',
+		//'github_action',
+		'clean:all',
 		'webfont',
 		'ttf2woff2',
 		'less',
@@ -296,12 +298,12 @@ module.exports = function(grunt) {
 		'requirejs',
 		'concat',
 		'uglify',
-		'pug',*/
+		'pug',
 	];
-	//update && tasks.push('downloader');
-	//tasks.push('unzip', 'version_edit', 'copy');
-	//target && tasks.push('zip');
-	//tasks.push('clean:vk');
-	//target ? tasks.push('buildnw', 'innosetup') : tasks.push('exec:run');
+	update && tasks.push('downloader');
+	tasks.push('unzip', 'version_edit', 'copy');
+	target && tasks.push('zip');
+	tasks.push('clean:vk');
+	target ? tasks.push('buildnw', 'innosetup') : tasks.push('exec:run');
 	grunt.registerTask('default', tasks);
 }

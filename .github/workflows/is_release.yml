@@ -1,4 +1,5 @@
-name: TEST RELEASE
+name: TEST
+
 on:
   release:
     types: [ created ]
@@ -17,29 +18,16 @@ concurrency:
 jobs:
   is-latest:
     runs-on: windows-latest
-    defaults:
-      run:
-        shell: powershell
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      - name: Check if latest
+      - name: TEST TEST
+        working-directory: .github/workflows
+        run: echo ./is_latest.sh ${{ github.event_name }}
         env:
           GITHUB_EVENT_NAME: ${{ github.event_name }}
-        run: bash .github/workflows/is_latest.sh >> $GITHUB_ENV
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-        run: |
-          echo "NW=$(curl -s https://nwjs.io/versions | jq -r '.latest' | sed 's/v//')" >> $GITHUB_ENV
-          npm i
-          npm run build
-      # - name: Upload windows binaries to release
-      #   uses: svenstaro/upload-release-action@v2
-      #   with:
-      #     repo_token: ${{ secrets.GITHUB_TOKEN }}
-      #     file: setup/*.exe
-      #     tag: ${{ env.GITHUB_EVENT_NAME }}
-      #     overwrite: true
-      #     file_glob: true
+      - name: Check if latest
+        working-directory: .github/workflows
+        run: bash ./is_latest.sh ${{ github.event_name }}
+        env:
+          GITHUB_EVENT_NAME: ${{ github.event_name }}

@@ -100,7 +100,8 @@ GETURLTOFILE('https://www.radiorecord.ru/api/stations/', 'record.json').then(asy
 	const result = JSON.parse(s);
 	fs.unlinkSync('record.json');
 	const stations = result.result.stations;
-	const playlist = {};
+	var obj = JSON.parse(fs.readFileSync('src/sources/data.json', 'utf8'));
+	const playlist = obj.stations || {};
 	for(let i = 0; i < stations.length - 1; ++i){
 		const station = stations[i];
 		const [dateValues, timeValues] = station.updated.split(' ');
@@ -138,7 +139,8 @@ GETURLTOFILE('https://www.radiorecord.ru/api/stations/', 'record.json').then(asy
 		};
 		console.log(station.updated, id, name);
 	}
-	fs.writeFileSync('record.json', JSON.stringify(playlist), {encoding: 'utf8'});
+	obj.stations = playlist;
+	fs.writeFileSync('application/radio/data.json', JSON.stringify(obj), {encoding: 'utf8'});// , null, "\t"
 }).catch(function(error){
 	console.log(error);
 });

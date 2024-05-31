@@ -1,9 +1,9 @@
 {
 	"name": "YourRadio",
-	"version": "3.0.3",
+	"version": "3.0.4",
 	"comments": "Ваше Радио. Облегчённая версия.",
 	"description": "Ваше Радио. Облегчённая версия. Самостоятельное добавление радио потока. Импорт/Экспорт плейлиста радиостанций.",
-	"buildDate": "31 May 2024 09:11:00",
+	"buildDate": "31 May 2024 11:09:12",
 	"author": "ProjectSoft",
 	"homepage": "https://projectsoft.ru/",
 	"license": "MIT",

@@ -9,9 +9,9 @@
 
 [Setup]
 AppId={{9EA71393-889E-490E-84DC-266FF93269F5}
-AppName={cm:AppName}
+AppName=Ваше Радио Light
 AppVersion={#RadioAppVersion}
-AppVerName={cm:AppName} {#RadioAppVersion}
+AppVerName=Ваше Радио Light {#RadioAppVersion}
 AppPublisher={#RadioAppPublisher}
 AppPublisherURL={#RadioAppURL}
 AppSupportURL={#RadioAppSupportURL}
@@ -26,6 +26,8 @@ OutputDir=setup
 OutputBaseFilename=YourRadioLightSetup
 SetupIconFile=application\favicon.ico
 UninstallDisplayIcon={app}\{#RadioAppExeName}
+VersionInfoDescription=Ваше Радио Light {#RadioAppVersion}
+VersionInfoProductName=Ваше Радио Light {#RadioAppVersion}
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern

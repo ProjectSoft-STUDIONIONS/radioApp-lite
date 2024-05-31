@@ -51,7 +51,8 @@ module.exports = function(grunt) {
 				'build/vk_*',
 				'build/vulkan*',
 				'build/swiftshader',
-			]
+				//'build/locales/*.info'
+			],
 		},
 		copy: {
 			build: {
@@ -234,7 +235,7 @@ module.exports = function(grunt) {
 		downloader: {
 			down: {
 				options: {
-					version: false,
+					version: '0.87.0', // or false
 					sdk: gc.sdk == 'normal' ? false : true
 				}
 			}

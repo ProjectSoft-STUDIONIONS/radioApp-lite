@@ -1,6 +1,6 @@
 ﻿#include "version.iss"  
 
-#define RadioAppName "Your Radio Lite"
+#define RadioAppName "Your Radio Light"
 #define RadioAppPublisher "ProjectSoft"
 #define RadioAppURL "https://github.com/ProjectSoft-STUDIONIONS/radioApp-lite"
 #define RadioAppSupportURL "https://github.com/ProjectSoft-STUDIONIONS/radioApp-lite/issues"
@@ -9,9 +9,9 @@
 
 [Setup]
 AppId={{9EA71393-889E-490E-84DC-266FF93269F5}
-AppName={#RadioAppName}
+AppName={cm:AppName}
 AppVersion={#RadioAppVersion}
-AppVerName={#RadioAppName} {#RadioAppVersion}
+AppVerName={cm:AppName} {#RadioAppVersion}
 AppPublisher={#RadioAppPublisher}
 AppPublisherURL={#RadioAppURL}
 AppSupportURL={#RadioAppSupportURL}
@@ -23,7 +23,7 @@ DisableDirPage=yes
 DisableProgramGroupPage=yes
 PrivilegesRequired=admin
 OutputDir=setup
-OutputBaseFilename=YourRadioLiteSetup
+OutputBaseFilename=YourRadioLightSetup
 SetupIconFile=application\favicon.ico
 UninstallDisplayIcon={app}\{#RadioAppExeName}
 Compression=lzma
@@ -38,12 +38,14 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "russian"; MessagesFile: "compiler:Languages\Russian.isl"
 
 [CustomMessages]
-english.RunProgramm=Launch application Your Radio v{#RadioAppVersion}  
-russian.RunProgramm=Запустить приложение Ваше Радио v{#RadioAppVersion}  
-english.ProgramName=Your Radio
-russian.ProgramName=Ваше Радио
-english.StopProgramm=Stop Your Radio...
-russian.StopProgramm=Остановить Ваше Радио...
+english.AppName=Your Radio Light
+russian.AppName=Ваше Радио Light
+english.RunProgramm=Launch application «Your Radio Light» v{#RadioAppVersion}  
+russian.RunProgramm=Запустить приложение «Ваше Радио Light» v{#RadioAppVersion}  
+english.ProgramName=Your Radio Light
+russian.ProgramName=Ваше Радио Light
+english.StopProgramm=Stop «Your Radio Light»...
+russian.StopProgramm=Остановить «Ваше Радио Light»...
 
 [Files]
 Source: "build\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs

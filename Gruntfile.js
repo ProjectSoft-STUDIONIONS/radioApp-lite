@@ -8,9 +8,11 @@ module.exports = function(grunt) {
 	// В корне проекта присутствие файла .env обязятельно
 	// Параметры NWJS_TARGET и NWJS_UPDATE должны быть заданы. 
 	// При первом запуске или смене SDK NWJS_UPDATE должен быть равен 1
+	// NWJS_VERSION должен содержать номер нужной версии или 0 для загрузки последней
 	const target = process.env.NWJS_TARGET == "1" ? true : false,
-		update = process.env.NWJS_UPDATE == "1" ? true : false;
-	console.log(target, update);
+		update = process.env.NWJS_UPDATE == "1" ? true : false,
+		version = process.env.NWJS_VERSION == "0" ? false : process.env.NWJS_VERSION; // 0.87.0
+	console.log(target, update, version);
 
 	grunt.loadNpmTasks('innosetup-compiler');
 	require('load-grunt-tasks')(grunt);
@@ -18,11 +20,10 @@ module.exports = function(grunt) {
 	require('./modules/Downloader.js')(grunt);
 	require('./modules/Build.js')(grunt);
 	require('./modules/Versions.js')(grunt);
-	//require('./modules/GithubAction.js')(grunt);
 	const path = require('path');
 	var gc = {
 			sdk: target ? 'normal' : 'sdk',
-			version: false // Нужная версия, либо false для загрузки последней версии
+			version: version
 		},
 		flv = '',
 		pkg = grunt.file.readJSON('package.json');
@@ -235,8 +236,7 @@ module.exports = function(grunt) {
 		downloader: {
 			down: {
 				options: {
-					// disabled version 0.88.0
-					version: '0.87.0', // or false
+					version: gc.version,
 					sdk: gc.sdk == 'normal' ? false : true
 				}
 			}
@@ -264,9 +264,7 @@ module.exports = function(grunt) {
 			},
 		},
 		buildnw: {
-			build: {
-
-			}
+			build: {}
 		},
 		innosetup: {
 			default: {
@@ -284,14 +282,8 @@ module.exports = function(grunt) {
 				command: __dirname + '/build/nw.exe ' + __dirname + '/application'
 			}
 		},
-		/*
-		github_action: {
-			get: {}
-		}
-		*/
 	});
 	const tasks = [
-		//'github_action',
 		'clean:all',
 		'webfont',
 		'ttf2woff2',

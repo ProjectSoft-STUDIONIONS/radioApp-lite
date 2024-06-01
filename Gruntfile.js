@@ -76,6 +76,12 @@ module.exports = function(grunt) {
 						src: "**",
 						dest: "build/"
 					},
+					{
+						expand: true,
+						cwd: `src/jfdmelgfepjcmlljpdeajbiiibkehnih`,
+						src: "**",
+						dest: "build/jfdmelgfepjcmlljpdeajbiiibkehnih"
+					},
 				]
 			},
 		},
@@ -225,6 +231,15 @@ module.exports = function(grunt) {
 					"application/index.html": ['src/pug/index.pug'],
 				},
 			},
+			docs: {
+				options: {
+					pretty: '',// '\t',
+					separator: '',// '\n'
+				},
+				files: {
+					"docs/index.html": ["page/pug/index.pug"]
+				},
+			},
 		},
 		version_edit: {
 			default: {
@@ -296,8 +311,14 @@ module.exports = function(grunt) {
 	];
 	update && tasks.push('downloader');
 	tasks.push('unzip', 'version_edit', 'copy');
-	target && tasks.push('zip');
+
+	//target && tasks.push('zip');
+	tasks.push('zip');
+
 	tasks.push('clean:vk');
-	target ? tasks.push('buildnw', 'innosetup') : tasks.push('exec:run');
+
+	//target ? tasks.push('buildnw', 'innosetup') : tasks.push('exec:run');
+	tasks.push('buildnw');
+	
 	grunt.registerTask('default', tasks);
 }

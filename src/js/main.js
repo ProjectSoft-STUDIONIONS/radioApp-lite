@@ -852,5 +852,21 @@
 		e.preventDefault();
 		win.showDevTools('chrome-extension://' + location.host + '_;generated_background_page.html');
 		return !1;
-	})
+	});
+	/**
+	 * Extension
+	 **/
+	chrome.tabs.getCurrent((tab) => {
+		console.log(tab);
+	});
+	$("#testBtn").on('click', function(e){
+		e.preventDefault();
+		chrome.runtime.sendMessage("jfdmelgfepjcmlljpdeajbiiibkehnih", {activateLasers: true});
+		return !1;
+	});
+	chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+		console.log(request);
+		console.log(sender);
+		console.log(sendResponse);
+	});
 }(jQuery));

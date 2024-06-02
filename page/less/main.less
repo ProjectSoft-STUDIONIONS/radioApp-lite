@@ -30,6 +30,7 @@ p {
 	margin-bottom: 1em;
 }
 body {
+	background-image: radial-gradient(circle,#fdc9a0,#ff7000);
 	> header,
 	> footer {
 		flex: 0;
@@ -45,8 +46,7 @@ body {
 		flex: 1;
 		position: relative;
 		background-image: radial-gradient(cyan 0%, transparent 20%, salmon 40%);
-		&:after,
-		&:before {
+		&:after {
 			content: "";
 			position: absolute;
 			display: block;

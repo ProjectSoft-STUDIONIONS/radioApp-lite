@@ -20,7 +20,11 @@ module.exports = function(grunt) {
 	require('./modules/Downloader.js')(grunt);
 	require('./modules/Build.js')(grunt);
 	require('./modules/Versions.js')(grunt);
-	const path = require('path');
+	const path = require('path'),
+		uniqid = function () {
+			let result = URL.createObjectURL(new Blob([])).slice(-36).replace(/-/g, '');
+			return result;
+		};
 	var gc = {
 			sdk: target ? 'normal' : 'sdk',
 			version: version
@@ -127,7 +131,12 @@ module.exports = function(grunt) {
 					ieCompat: false,
 					plugins: [
 						
-					]
+					],
+					data: function(dest, src) {
+						return {
+							"hash": uniqid(),
+						}
+					}
 				},
 				files: {
 					'test/css/test-main.css': [
@@ -261,6 +270,11 @@ module.exports = function(grunt) {
 				options: {
 					pretty: '',// '\t',
 					separator: '',// '\n'
+					data: function(dest, src) {
+						return {
+							"hash": uniqid(),
+						}
+					},
 				},
 				files: {
 					"docs/index.html": ["page/pug/index.pug"]

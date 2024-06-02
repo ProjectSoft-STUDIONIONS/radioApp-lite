@@ -11,10 +11,12 @@ html(lang="ru" prefix="og: http://ogp.me/ns#")
 		meta(name="yandex-verification" content="")
 		title Your Radio Light | Ваше Радио (облегчённая версия)
 		meta(name="title" content="Your Radio Light | Ваше Радио (облегчённая версия)")
-		link(type="text/css" rel="stylesheet" href="css/main.css")
+		link(type="text/css" rel="stylesheet" href="css/main.css?hash=" + hash)
 	body
 		header.clearfix
+			| Header
 		main.clearfix
 			h1 Your Radio Light | Ваше Радио (облегчённая версия)
 		footer.clearfix
-		script(src="js/main.js" type="text/javascript")
+			| Footer
+		script(src="js/main.js?hash=" + hash type="text/javascript")

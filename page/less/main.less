@@ -80,6 +80,19 @@ body {
 				margin-top: 2em;
 				border-bottom: 1px solid #ccc;
 				font-weight: 700;
+				&::before {
+					display: inline-block;
+					width: 1em;
+					height: 1em;
+					content: "";
+					background-repeat: no-repeat;
+					background-position: center center;
+					background-size: contain;
+					background-image: data-uri('../../src/sources/favicon.svg');
+				}
+				.your-radio {
+					display: inline-block;
+				}
 			}
 		}
 	}

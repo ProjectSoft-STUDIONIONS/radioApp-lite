@@ -1,0 +1,1 @@
+*,::after,::before{box-sizing:border-box}body,html{min-height:100vh}body{display:flex;position:relative;flex-direction:column}body>footer,body>header{flex:0}body>main{flex:1}

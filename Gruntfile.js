@@ -135,6 +135,20 @@ module.exports = function(grunt) {
 						'bower_components/Croppie/croppie.css'
 					]
 				}
+			},
+			docs: {
+				options: {
+					compress: false,
+					ieCompat: false,
+					plugins: [
+						
+					]
+				},
+				files: {
+					'test/css/page-main.css': [
+						'page/less/main.less',
+					]
+				}
 			}
 		},
 		cssmin: {
@@ -142,14 +156,19 @@ module.exports = function(grunt) {
 				mergeIntoShorthands: false,
 				roundingPrecision: -1
 			},
-			minify: {
+			main: {
 				files: {
 					'application/css/main.css': ['test/css/test-main.css']
+				}
+			},
+			docs: {
+				files: {
+					'docs/css/main.css': ['test/css/page-main.css']
 				}
 			}
 		},
 		requirejs: {
-			ui: {
+			main: {
 				options: {
 					baseUrl: __dirname+"/bower_components/jquery-ui/ui/widgets/",//"./",
 					paths: {
@@ -181,7 +200,7 @@ module.exports = function(grunt) {
 			options: {
 				separator: ';',
 			},
-			dist: {
+			main: {
 				src: [
 					'bower_components/jquery/dist/jquery.js',
 					'test/js/jquery.ui.nogit.js',
@@ -220,6 +239,13 @@ module.exports = function(grunt) {
 					},
 				],
 			},
+			docs: {
+				files: {
+					'docs/js/main.js': [
+						'page/js/main.js'
+					],
+				}
+			}
 		},
 		pug: {
 			files: {
@@ -302,12 +328,13 @@ module.exports = function(grunt) {
 		'clean:all',
 		'webfont',
 		'ttf2woff2',
-		'less',
-		'cssmin',
-		'requirejs',
-		'concat',
-		'uglify',
-		'pug',
+		'less:main',
+		'cssmin:main',
+		'requirejs:main',
+		'concat:main',
+		'uglify:main',
+		'uglify:modules',
+		'pug:main',
 	];
 	update && tasks.push('downloader');
 	tasks.push('unzip', 'version_edit', 'copy');
@@ -319,6 +346,14 @@ module.exports = function(grunt) {
 
 	//target ? tasks.push('buildnw', 'innosetup') : tasks.push('exec:run');
 	tasks.push('buildnw');
+	tasks.push('innosetup');
 	
 	grunt.registerTask('default', tasks);
+
+	grunt.registerTask('page', [
+		'less:docs',
+		'cssmin:docs',
+		'uglify:docs',
+		'pug:docs',
+	]);
 }

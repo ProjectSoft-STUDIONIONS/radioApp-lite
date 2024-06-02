@@ -1,0 +1,28 @@
+* {
+	&,
+	&::before,
+	&::after {
+		box-sizing: border-box;
+	}
+}
+
+html,
+body {
+	min-height: 100vh;
+}
+
+body {
+	display: flex;
+	position: relative;
+	flex-direction: column;
+}
+
+body {
+	> header,
+	> footer {
+		flex: 0;
+	}
+	> main {
+		flex: 1;
+	}
+}

@@ -1,1 +1,1 @@
-*,::after,::before{box-sizing:border-box}body,html{min-height:100vh}body{display:flex;position:relative;flex-direction:column}body>footer,body>header{flex:0}body>main{flex:1}
+*,::after,::before{box-sizing:border-box}.clearfix::after,.clearfix::before{display:table;clear:both;content:""}body,html{min-height:100vh}body{margin:0;padding:0;display:flex;position:relative;flex-direction:column}body>footer,body>header{flex:0}body>main{flex:1}

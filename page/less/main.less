@@ -5,18 +5,25 @@
 		box-sizing: border-box;
 	}
 }
-
+.clearfix {
+	&::before,
+	&::after {
+		display: table;
+		clear: both;
+		content: "";
+	}
+}
 html,
 body {
 	min-height: 100vh;
 }
-
 body {
+	margin: 0;
+	padding: 0;
 	display: flex;
 	position: relative;
 	flex-direction: column;
 }
-
 body {
 	> header,
 	> footer {

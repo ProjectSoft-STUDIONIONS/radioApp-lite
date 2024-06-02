@@ -4,9 +4,9 @@ html(lang="ru" prefix="og: http://ogp.me/ns#")
 		meta(http-equiv="Content-Type" content="text/html; charset=UTF-8")
 		meta(http-equiv="X-UA-Compatible" content="IE=EmulateIE9")
 		meta(charset="utf-8")
-		base(href=base)
-		link(rel="shortcut icon" type="image/x-icon" href=base + "favicon.ico")
-		link(rel="icon" type="image/png" href=base + "favicon.png")
+		base(href="https://" + userSite + ".github.io/" + repo + "/")
+		link(rel="shortcut icon" type="image/x-icon" href="https://" + userSite + ".github.io/" + repo + "/favicon.ico")
+		link(rel="icon" type="image/png" href="https://" + userSite + ".github.io/" + repo + "/favicon.png")
 		meta(name="viewport" content="width=device-width, initial-scale=1")
 		meta(name="SKYPE_TOOLBAR" content="SKYPE_TOOLBAR_PARSER_COMPATIBLE")
 		meta(name="yandex-verification" content="")
@@ -15,11 +15,11 @@ html(lang="ru" prefix="og: http://ogp.me/ns#")
 		link(rel="preconnect" href="https://fonts.googleapis.com")
 		link(rel="preconnect" href="https://fonts.gstatic.com" crossorigin)
 		link(href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300..700&display=swap" rel="stylesheet")
-		link(type="text/css" rel="stylesheet" href=base + "css/main.css?hash=" + hash)
+		link(type="text/css" rel="stylesheet" href="https://" + userSite + ".github.io/" + repo + "/css/main.css?hash=" + hash)
 	body
 		header.clearfix
 			.wrapper
-				a.link-repo(href=base target="_blank")
+				a.link-repo(href="https://github.com/" +  userRepo + "/" + repo target="_blank")
 					.octocat
 						include ../../src/glyph/github.svg
 					.github
@@ -30,4 +30,4 @@ html(lang="ru" prefix="og: http://ogp.me/ns#")
 		footer.clearfix
 			.wrapper
 				| Footer
-		script(src=base + "js/main.js?hash=" + hash type="text/javascript")
+		script(src="https://" + userSite + ".github.io/" + repo + "/js/main.js?hash=" + hash type="text/javascript")

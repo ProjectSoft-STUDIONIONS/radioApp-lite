@@ -283,7 +283,9 @@ module.exports = function(grunt) {
 					data: function(dest, src) {
 						return {
 							"hash": uniqid(),
-							"base": "https://projectsoft-studionions.github.io/radioApp-lite/"
+							"repo": "radioApp-lite",
+							"userSite": "projectsoft-studionions",
+							"userRepo": "ProjectSoft-STUDIONIONS",
 						}
 					},
 				},

@@ -60,7 +60,7 @@ module.exports = function(grunt) {
 			],
 		},
 		copy: {
-			build: {
+			main: {
 				files: [
 					{
 						expand: true,
@@ -88,6 +88,16 @@ module.exports = function(grunt) {
 					},
 				]
 			},
+			page: {
+				files: [
+					{
+						expand: true,
+						cwd: 'src/sources',
+						src: ['favicon.{ico,png}'],
+						dest: 'docs/',
+					}
+				]
+			}
 		},
 		webfont: {
 			radioapp: {
@@ -351,7 +361,7 @@ module.exports = function(grunt) {
 		'pug:main',
 	];
 	update && tasks.push('downloader');
-	tasks.push('unzip', 'version_edit', 'copy');
+	tasks.push('unzip', 'version_edit', 'copy:main');
 
 	//target && tasks.push('zip');
 	tasks.push('zip');
@@ -369,5 +379,6 @@ module.exports = function(grunt) {
 		'cssmin:docs',
 		'uglify:docs',
 		'pug:docs',
+		'copy:page'
 	]);
 }

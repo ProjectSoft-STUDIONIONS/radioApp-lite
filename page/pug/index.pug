@@ -14,9 +14,12 @@ html(lang="ru" prefix="og: http://ogp.me/ns#")
 		link(type="text/css" rel="stylesheet" href="css/main.css?hash=" + hash)
 	body
 		header.clearfix
-			| Header
+			.wrapper
+				| Header
 		main.clearfix
-			h1 Your Radio Light | Ваше Радио (облегчённая версия)
+			.wrapper
+				h1 Your Radio Light | Ваше Радио (облегчённая версия)
 		footer.clearfix
-			| Footer
+			.wrapper
+				| Footer
 		script(src="js/main.js?hash=" + hash type="text/javascript")

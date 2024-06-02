@@ -28,8 +28,20 @@ body {
 	> header,
 	> footer {
 		flex: 0;
+		background-color: black;
+		&,
+		* {
+			color: white;
+		}
 	}
 	> main {
 		flex: 1;
 	}
+}
+
+.wrapper {
+	.clearfix();
+	max-width: 1200px;
+	padding-left: 15px;
+	padding-right: 15px;
 }

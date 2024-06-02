@@ -177,12 +177,17 @@ module.exports = function(grunt) {
 			},
 			main: {
 				files: {
-					'application/css/main.css': ['test/css/test-main.css']
+					'application/css/main.css': [
+						'test/css/test-main.css'
+					]
 				}
 			},
 			docs: {
 				files: {
-					'docs/css/main.css': ['test/css/page-main.css']
+					'docs/css/main.css': [
+						'bower_components/fancybox/dist/jquery.fancybox.css',
+						'test/css/page-main.css'
+					]
 				}
 			}
 		},
@@ -261,6 +266,8 @@ module.exports = function(grunt) {
 			docs: {
 				files: {
 					'docs/js/main.js': [
+						'bower_components/jquery/dist/jquery.js',
+						'bower_components/fancybox/dist/jquery.fancybox.js',
 						'page/js/main.js'
 					],
 				}

@@ -40,6 +40,26 @@ body {
 	> main {
 		flex: 1;
 	}
+	> header {
+		.link {
+			&-repo {
+				display: flex;
+				flex-wrap: nowrap;
+				flex-direction: row;
+				&:focus
+				&:hover,
+				&:active,
+				&:visited,
+				&:target {
+					color: white;
+					text-decoration: unset;
+				}
+				.octocat {
+					margin-right: 10px;
+				}
+			}
+		}
+	}
 }
 
 .wrapper {

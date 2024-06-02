@@ -19,7 +19,11 @@ html(lang="ru" prefix="og: http://ogp.me/ns#")
 	body
 		header.clearfix
 			.wrapper
-				| Header
+				a.link-repo(href=base target="_blank")
+					.octocat
+						include ../../src/glyph/github.svg
+					.github
+						|GitHub
 		main.clearfix
 			.wrapper
 				h1 Your Radio Light | Ваше Радио (облегчённая версия)

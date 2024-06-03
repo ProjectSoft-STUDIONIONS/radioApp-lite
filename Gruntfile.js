@@ -100,7 +100,7 @@ module.exports = function(grunt) {
 			}
 		},
 		webfont: {
-			radioapp: {
+			main: {
 				src: 'src/glyph/*.svg',
 				dest: 'src/font',
 				options: {
@@ -129,7 +129,7 @@ module.exports = function(grunt) {
 			}
 		},
 		ttf2woff2: {
-			default: {
+			main: {
 				src: ["src/font/*"],
 				dest: "application/fonts",
 			},
@@ -274,7 +274,7 @@ module.exports = function(grunt) {
 			}
 		},
 		pug: {
-			files: {
+			main: {
 				options: {
 					pretty: '',// '\t',
 					separator: '',// '\n'
@@ -302,14 +302,14 @@ module.exports = function(grunt) {
 			},
 		},
 		version_edit: {
-			default: {
+			main: {
 				options: {
 					pkg: pkg,
 				}
 			}
 		},
 		downloader: {
-			down: {
+			main: {
 				options: {
 					version: gc.version,
 					sdk: gc.sdk == 'normal' ? false : true
@@ -317,7 +317,7 @@ module.exports = function(grunt) {
 			}
 		},
 		zip: {
-			ziped: {
+			main: {
 				router: function (filepath) {
 					return filepath.split('/').slice(1).join('/');
 				},
@@ -339,10 +339,10 @@ module.exports = function(grunt) {
 			},
 		},
 		buildnw: {
-			build: {}
+			main: {}
 		},
 		innosetup: {
-			default: {
+			main: {
 				options: {
 					gui: false,
 					verbose: true,
@@ -353,7 +353,7 @@ module.exports = function(grunt) {
 		exec: {
 			// Compiling install file
 			// Run YourRadio
-			run: {
+			main: {
 				command: __dirname + '/build/nw.exe ' + __dirname + '/application'
 			}
 		},
@@ -370,20 +370,14 @@ module.exports = function(grunt) {
 		'uglify:modules',
 		'pug:main',
 	];
+
 	update && tasks.push('downloader');
-	tasks.push('unzip', 'version_edit', 'copy:main');
-
-	//target && tasks.push('zip');
-	tasks.push('zip');
-
+	tasks.push('unzip', 'version_edit:main', 'copy:main');
+	target && tasks.push('zip:main');
 	tasks.push('clean:vk');
+	target ? tasks.push('buildnw:main', 'innosetup:main') : tasks.push('exec:main');
 
-	//target ? tasks.push('buildnw', 'innosetup') : tasks.push('exec:run');
-	tasks.push('buildnw');
-	tasks.push('innosetup');
-	
 	grunt.registerTask('default', tasks);
-
 	grunt.registerTask('page', [
 		'less:docs',
 		'cssmin:docs',

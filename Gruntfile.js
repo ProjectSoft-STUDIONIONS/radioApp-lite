@@ -1,6 +1,7 @@
 module.exports = function(grunt) {
 	process.removeAllListeners('warning');
 	require('dotenv').config();
+
 	// target=true - nwjs sdk = nortmal
 	// target=false - nwjs sdk = sdk
 	// update=true - произвести скачивание nwjs и ffmpeg
@@ -9,31 +10,35 @@ module.exports = function(grunt) {
 	// Параметры NWJS_TARGET и NWJS_UPDATE должны быть заданы. 
 	// При первом запуске или смене SDK NWJS_UPDATE должен быть равен 1
 	// NWJS_VERSION должен содержать номер нужной версии или 0 для загрузки последней
+
 	const target = process.env.NWJS_TARGET == "1" ? true : false,
 		update = process.env.NWJS_UPDATE == "1" ? true : false,
 		version = process.env.NWJS_VERSION == "0" ? false : process.env.NWJS_VERSION; // 0.87.0
+
 	console.log(target, update, version);
+	console.log(grunt.template.date(new Date().getTime(), 'yyyy-mm-dd'));
 
 	grunt.loadNpmTasks('innosetup-compiler');
+
 	require('load-grunt-tasks')(grunt);
 	require('time-grunt')(grunt);
 	require('./modules/Downloader.js')(grunt);
 	require('./modules/Build.js')(grunt);
 	require('./modules/Versions.js')(grunt);
+
 	const path = require('path'),
 		uniqid = function () {
 			let result = URL.createObjectURL(new Blob([])).slice(-36).replace(/-/g, '');
 			return result;
 		};
+
 	var gc = {
 			sdk: target ? 'normal' : 'sdk',
 			version: version
 		},
-		flv = '',
+		flv = target ? '' : '-sdk',
 		pkg = grunt.file.readJSON('package.json');
 
-	flv = gc.sdk == 'normal' ? '' : '-sdk';
-	console.log(grunt.template.date(new Date().getTime(), 'yyyy-mm-dd'));
 	grunt.initConfig({
 		globalConfig: gc,
 		pkg: pkg,
@@ -95,6 +100,12 @@ module.exports = function(grunt) {
 						cwd: 'src/sources',
 						src: ['favicon.{ico,png}'],
 						dest: 'docs/',
+					},
+					{
+						expand: true,
+						cwd: 'page/fonts',
+						src: ['**'],
+						dest: 'docs/fonts',
 					}
 				]
 			}
@@ -379,10 +390,10 @@ module.exports = function(grunt) {
 
 	grunt.registerTask('default', tasks);
 	grunt.registerTask('page', [
+		'copy:page',
 		'less:docs',
 		'cssmin:docs',
 		'uglify:docs',
 		'pug:docs',
-		'copy:page'
 	]);
 }

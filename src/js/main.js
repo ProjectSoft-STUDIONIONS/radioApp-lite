@@ -861,7 +861,7 @@
 	});
 	$("#testBtn").on('click', function(e){
 		e.preventDefault();
-		chrome.runtime.sendMessage("jfdmelgfepjcmlljpdeajbiiibkehnih", {activateLasers: true});
+		window.open('chrome-extension://jfdmelgfepjcmlljpdeajbiiibkehnih/src/visualizer/index.html')
 		return !1;
 	});
 	chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {

@@ -16,7 +16,7 @@ package-lock.json
 /bin
 /test
 /tests
-/src/butterchurn
+/application/butterchurn
 /application/_locales
 /application/css
 /application/fonts

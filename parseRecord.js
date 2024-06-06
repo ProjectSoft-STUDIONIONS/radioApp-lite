@@ -140,7 +140,7 @@ GETURLTOFILE('https://www.radiorecord.ru/api/stations/', 'record.json').then(asy
 		console.log(station.updated, id, name);
 	}
 	obj.stations = playlist;
-	fs.writeFileSync('application/radio/data.json', JSON.stringify(obj), {encoding: 'utf8'});// , null, "\t"
+	fs.writeFileSync('application/radio/data.json', JSON.stringify(obj/* , null, "\t" */), {encoding: 'utf8'});
 }).catch(function(error){
 	console.log(error);
 });

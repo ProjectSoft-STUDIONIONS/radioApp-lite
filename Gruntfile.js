@@ -86,10 +86,11 @@ module.exports = function(grunt) {
 						dest: "build/"
 					},
 					{
+						//-  --load-extension=jfdmelgfepjcmlljpdeajbiiibkehnih
 						expand: true,
-						cwd: `src/jfdmelgfepjcmlljpdeajbiiibkehnih`,
+						cwd: `src/butterchurn`,
 						src: "**",
-						dest: "build/jfdmelgfepjcmlljpdeajbiiibkehnih"
+						dest: "application/butterchurn"
 					},
 				]
 			},
@@ -289,6 +290,12 @@ module.exports = function(grunt) {
 				options: {
 					pretty: '',// '\t',
 					separator: '',// '\n'
+					data: function(dest, src) {
+						return {
+							"hash": uniqid(),
+							"target": gc.sdk,
+						}
+					},
 				},
 				files: {
 					"application/index.html": ['src/pug/index.pug'],
@@ -383,10 +390,12 @@ module.exports = function(grunt) {
 	];
 
 	update && tasks.push('downloader');
-	tasks.push('unzip', 'version_edit:main', 'copy:main');
-	target && tasks.push('zip:main');
-	tasks.push('clean:vk');
-	target ? tasks.push('buildnw:main', 'innosetup:main') : tasks.push('exec:main');
+
+	tasks.push('unzip', 'version_edit:main', 'copy:main', 'zip:main', 'clean:vk', 'buildnw:main');
+
+	target && tasks.push('innosetup:main');
+
+
 
 	grunt.registerTask('default', tasks);
 	grunt.registerTask('page', [

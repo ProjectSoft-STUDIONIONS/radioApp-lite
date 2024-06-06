@@ -102,12 +102,7 @@
 	// Open url in default browser
 	$(document).on("click", "a[target='_blank']", function(e){
 		e.preventDefault();
-		let lng = locale.goToDev + ` ${this.href} ?`;
-		if (confirm(lng)) {
-			nw.Shell.openExternal(this.href);
-		} else {
-			alert(locale.notToDev);
-		}
+		nw.Shell.openExternal(this.href);
 		return !1;
 	});
 	const play_stop = function(){

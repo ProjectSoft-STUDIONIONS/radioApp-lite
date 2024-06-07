@@ -31,16 +31,17 @@ html
 					input#volume(min="0" max="100" value="1" step="1" type="range")
 		footer.clearfix
 			.footer_wrap
-				p.ring
+				p.right
 					a.github.icon-github(href="https://github.com/ProjectSoft-STUDIONIONS/radioApp-lite" target="_blank", title="https://github.com/ProjectSoft-STUDIONIONS/radioApp-lite" tabindex="-1")
 				p.text-center
 					|Developed by  
 					a(href="https://projectsoft.ru/" target="_blank" title="https://projectsoft.ru/" tabindex="-1") ProjectSoft
 					br
 					|&copy; 2008 - all
-				span#testBtn(class="icon-radio " + target)
-				p.left.writ.teest
-					|0%
+				.left
+					span.writ.teest
+						|0%
+					span#testBtn(class="icon-deezer  " + target)
 		dialog.appBlock
 		dialog.settings-block
 			h3.settingsTitle.text-center

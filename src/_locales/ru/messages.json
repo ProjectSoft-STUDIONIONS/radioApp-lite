@@ -88,5 +88,11 @@
 	},
 	"settingsNotify": {
 		"message": "Отображение сообщения о воспроизведении"
+	},
+	"appVizualuzer": {
+		"message": "Визуализатор"
+	},
+	"goToWebsite": {
+		"message": "Перейти на сайт:"
 	}
 }

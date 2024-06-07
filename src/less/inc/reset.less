@@ -103,19 +103,27 @@ a.github.icon-github {
     font-size: 20px;
     text-decoration: none;
 }
-p.right,
-p.left {
-	width: 26px;
+.right,
+.left .writ {
+	display: inline-block;
 }
-p.left {
+.left {
 	text-align: right;
-	opacity: 0;
-	transition: opacity .5s ease;
-	&.visible {
-		opacity: 1;
+	.writ {
+		opacity: 0;
+		width: 26px;
+		margin-right: 15px;
+		transition: opacity .5s ease;
+		&.visible {
+			opacity: 1;
+		}
 	}
 }
-p.right {
+.right,
+.left {
+	width: 63px;
+}
+.right {
 	text-align: left;
 }
 #cropTmp {

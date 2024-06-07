@@ -88,5 +88,11 @@
 	},
 	"settingsNotify": {
 		"message": "Display a message about playback"
+	},
+	"appVizualuzer": {
+		"message": "Vizualizer"
+	},
+	"goToWebsite": {
+		"message": "Go to website:"
 	}
 }

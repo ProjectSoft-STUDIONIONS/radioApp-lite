@@ -68,7 +68,7 @@ ExportSattions = function(json){
  **/
 ImportStations = function(file){
 	return new Promise(function(resolve, reject){
-		const regex = /^data:image\/png;base64,iVBORw0KGgo/;
+		const regex = /^data:image\/png;base64,iVBOR/;
 		if(typeof file == 'string' && fs.existsSync(file)){
 			if(path.extname(file.toLowerCase()) == '.json'){
 				/**

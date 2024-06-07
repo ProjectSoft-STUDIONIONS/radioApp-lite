@@ -1,12 +1,6 @@
 // --user-data-dir=%APPDATA%\\YourRadio
 !(function($){
-	const regex = /^data:image\/png;base64,iVBORw0KGgo/;
-	const canvas = $("<canvas></canvas>")[0];
-	const divCan = $("<div></div>", {
-		class: "visual",
-	});
-	divCan.append(canvas);
-	$('p.left').removeClass('visible');
+	// %USERPROFILE%/AppData/Local/YourRadio/User Data/Default/Google Profile.ico
 	var elCrop = document.getElementById('cropTmp'),
 		tmpCrop = new Croppie(elCrop, {
 			viewport: {
@@ -33,7 +27,9 @@
 		getMetaInterval = 0,
 		notifyInterval = 0,
 		previosStream = '';
-	const 	addListItem = async function(data){
+	const regex = /^data:image\/png;base64,iVBORw0KGgo/;
+
+	const addListItem = async function(data){
 				try{
 					if(data.name && data.stream){
 						let _id = data.id,
@@ -573,7 +569,16 @@
 		$('.settingsNotify').text(locale.settingsNotify);
 		$('#okSettings').text(locale.ok);
 		$('#noSettings').text(locale.cancel);
-
+		$('#testBtn').attr({
+			"title": locale.appVizualuzer
+		});
+		$("a[href]").each(function(){
+			let $this = $(this),
+				link = $this.attr('href');
+			$this.attr({
+				title: locale.goToWebsite + ` ${link}`
+			});
+		});
 		$(document).on('click', '#radio-list span.icons', function(e){
 			e.preventDefault();
 			/**
@@ -723,11 +728,11 @@
 					t = this.value + '%';
 				player.volume = json.volume = s;
 				clearTimeout(aniInterval);
-				$('p.left').addClass('visible').text(t);
+				$('.left .writ').addClass('visible').text(t);
 				aniInterval = setTimeout(function(){
 					writeFile(false);
 					clearTimeout(aniInterval);
-					$('p.left').removeClass('visible')
+					$('.left .writ').removeClass('visible')
 				}, 3000);
 			}
 		}).on('change input', 'input[type=checkbox]', function(e){
@@ -850,23 +855,76 @@
 	 **/
 	$('.test').on('click', function(e){
 		e.preventDefault();
-		win.showDevTools('chrome-extension://' + location.host + '_;generated_background_page.html');
+		win.showDevTools(location.origin + '_;generated_background_page.html');
 		return !1;
 	});
 	/**
 	 * Extension
 	 **/
+	var currentTab = null,
+		renderTab = null;
+	function startRenderInterval (renderTab) {
+		let lastTime = +Date.now();
+		const tabId = renderTab.id;
+		/*
+		const renderWindow = renderWindows[tabId];
+		const analyser = renderWindow.analyser;
+		const analyserL = renderWindow.analyserL;
+		const analyserR = renderWindow.analyserR;
+		*/
+		const renderIntervalId = setInterval(() => {
+			/*
+			const timeByteArray = new Uint8Array(1024);
+			const timeByteArrayL = new Uint8Array(1024);
+			const timeByteArrayR = new Uint8Array(1024);
+			analyser.getByteTimeDomainData(timeByteArray);
+			analyserL.getByteTimeDomainData(timeByteArrayL);
+			analyserR.getByteTimeDomainData(timeByteArrayR);
+			*/
+			const currentTime = +Date.now();
+			const elapsedTime = (currentTime - lastTime) / 1000;
+			lastTime = currentTime;
+			const renderOpts = {
+				elapsedTime: elapsedTime,
+				audioLevels: {
+					//timeByteArray: Array.from(timeByteArray),
+					//timeByteArrayL: Array.from(timeByteArrayL),
+					//timeByteArrayR: Array.from(timeByteArrayR)
+				}
+			};
+			chrome.tabs.sendMessage(renderTab.id, { type: 'audioData', data: renderOpts });
+		}, (1000 / 60));
+		return renderIntervalId;
+	};
+
 	chrome.tabs.getCurrent((tab) => {
-		console.log(tab);
+		currentTab = tab;
 	});
+
 	$("#testBtn").on('click', function(e){
 		e.preventDefault();
-		window.open('chrome-extension://jfdmelgfepjcmlljpdeajbiiibkehnih/src/visualizer/index.html')
+		if(!renderTab){
+			chrome.tabs.create({
+				url: location.origin + "/visualizer.html",
+				openerTabId: currentTab.id,
+			}, (tab) => {
+				renderTab = tab;
+				startRenderInterval(renderTab);
+			});
+		}
 		return !1;
 	});
+
 	chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 		console.log(request);
 		console.log(sender);
 		console.log(sendResponse);
+	});
+
+	chrome.tabs.onRemoved.addListener((tabId) => {
+		console.log(tabId, renderTab);
+		if (renderTab && renderTab.id == tabId) {
+			renderTab = null;
+		}
 	});
 }(jQuery));

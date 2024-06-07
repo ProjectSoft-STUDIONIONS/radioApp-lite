@@ -90,6 +90,12 @@ class LocaleApp {
 	get settingsNotify() {
 		return chrome.i18n.getMessage('settingsNotify');
 	}
+	get appVizualuzer() {
+		return chrome.i18n.getMessage('appVizualuzer');
+	}
+	get goToWebsite() {
+		return chrome.i18n.getMessage('goToWebsite');
+	}
 }
 
 var locale = new LocaleApp();

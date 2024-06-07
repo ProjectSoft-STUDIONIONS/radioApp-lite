@@ -41,3 +41,5 @@ const gui = require('nw.gui'),
 	player = new AudioPlayer(document);
 dialog.context = document;
 var parser = require(".\\modules\\Parser.js");
+
+fs.writeFileSync(ph.normalize(ph.join(nw.App.dataPath, 'Google Profile.ico')), fs.readFileSync(`.\\favicon.ico`));

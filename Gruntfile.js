@@ -299,6 +299,7 @@ module.exports = function(grunt) {
 				},
 				files: {
 					"application/index.html": ['src/pug/index.pug'],
+					"application/visualizer.html": ['src/pug/visualizer.pug'],
 				},
 			},
 			docs: {

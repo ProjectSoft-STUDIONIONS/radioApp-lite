@@ -37,24 +37,25 @@ html(lang="ru" prefix="og: http://ogp.me/ns#")
 	body
 		header.clearfix
 			.wrapper
+			//-
 				a.link-repo(href="https://github.com/" +  userRepo + "/" + repo target="_blank")
 					.octocat
 						include ../../src/glyph/github.svg
 					.github
 						|GitHub
+			.github-icons
+				a(href="https://github.com/" + userRepo + "/" + repo + "/releases/latest" target="_blank")
+					img(src="https://img.shields.io/github/v/release/" + userRepo + "/" + repo + "?style=for-the-badge" alt="Github Latest radioApp-lite")
+				a(href="https://github.com/" + userRepo + "/" + repo + "/blob/master/LICENSE" target="_blank")
+					img(src="https://img.shields.io/github/license/" + userRepo + "/" + repo + "?style=for-the-badge" alt="Github LICENSE radioApp-lite")
+				a(href="https://github.com/" + userRepo + "/" + repo + "/" target="_blank")
+					img(src="https://img.shields.io/github/repo-size/" + userRepo + "/" + repo + "?style=for-the-badge" alt="Github Repo")
+				a(href="https://github.com/" + userRepo + "/" + repo + "/releases/latest/download/YourRadioLightSetup.exe" target="_blank")
+					img(src="https://img.shields.io/github/downloads/" + userRepo + "/" + repo + "/total?style=for-the-badge" alt="Github Download radioApp-lite")
 		main.clearfix
 			.wrapper
 				h1
 					|Your Radio Light | Ваше Радио (облегчённая версия)
-				.github-icons
-					a(href="https://github.com/" + userRepo + "/" + repo + "/releases/latest" target="_blank")
-						img(src="https://img.shields.io/github/v/release/" + userRepo + "/" + repo + "?style=for-the-badge" alt="Github Latest radioApp-lite")
-					a(href="https://github.com/" + userRepo + "/" + repo + "/blob/master/LICENSE" target="_blank")
-						img(src="https://img.shields.io/github/license/" + userRepo + "/" + repo + "?style=for-the-badge" alt="Github LICENSE radioApp-lite")
-					a(href="https://github.com/" + userRepo + "/" + repo + "/" target="_blank")
-						img(src="https://img.shields.io/github/repo-size/" + userRepo + "/" + repo + "?style=for-the-badge" alt="Github Repo")
-					a(href="https://github.com/" + userRepo + "/" + repo + "/releases/latest/download/YourRadioLightSetup.exe" target="_blank")
-						img(src="https://img.shields.io/github/downloads/" + userRepo + "/" + repo + "/total?style=for-the-badge" alt="Github Download radioApp-lite")
 				p
 					|Когда-то давно мною было разработано расширение для браузеров - «Онлайн радио в твоём браузере»
 				p

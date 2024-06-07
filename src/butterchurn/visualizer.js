@@ -79,8 +79,8 @@ var readyStateCheckInterval = setInterval(() => {
 		nextPreset(0);
 
 		chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-			//console.log(request, sender, sendResponse);
-			
+			console.log(request.type);
+			console.log("=>>>>>>>>>>>");
 			if (request.type === 'startRendering') {
 				noAudioOverlay.style.display = 'none';
 			} else if (request.type === 'stopRendering') {
@@ -88,7 +88,6 @@ var readyStateCheckInterval = setInterval(() => {
 			} else if (request.type === 'audioData') {
 				visualizer.render(request.data);
 			}
-
 			sendResponse();
 		});
 
@@ -109,8 +108,11 @@ var readyStateCheckInterval = setInterval(() => {
 		});
 	}
 }, 10);
+
 const win = nw.Window.get(),
 	cnv = document.getElementById('canvas');
+win.setShowInTaskbar(false);
+win.setAlwaysOnTop(true);
 document.addEventListener('dblclick', (e) => {
 	win.toggleFullscreen()
 });

@@ -813,10 +813,12 @@
 			$('body').addClass('appVisual');
 		}
 	}, 1000);
+
 	/**
 	 * Set App title
 	 **/
 	setTitle(locale.appName);
+
 	/**
 	 * Player events
 	 **/
@@ -829,7 +831,6 @@
 					clearTimeout(getMetaInterval);
 					break;
 				case 'playing':
-					// icy ?
 					spawnNotificationClose();
 					e.bufering ?  (
 						$li.removeClass('stop').addClass('play preload')
@@ -858,73 +859,5 @@
 		win.showDevTools(location.origin + '_;generated_background_page.html');
 		return !1;
 	});
-	/**
-	 * Extension
-	 **/
-	var currentTab = null,
-		renderTab = null;
-	function startRenderInterval (renderTab) {
-		let lastTime = +Date.now();
-		const tabId = renderTab.id;
-		/*
-		const renderWindow = renderWindows[tabId];
-		const analyser = renderWindow.analyser;
-		const analyserL = renderWindow.analyserL;
-		const analyserR = renderWindow.analyserR;
-		*/
-		const renderIntervalId = setInterval(() => {
-			/*
-			const timeByteArray = new Uint8Array(1024);
-			const timeByteArrayL = new Uint8Array(1024);
-			const timeByteArrayR = new Uint8Array(1024);
-			analyser.getByteTimeDomainData(timeByteArray);
-			analyserL.getByteTimeDomainData(timeByteArrayL);
-			analyserR.getByteTimeDomainData(timeByteArrayR);
-			*/
-			const currentTime = +Date.now();
-			const elapsedTime = (currentTime - lastTime) / 1000;
-			lastTime = currentTime;
-			const renderOpts = {
-				elapsedTime: elapsedTime,
-				audioLevels: {
-					//timeByteArray: Array.from(timeByteArray),
-					//timeByteArrayL: Array.from(timeByteArrayL),
-					//timeByteArrayR: Array.from(timeByteArrayR)
-				}
-			};
-			chrome.tabs.sendMessage(renderTab.id, { type: 'audioData', data: renderOpts });
-		}, (1000 / 60));
-		return renderIntervalId;
-	};
 
-	chrome.tabs.getCurrent((tab) => {
-		currentTab = tab;
-	});
-
-	$("#testBtn").on('click', function(e){
-		e.preventDefault();
-		if(!renderTab){
-			chrome.tabs.create({
-				url: location.origin + "/visualizer.html",
-				openerTabId: currentTab.id,
-			}, (tab) => {
-				renderTab = tab;
-				startRenderInterval(renderTab);
-			});
-		}
-		return !1;
-	});
-
-	chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-		console.log(request);
-		console.log(sender);
-		console.log(sendResponse);
-	});
-
-	chrome.tabs.onRemoved.addListener((tabId) => {
-		console.log(tabId, renderTab);
-		if (renderTab && renderTab.id == tabId) {
-			renderTab = null;
-		}
-	});
 }(jQuery));

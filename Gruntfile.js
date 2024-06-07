@@ -261,7 +261,8 @@ module.exports = function(grunt) {
 						'src/js/require.js',
 						'src/js/windows.js',
 						'src/js/stationInsert.js',
-						'src/js/main.js'
+						'src/js/main.js',
+						'src/butterchurn/background.js'
 					],
 				},
 			},

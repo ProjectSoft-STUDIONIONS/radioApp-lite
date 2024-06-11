@@ -45,13 +45,13 @@ html(lang="ru" prefix="og: http://ogp.me/ns#")
 							|GitHub
 				.github-icons
 					a(href="https://github.com/" + userRepo + "/" + repo + "/releases/latest" target="_blank")
-						img(src="https://img.shields.io/github/v/release/" + userRepo + "/" + repo + "?style=for-the-badge&color=%23007ec6" alt="Github Latest radioApp-lite")
+						img(src="https://img.shields.io/github/v/release/" + userRepo + "/" + repo + "?style=for-the-badge&color=%23007ec6&label=РЕАЛИЗ" alt="Github Latest radioApp-lite")
 					a(href="https://github.com/" + userRepo + "/" + repo + "/blob/master/LICENSE" target="_blank")
-						img(src="https://img.shields.io/github/license/" + userRepo + "/" + repo + "?style=for-the-badge&color=%2397ca00" alt="Github LICENSE radioApp-lite")
+						img(src="https://img.shields.io/github/license/" + userRepo + "/" + repo + "?style=for-the-badge&color=%2397ca00&label=ЛИЦЕНЗИЯ" alt="Github LICENSE radioApp-lite")
 					a(href="https://github.com/" + userRepo + "/" + repo + "/" target="_blank")
-						img(src="https://img.shields.io/github/repo-size/" + userRepo + "/" + repo + "?style=for-the-badge&color=%23007ec6" alt="Github Repo")
+						img(src="https://img.shields.io/github/repo-size/" + userRepo + "/" + repo + "?style=for-the-badge&color=%23007ec6&label=РАЗМЕР РЕПОЗИТОРИЯ" alt="Github Repo")
 					a(href="https://github.com/" + userRepo + "/" + repo + "/releases/latest/download/YourRadioLightSetup.exe" target="_blank")
-						img(src="https://img.shields.io/github/downloads/" + userRepo + "/" + repo + "/total?style=for-the-badge&color=%2397ca00" alt="Github Download radioApp-lite")
+						img(src="https://img.shields.io/github/downloads/" + userRepo + "/" + repo + "/total?style=for-the-badge&color=%2397ca00&label=СКАЧАТЬ" alt="Github Download radioApp-lite")
 		main.clearfix
 			.wrapper
 				h1
@@ -69,6 +69,10 @@ html(lang="ru" prefix="og: http://ogp.me/ns#")
 						img.img-16x9(src="https://github.com/" + userRepo + "/" + repo + "/raw/main/src/thumb.screen.png?raw=true" alt="Your Radio Light | Ваше Радио (облегчённая версия)" title="Your Radio Light | Ваше Радио (облегчённая версия)")
 				p
 					|В приложении реализовано чтение метатегов воспроизводимого потока. Так, если радиостанция передаёт в потоке называние песни и исполнителя, то оно отобразится в заголовке окна и во всплывающем окне.
+				p.text-center
+					a(href="https://github.com/" + userRepo + "/" + repo + "/releases/latest/download/YourRadioLightSetup.exe" target="_blank")
+						img(src="https://img.shields.io/github/downloads/" + userRepo + "/" + repo + "/total?style=for-the-badge&color=%2397ca00&label=СКАЧАТЬ" alt="Github Download radioApp-lite")
+
 		footer.clearfix
 			.wrapper
 				span.copyright

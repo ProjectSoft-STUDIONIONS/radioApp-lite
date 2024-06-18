@@ -7,6 +7,8 @@
 	"main": "Gruntfile.js",
 	"scripts": {
 		"preinstall": "npm i -g less pug-cli bower && bower install && cd application && npm i",
+		"inst": "npm install --legacy-peer-deps",
+		"page": "grunt --gruntfile page.js -v",
 		"test": "node parseRecord.js && grunt -v",
 		"build": "node parseRecord.js && grunt"
 	},
@@ -25,6 +27,8 @@
 		"grunt-contrib-concat": "latest",
 		"grunt-contrib-copy": "latest",
 		"grunt-contrib-cssmin": "latest",
+		"grunt-contrib-imagemin": "latest",
+		"grunt-tinyimg": "latest",
 		"grunt-contrib-less": "latest",
 		"grunt-contrib-pug": "latest",
 		"grunt-contrib-requirejs": "latest",
@@ -43,5 +47,7 @@
 		"rcedit": "latest",
 		"time-grunt": "github:ProjectSoft-STUDIONIONS/time-grunt",
 		"ttf2woff2": "latest"
+	},
+	"devDependencies": {
 	}
 }

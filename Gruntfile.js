@@ -93,22 +93,6 @@ module.exports = function(grunt) {
 						dest: "application/butterchurn"
 					},
 				]
-			},
-			page: {
-				files: [
-					{
-						expand: true,
-						cwd: 'src/sources',
-						src: ['favicon.{ico,png}'],
-						dest: 'docs/',
-					},
-					{
-						expand: true,
-						cwd: 'page/fonts',
-						src: ['**'],
-						dest: 'docs/fonts',
-					}
-				]
 			}
 		},
 		webfont: {
@@ -167,20 +151,6 @@ module.exports = function(grunt) {
 					]
 				}
 			},
-			docs: {
-				options: {
-					compress: false,
-					ieCompat: false,
-					plugins: [
-						
-					]
-				},
-				files: {
-					'test/css/page-main.css': [
-						'page/less/main.less',
-					]
-				}
-			}
 		},
 		cssmin: {
 			options: {
@@ -194,14 +164,6 @@ module.exports = function(grunt) {
 					]
 				}
 			},
-			docs: {
-				files: {
-					'docs/css/main.css': [
-						'bower_components/fancybox/dist/jquery.fancybox.css',
-						'test/css/page-main.css'
-					]
-				}
-			}
 		},
 		requirejs: {
 			main: {
@@ -276,15 +238,6 @@ module.exports = function(grunt) {
 					},
 				],
 			},
-			docs: {
-				files: {
-					'docs/js/main.js': [
-						'bower_components/jquery/dist/jquery.js',
-						'bower_components/fancybox/dist/jquery.fancybox.js',
-						'page/js/main.js'
-					],
-				}
-			}
 		},
 		pug: {
 			main: {
@@ -301,23 +254,6 @@ module.exports = function(grunt) {
 				files: {
 					"application/index.html": ['src/pug/index.pug'],
 					"application/visualizer.html": ['src/pug/visualizer.pug'],
-				},
-			},
-			docs: {
-				options: {
-					pretty: '',// '\t',
-					separator: '',// '\n'
-					data: function(dest, src) {
-						return {
-							"hash": uniqid(),
-							"repo": "radioApp-lite",
-							"userSite": "projectsoft-studionions",
-							"userRepo": "ProjectSoft-STUDIONIONS",
-						}
-					},
-				},
-				files: {
-					"docs/index.html": ["page/pug/index.pug"]
 				},
 			},
 		},
@@ -400,11 +336,4 @@ module.exports = function(grunt) {
 
 
 	grunt.registerTask('default', tasks);
-	grunt.registerTask('page', [
-		'copy:page',
-		'less:docs',
-		'cssmin:docs',
-		'uglify:docs',
-		'pug:docs',
-	]);
 }

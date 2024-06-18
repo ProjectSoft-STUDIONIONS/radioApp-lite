@@ -16,7 +16,6 @@ module.exports = function(grunt){
 			default:
 				return [
 					'imagemin',
-					'tinyimg',
 					'less',
 					'cssmin',
 					'uglify',
@@ -44,22 +43,10 @@ module.exports = function(grunt){
 						src: [
 							'page/images/*.{png,jpg,gif}'
 						],
-						dest: 'test/images/',
+						dest: 'docs/images/',
 						filter: 'isFile'
 					}
 				],
-			}
-		},
-		tinyimg: {
-			dynamic: {
-				files: [
-					{
-						expand: true,
-						cwd: 'test/images', 
-						src: ['**/*.{png,jpg,jpeg}'],
-						dest: 'docs/images/'
-					}
-				]
 			}
 		},
 		less: {

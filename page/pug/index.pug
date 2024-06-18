@@ -38,7 +38,7 @@ html(lang="ru" prefix="og: http://ogp.me/ns#")
 			.wrapper
 				.github-icons
 					a(href="https://" + repo + "/")
-						img(src="https://" + repo + "/images/" + logotype alt=nickname + " GitHub")Github Download radioApp-lite")
+						img(src="https://" + repo + "/images/" + logotype alt=nickname + " GitHub")
 		main
 			.wrapper
 				.github-icons
@@ -67,14 +67,14 @@ html(lang="ru" prefix="og: http://ogp.me/ns#")
 				p.text-center
 					a(href="https://github.com/" + userRepo + "/" + repo + "/releases/latest/download/YourRadioLightSetup.exe" target="_blank")
 						img(src="https://img.shields.io/github/downloads/" + userRepo + "/" + repo + "/total?style=for-the-badge&color=%2397ca00&label=СКАЧАТЬ" alt="Github Download radioApp-lite")
-
-		footer.clearfix
+		footer
 			.wrapper
 				span.copyright
-					|Copyright &copy; 2008 - all right reserved
+					|Copyright &copy; 
+					= copyright
 				span.developer
 					|Developed by:  
-					a(href="https://github.com/" + userRepo + "/" target="_blank")
-						|ProjectSoft
-		script(src="https://" + userSite + ".github.io/" + repo + "/js/main.js?hash=" + hash type="text/javascript")
-		include yandex.html
+					a(href="https://github.com/" + userName + "/" target="_blank")= nickname
+		include inc/yandex.pug
+		script(src="https://" + repo + "/js/plugins.js?hash=" + hash type="text/javascript")
+		script(src="https://" + repo + "/js/main.js?hash=" + hash type="text/javascript")

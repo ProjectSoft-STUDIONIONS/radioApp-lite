@@ -28,7 +28,6 @@
 		"grunt-contrib-copy": "latest",
 		"grunt-contrib-cssmin": "latest",
 		"grunt-contrib-imagemin": "latest",
-		"grunt-tinyimg": "latest",
 		"grunt-contrib-less": "latest",
 		"grunt-contrib-pug": "latest",
 		"grunt-contrib-requirejs": "latest",

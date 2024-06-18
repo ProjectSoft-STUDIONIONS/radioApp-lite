@@ -18,7 +18,6 @@ module.exports = function(grunt){
 					'imagemin',
 					'tinyimg',
 					'less',
-					'autoprefixer',
 					'cssmin',
 					'uglify',
 					'pug'
@@ -77,17 +76,6 @@ module.exports = function(grunt){
 				}
 			}
 		},
-		autoprefixer:{
-			options: {
-				browsers: ["last 10 version"],//['Chrome > 70']
-				cascade: true
-			},
-			css: {
-				files: {
-					'tests/css/main.css' : ['test/css/main.css'],
-				}
-			},
-		},
 		cssmin: {
 			options: {
 				mergeIntoShorthands: false,
@@ -96,7 +84,7 @@ module.exports = function(grunt){
 			minify: {
 				files: {
 					'docs/css/main.css' : [
-						'tests/css/main.css'
+						'test/css/main.css'
 					],
 				}
 			}

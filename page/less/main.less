@@ -6,5 +6,12 @@ body {
 		background-position: center bottom, center center;
 		background-size: cover, cover;
 		position: relative;
+		.wrapper {
+			h1 {
+				&::before {
+					background-image: data-uri('icon.png');
+				}
+			}
+		}
 	}
 }

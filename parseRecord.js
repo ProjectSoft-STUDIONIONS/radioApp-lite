@@ -1,3 +1,13 @@
+function padLeft(str, numChars = 4, char = ' ') {
+	return (Array.from({ length: numChars }).fill(char).join('') + str).slice(-1 * numChars)
+}
+
+function padRight(str, numChars = 4, char = ' ') {
+	return (str + Array.from({ length: numChars }).fill(char).join('')).slice(0, numChars)
+}
+
+let md = `| ${padRight('Station Name', 100, ' ')} | ${padRight('Strem link', 100, ' ')} |
+| ${padRight('-', 100, '-')} | ${padRight('-', 100, '-')} |`;
 const fs = require('fs'),
 	path = require('path'),
 	GETURLTOFILE = function(url, output) {
@@ -130,6 +140,8 @@ GETURLTOFILE('https://www.radiorecord.ru/api/stations/', 'record.json').then(asy
 		fs.unlinkSync(`${id}_big.png`);
 		fs.unlinkSync(`${id}_icon.png`);
 		fs.unlinkSync(`${id}_favicon.png`);
+		md += `
+| ${padRight(name, 100, ' ')} | ${padRight(stream, 100, ' ')} |`;
 		playlist[id] = {
 			"name": name,
 			"stream": stream,
@@ -141,6 +153,7 @@ GETURLTOFILE('https://www.radiorecord.ru/api/stations/', 'record.json').then(asy
 	}
 	obj.stations = playlist;
 	fs.writeFileSync('application/radio/data.json', JSON.stringify(obj, null, "\t"), {encoding: 'utf8'});
+	fs.writeFileSync('radiorecord.md', md, {encoding: 'utf8'});
 }).catch(function(error){
 	console.log(error);
 });

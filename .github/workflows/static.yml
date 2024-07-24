@@ -1,5 +1,5 @@
 # Simple workflow for deploying static content to GitHub Pages
-name: Build and Deploy static content to Pages 🛠️
+name: Deploy static content to Pages 🛠️
 
 on: workflow_dispatch
 

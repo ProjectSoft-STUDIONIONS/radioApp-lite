@@ -8,14 +8,12 @@ module.exports = function(grunt) {
 		},
 		versions = '0.86.0';
 	const formatTime = function(value){
-
-			// leading zero padding
 			function autopadding(v){
 				return ("0" + v).slice(-2);
 			}
-			var s = autopadding(Math.round(value % 60));
-			var m = autopadding(Math.round((value / 60) % 60));
-			var h  = autopadding(Math.round((value / 360) % 24));
+			let s = autopadding(Math.floor((value / 1000) % 60));
+			let m = autopadding(Math.floor((value / 1000 / 60) % 60));
+			let h = autopadding(Math.floor((value / (1000 * 60 * 60)) % 24));
 			return h + ":" + m + ":" + s
 		},
 		autopaddingVal = function (value, length, opt){
@@ -43,7 +41,7 @@ module.exports = function(grunt) {
 			const formatTotal = formatBytes(paramsBar.total);
 			const total = formatTotal.length;// params
 			const stopTime = paramsBar.stopTime || Date.now();
-			const elapsedTime = formatTime(Math.round((stopTime - paramsBar.startTime)/1000));
+			const elapsedTime = formatTime(Math.round((stopTime - paramsBar.startTime)));
 			
 			var barStr = _colors.white('|') + _colors.cyan(bar + ' ' + autopadding(percentage, 3) + '%') + "  " + _colors.white('|') + "  " + elapsedTime;
 			return barStr;

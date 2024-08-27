@@ -33,3 +33,11 @@ jobs:
           tag: ${{ github.ref_name }}
           overwrite: true
           file_glob: true
+      - name: Upload binaries to latest
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: setup/YourRadioLightSetup.exe
+          tag: latest
+          overwrite: true
+          file_glob: true

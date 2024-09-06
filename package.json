@@ -8,7 +8,7 @@
 	"scripts": {
 		"preinstall": "npm i -g less pug-cli bower && bower install && cd application && npm i",
 		"inst": "npm install --legacy-peer-deps",
-		"page": "grunt --gruntfile page.js -v",
+		"page": "grunt --gruntfile page.js",
 		"test": "node parseRecord.js && grunt -v",
 		"build": "node parseRecord.js && grunt"
 	},

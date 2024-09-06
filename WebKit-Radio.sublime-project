@@ -27,6 +27,19 @@
 				"*.template",
 				"*.sublime-project"
 			]
+		},
+		{
+			"name": "Build Project Page",
+			"working_dir": "$project_path",
+			"shell_cmd": "npm run page && echo Finish Build Project",
+			"file_patterns": [
+				"*.less",
+				"*.js",
+				"*.pug",
+				"*.json",
+				"*.svg",
+				"*.template"
+			]
 		}
 	]
 }

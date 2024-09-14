@@ -170,4 +170,10 @@
 	win.setMinimumSize(w, h);
 	win.resizeTo(w, h);
 	win.title = locale.appName;
+	win.on('close', function() {
+		win.restore();
+		win.moveTo(x, y);
+		win.setMinimumSize(w, h);
+		win.resizeTo(w, h);
+	});
 }(jQuery))

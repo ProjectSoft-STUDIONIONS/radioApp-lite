@@ -1,1 +1,1 @@
-#define RadioAppVersion "3.0.7"
+#define RadioAppVersion "3.0.8"

@@ -326,14 +326,8 @@ module.exports = function(grunt) {
 		'uglify:modules',
 		'pug:main',
 	];
-
 	update && tasks.push('downloader');
-
 	tasks.push('unzip', 'version_edit:main', 'copy:main', 'zip:main', 'clean:vk', 'buildnw:main');
-
-	target && tasks.push('innosetup:main');
-
-
-
+	//target && tasks.push('innosetup:main');
 	grunt.registerTask('default', tasks);
 }

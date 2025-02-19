@@ -7,39 +7,23 @@
 			"file_exclude_patterns": [
 				
 			],
-			"folder_exclude_patterns": [
-				
-			]
+			"folder_exclude_patterns": []
 		}
 	],
 	"build_systems":
 	[
+
 		{
-			"name": "Build Project",
-			"working_dir": "$project_path",
-			"shell_cmd": "grunt -v default && echo Finish Build Project",
-			"file_patterns": [
-				"*.less",
-				"*.js",
-				"*.pug",
-				"*.json",
-				"*.svg",
-				"*.template",
-				"*.sublime-project"
-			]
+			"name": "Запуск сборки проекта",
+			"working_dir": "${project_path}",
+			"cmd": ["start", "/wait", "npm", "run", "test"],
+			"shell": true
 		},
 		{
-			"name": "Build Page",
-			"working_dir": "$project_path",
-			"shell_cmd": "npm run page && echo Finish Build Page",
-			"file_patterns": [
-				"*.less",
-				"*.js",
-				"*.pug",
-				"*.json",
-				"*.svg",
-				"*.template"
-			]
+			"name": "Запуск сборки страницы",
+			"working_dir": "${project_path}",
+			"cmd": ["start", "/wait", "npm", "run", "page"],
+			"shell": true
 		}
 	]
 }

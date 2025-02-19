@@ -141,6 +141,7 @@ module.exports = function(grunt) {
 					data: function(dest, src) {
 						return {
 							"hash": uniqid(),
+							"sdk": gc.sdk,
 						}
 					}
 				},
@@ -328,6 +329,6 @@ module.exports = function(grunt) {
 	];
 	update && tasks.push('downloader');
 	tasks.push('unzip', 'version_edit:main', 'copy:main', 'zip:main', 'clean:vk', 'buildnw:main');
-	//target && tasks.push('innosetup:main');
+	target && tasks.push('innosetup:main');
 	grunt.registerTask('default', tasks);
 }

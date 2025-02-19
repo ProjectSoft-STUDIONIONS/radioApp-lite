@@ -115,10 +115,10 @@ GETURLTOFILE('https://www.radiorecord.ru/api/stations/', 'record.json').then(asy
 	for(let i = 0; i < stations.length - 1; ++i){
 		const station = stations[i];
 		const [dateValues, timeValues] = station.updated.split(' ');
-		const [month, day, year] = dateValues.split('.');
+		const [day, month, year] = dateValues.split('.');
 		const [hours, minutes, seconds] = timeValues.split(':');
 		const icon = station.icon_fill_white;
-		const stream = station.stream_128;
+		const stream = station.stream_320;
 		const name = `Radio Record «${station.title}»`;
 		const ms = (new Date()).getMilliseconds();
 		const date = new Date(
@@ -149,7 +149,7 @@ GETURLTOFILE('https://www.radiorecord.ru/api/stations/', 'record.json').then(asy
 			"favicon": `data:image/png;base64,${favicon}`,
 			"image": `data:image/png;base64,${bigicon}`
 		};
-		console.log(station.updated, id, name);
+		console.log(name, "\n", date, id, stream, "\n");
 	}
 	obj.stations = playlist;
 	fs.writeFileSync('application/radio/data.json', JSON.stringify(obj, null, "\t"), {encoding: 'utf8'});

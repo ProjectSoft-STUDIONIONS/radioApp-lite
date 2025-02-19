@@ -16,28 +16,28 @@ jobs:
           echo "NW=${{ github.event.inputs.version }}" >> $GITHUB_ENV
           echo "repository variable : ${{ env.NW }}"
       - uses: actions/checkout@v4
-      - run: mkdir build && mkdir setup
+      # - run: mkdir build && mkdir setup
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-      - name: Build
-        run: |
-          npm run inst
-          npm run build
-      - name: Upload binaries to release
-        uses: svenstaro/upload-release-action@v2
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: setup/YourRadioLightSetup.exe
-          tag: ${{ github.ref_name }}
-          overwrite: true
-          file_glob: true
-      - name: Upload binaries to latest
-        uses: svenstaro/upload-release-action@v2
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: setup/YourRadioLightSetup.exe
-          tag: latest
-          overwrite: true
-          file_glob: true
+      # - name: Build
+      #   run: |
+      #     npm run inst
+      #     npm run build
+      # - name: Upload binaries to release
+      #   uses: svenstaro/upload-release-action@v2
+      #   with:
+      #     repo_token: ${{ secrets.GITHUB_TOKEN }}
+      #     file: setup/YourRadioLightSetup.exe
+      #     tag: ${{ github.ref_name }}
+      #     overwrite: true
+      #     file_glob: true
+      # - name: Upload binaries to latest
+      #   uses: svenstaro/upload-release-action@v2
+      #   with:
+      #     repo_token: ${{ secrets.GITHUB_TOKEN }}
+      #     file: setup/YourRadioLightSetup.exe
+      #     tag: latest
+      #     overwrite: true
+      #     file_glob: true

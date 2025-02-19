@@ -5,7 +5,7 @@ html
 		meta(name="viewport" content="width=device-width, initial-scale=1")
 		link(rel="stylesheet" type="text/css" href="css/main.css")
 		base(href="/")
-	body(ondragstart="return false;" ondrop="return false;")
+	body(ondragstart="return false;" ondrop="return false;" class=target)
 		#TitleBar
 			#TitleBar-icon
 				img(src="favicon.ico" alt="")
@@ -41,7 +41,7 @@ html
 				.left
 					span.writ.teest
 						|0%
-					span#testBtn(class="icon-deezer  " + target)
+					span#testBtn(class="icon-deezer " + target)
 		dialog.appBlock
 		dialog.settings-block
 			h3.settingsTitle.text-center

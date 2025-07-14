@@ -5,9 +5,13 @@ function padLeft(str, numChars = 4, char = ' ') {
 function padRight(str, numChars = 4, char = ' ') {
 	return (str + Array.from({ length: numChars }).fill(char).join('')).slice(0, numChars)
 }
-
+function getM3U8Item(name, url) {
+	return `\r\n#EXTINF:-1,${name}\r\n${url}`;p
+}
 let md = `| Station Name | Strem link |
 | ------------------- | ------------------- |`;
+let m3u8 = `#EXTM3U
+#PLAYLIST:Ваше Радио. Облегчённая версия.`;
 const fs = require('fs'),
 	path = require('path'),
 	GETURLTOFILE = function(url, output) {
@@ -112,7 +116,23 @@ GETURLTOFILE('https://www.radiorecord.ru/api/stations/', 'record.json').then(asy
 	const stations = result.result.stations;
 	var obj = JSON.parse(fs.readFileSync('src/sources/data.json', 'utf8'));
 	const playlist = obj.stations || {};
-	for(let i = 0; i < stations.length - 1; ++i){
+	/**
+	 * Загрузка локальных станций из src/sources/stations
+	 */
+	let filesDir = path.join(__dirname, 'src/sources/stations');
+	let files = fs.readdirSync(filesDir).filter(fn => fn.endsWith('.json')).map(file => path.join(filesDir, file));
+	for(let f = 0; f < files.length; ++f){
+		let fileStation = JSON.parse(fs.readFileSync(files[f], 'utf8'));
+		let values = Object.values(fileStation)[0];
+		playlist[Object.keys(fileStation)[0]] = Object.values(fileStation)[0];
+		md += `\n| ${values.name} | ${values.stream} |`;
+		m3u8 += getM3U8Item(values.name, values.stream);
+	}
+
+	/**
+	 * Парсинг Radio Record
+	 */
+	for(let i = 0; i < stations.length; ++i){
 		const station = stations[i];
 		const [dateValues, timeValues] = station.updated.split(' ');
 		const [day, month, year] = dateValues.split('.');
@@ -141,6 +161,7 @@ GETURLTOFILE('https://www.radiorecord.ru/api/stations/', 'record.json').then(asy
 		fs.unlinkSync(`${id}_icon.png`);
 		fs.unlinkSync(`${id}_favicon.png`);
 		md += `\n| ${name} | ${stream} |`;
+		m3u8 += getM3U8Item(name, stream);
 		playlist[id] = {
 			"name": name,
 			"stream": stream,
@@ -152,7 +173,9 @@ GETURLTOFILE('https://www.radiorecord.ru/api/stations/', 'record.json').then(asy
 	}
 	obj.stations = playlist;
 	fs.writeFileSync('application/radio/data.json', JSON.stringify(obj, null, "\t"), {encoding: 'utf8'});
-	fs.writeFileSync('radiorecord.md', md, {encoding: 'utf8'});
+	md += `\r\n\r\n[Playlist](radio.m3u8)`;
+	fs.writeFileSync('radio.md', md, {encoding: 'utf8'});
+	fs.writeFileSync('radio.m3u8', m3u8, {encoding: 'utf8'});
 }).catch(function(error){
 	console.log(error);
 });

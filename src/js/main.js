@@ -476,7 +476,7 @@
 							 * Export radio stations
 							 **/
 							ImpExp.ExportSattions(json).then(function(data){
-								let _output = JSON.stringify(data);
+								let _output = JSON.stringify(data, null, "\t");
 								dialog.saveFileDialog('radio-export', '.json', function(sfile){
 									$("main").addClass('loading');
 									fs.writeFile(sfile, _output, 'utf8', (err) => {

@@ -1,16 +1,17 @@
 {
 	"name": "webkit-app-radio",
 	"appName": "YourRadio",
-	"version": "3.0.8.1",
+	"version": "3.0.9",
 	"description": "Ваше Радио. Облегчённая версия. Самостоятельное добавление радио потока. Импорт/Экспорт плейлиста радиостанций.",
 	"comments": "Ваше Радио. Облегчённая версия.",
 	"main": "Gruntfile.js",
 	"scripts": {
 		"preinstall": "npm i -g less pug-cli bower && bower install && cd application && npm i",
-		"inst": "npm install --legacy-peer-deps",
-		"page": "grunt --gruntfile page.js",
-		"test": "node parseRecord.js && grunt -v",
-		"build": "node parseRecord.js && grunt"
+		"inst": "npm install",
+		"page": "cls && grunt --gruntfile page.js",
+		"record": "cls && node parseRecord.js",
+		"test": "cls && node parseRecord.js && grunt -v",
+		"build": "cls && node parseRecord.js && grunt"
 	},
 	"author": {
 		"name": "ProjectSoft",

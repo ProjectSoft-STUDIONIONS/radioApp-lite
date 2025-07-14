@@ -8,10 +8,10 @@
 	"scripts": {
 		"preinstall": "npm i -g less pug-cli bower && bower install && cd application && npm i",
 		"inst": "npm install",
-		"page": "cls && grunt --gruntfile page.js",
-		"record": "cls && node parseRecord.js",
-		"test": "cls && node parseRecord.js && grunt -v",
-		"build": "cls && node parseRecord.js && grunt"
+		"page": "grunt --gruntfile page.js",
+		"record": "node parseRecord.js",
+		"test": "node parseRecord.js && grunt -v",
+		"build": "node parseRecord.js && grunt"
 	},
 	"author": {
 		"name": "ProjectSoft",

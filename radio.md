@@ -39,6 +39,12 @@
 | Радио «Europa Plus - NEW» | https://europaplus.hostingradio.ru:8014/ep-new128.mp3 |
 | Радио «Europa Plus - PARTY» | https://epdop.hostingradio.ru:8033/epparty128.mp3 |
 | Радио «Europa Plus - TOP 40» | https://europaplus.hostingradio.ru:8014/ep-top256.mp3 |
+| Радио Родных Дорог | https://stream1.radiord.ru:8000/live128.mp3 |
+| Русское радио | https://rusradio.hostingradio.ru/rusradio96.aacp |
+| Радио Шансон | https://chanson.hostingradio.ru:8041/chanson256.mp3 |
+| Радио Монте-Карло | https://montecarlo.hostingradio.ru/montecarlo96.aacp |
+| Радио Energy Самара | https://srv21.gpmradio.ru:8443/stream/air/aac/64/99 |
+| Авторадио | https://srv01.gpmradio.ru/stream/air/aac/64/100 |
 | Radio Record «Record» | https://radiorecord.hostingradio.ru/rr_main96.aacp |
 | Radio Record «Russian Mix» | https://radiorecord.hostingradio.ru/rus96.aacp |
 | Radio Record «Mashup» | https://radiorecord.hostingradio.ru/mashup96.aacp |

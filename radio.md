@@ -31,6 +31,7 @@
 | Hunter.FM «Pop» | https://live.hunter.fm/pop_low |
 | POP FM Биробиджан | http://5.8.213.195:8000/popfm_80 |
 | Retrowave.One Radio | https://waveretro.ru:8443/stream |
+| Радио 7 | https://radio7.hostingradio.ru:8040/radio7128.mp3 |
 | Radio Record «Record» | https://radiorecord.hostingradio.ru/rr_main96.aacp |
 | Radio Record «Russian Mix» | https://radiorecord.hostingradio.ru/rus96.aacp |
 | Radio Record «Mashup» | https://radiorecord.hostingradio.ru/mashup96.aacp |

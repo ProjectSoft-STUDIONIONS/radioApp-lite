@@ -62,6 +62,8 @@ https://live.hunter.fm/pop_low
 http://5.8.213.195:8000/popfm_80
 #EXTINF:-1,Retrowave.One Radio
 https://waveretro.ru:8443/stream
+#EXTINF:-1,Радио 7
+https://radio7.hostingradio.ru:8040/radio7128.mp3
 #EXTINF:-1,Radio Record «Record»
 https://radiorecord.hostingradio.ru/rr_main96.aacp
 #EXTINF:-1,Radio Record «Russian Mix»

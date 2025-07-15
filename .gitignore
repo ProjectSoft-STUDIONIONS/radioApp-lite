@@ -3,7 +3,11 @@ package-lock.json
 *.nw
 *.bat
 *.sublime-workspace
-!/radiorecord.md
+/*.png
+/*.jpg
+/*.jpeg
+/*.webp
+/*.svg
 /*.sublime-workspace
 /.cache/*.zip
 /.cache/**/*

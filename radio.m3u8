@@ -64,6 +64,20 @@ http://5.8.213.195:8000/popfm_80
 https://waveretro.ru:8443/stream
 #EXTINF:-1,Радио 7
 https://radio7.hostingradio.ru:8040/radio7128.mp3
+#EXTINF:-1,Радио «Europa Plus»
+https://europaplus.hostingradio.ru:8030/ep128
+#EXTINF:-1,Радио «Europa Plus - СВЕЖЕЕ»
+https://epdop.hostingradio.ru:8033/fresh64.aac
+#EXTINF:-1,Радио «Europa Plus - Light»
+https://europaplus.hostingradio.ru:8014/ep-light128.mp3
+#EXTINF:-1,Радио «Europa Plus - URBAN»
+https://epdop.hostingradio.ru:8033/ep-urban128.mp3
+#EXTINF:-1,Радио «Europa Plus - NEW»
+https://europaplus.hostingradio.ru:8014/ep-new128.mp3
+#EXTINF:-1,Радио «Europa Plus - PARTY»
+https://epdop.hostingradio.ru:8033/epparty128.mp3
+#EXTINF:-1,Радио «Europa Plus - TOP 40»
+https://europaplus.hostingradio.ru:8014/ep-top256.mp3
 #EXTINF:-1,Radio Record «Record»
 https://radiorecord.hostingradio.ru/rr_main96.aacp
 #EXTINF:-1,Radio Record «Russian Mix»

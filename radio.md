@@ -32,6 +32,13 @@
 | POP FM Биробиджан | http://5.8.213.195:8000/popfm_80 |
 | Retrowave.One Radio | https://waveretro.ru:8443/stream |
 | Радио 7 | https://radio7.hostingradio.ru:8040/radio7128.mp3 |
+| Радио «Europa Plus» | https://europaplus.hostingradio.ru:8030/ep128 |
+| Радио «Europa Plus - СВЕЖЕЕ» | https://epdop.hostingradio.ru:8033/fresh64.aac |
+| Радио «Europa Plus - Light» | https://europaplus.hostingradio.ru:8014/ep-light128.mp3 |
+| Радио «Europa Plus - URBAN» | https://epdop.hostingradio.ru:8033/ep-urban128.mp3 |
+| Радио «Europa Plus - NEW» | https://europaplus.hostingradio.ru:8014/ep-new128.mp3 |
+| Радио «Europa Plus - PARTY» | https://epdop.hostingradio.ru:8033/epparty128.mp3 |
+| Радио «Europa Plus - TOP 40» | https://europaplus.hostingradio.ru:8014/ep-top256.mp3 |
 | Radio Record «Record» | https://radiorecord.hostingradio.ru/rr_main96.aacp |
 | Radio Record «Russian Mix» | https://radiorecord.hostingradio.ru/rus96.aacp |
 | Radio Record «Mashup» | https://radiorecord.hostingradio.ru/mashup96.aacp |

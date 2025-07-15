@@ -1,3 +1,6 @@
+const fs = require('fs'),
+	path = require('path');
+
 function padLeft(str, numChars = 4, char = ' ') {
 	return (Array.from({ length: numChars }).fill(char).join('') + str).slice(-1 * numChars)
 }
@@ -8,13 +11,32 @@ function padRight(str, numChars = 4, char = ' ') {
 function getM3U8Item(name, url) {
 	return `\r\n#EXTINF:-1,${name}\r\n${url}`;p
 }
-let md = `| Station Name | Strem link |
-| ------------------- | ------------------- |`;
-let m3u8 = `#EXTM3U
-#PLAYLIST:Ваше Радио. Облегчённая версия.`;
-const fs = require('fs'),
-	path = require('path'),
-	GETURLTOFILE = function(url, output) {
+
+let mdFile = path.join(__dirname, `radio.md`),
+	m3u8File = path.join(__dirname, `radio.m3u8`),
+	dataJsonFile = path.join(__dirname, `application`, `radio`, `data.json`);
+
+fs.unlinkSync(mdFile);
+fs.unlinkSync(m3u8File);
+fs.unlinkSync(dataJsonFile);
+
+let mdWrite = fs.createWriteStream(mdFile, {
+		flag: 'a',
+		autoClose: false,
+		emitClose: false
+	}),
+	m3u8Write = fs.createWriteStream(m3u8File, {
+		flag: 'a',
+		autoClose: false,
+		emitClose: false
+	});
+
+mdWrite.write(`| Station Name | Strem link |
+| ------------------- | ------------------- |`);
+m3u8Write.write(`#EXTM3U
+#PLAYLIST:Ваше Радио. Облегчённая версия.`);
+
+const GETURLTOFILE = function(url, output) {
 		return new Promise(function(resolve, reject){
 			const options = new URL(url);
 			const file = fs.createWriteStream(output);
@@ -125,8 +147,11 @@ GETURLTOFILE('https://www.radiorecord.ru/api/stations/', 'record.json').then(asy
 		let fileStation = JSON.parse(fs.readFileSync(files[f], 'utf8'));
 		let values = Object.values(fileStation)[0];
 		playlist[Object.keys(fileStation)[0]] = Object.values(fileStation)[0];
-		md += `\n| ${values.name} | ${values.stream} |`;
-		m3u8 += getM3U8Item(values.name, values.stream);
+		mdWrite.write(`\n| ${values.name} | ${values.stream} |`);
+		m3u8Write.write(getM3U8Item(values.name, values.stream));
+		let date = new Date();
+		date.setTime(values.id);
+		console.log(values.name, "\n", date, values.id, values.stream, "\n");
 	}
 
 	/**
@@ -160,8 +185,10 @@ GETURLTOFILE('https://www.radiorecord.ru/api/stations/', 'record.json').then(asy
 		fs.unlinkSync(`${id}_big.png`);
 		fs.unlinkSync(`${id}_icon.png`);
 		fs.unlinkSync(`${id}_favicon.png`);
-		md += `\n| ${name} | ${stream} |`;
-		m3u8 += getM3U8Item(name, stream);
+
+		mdWrite.write(`\n| ${name} | ${stream} |`);
+		m3u8Write.write(getM3U8Item(name, stream));
+
 		playlist[id] = {
 			"name": name,
 			"stream": stream,
@@ -172,10 +199,13 @@ GETURLTOFILE('https://www.radiorecord.ru/api/stations/', 'record.json').then(asy
 		console.log(name, "\n", date, id, stream, "\n");
 	}
 	obj.stations = playlist;
-	fs.writeFileSync('application/radio/data.json', JSON.stringify(obj, null, "\t"), {encoding: 'utf8'});
-	md += `\r\n\r\n[Playlist](radio.m3u8)`;
-	fs.writeFileSync('radio.md', md, {encoding: 'utf8'});
-	fs.writeFileSync('radio.m3u8', m3u8, {encoding: 'utf8'});
+
+	fs.writeFileSync(dataJsonFile, JSON.stringify(obj, null, "\t"), {encoding: 'utf8'});
+
+	mdWrite.write(`\r\n\r\n[Playlist](radio.m3u8)`);
+
+	mdWrite.end();
+	m3u8Write.end();
 }).catch(function(error){
 	console.log(error);
 });

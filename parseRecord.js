@@ -14,7 +14,9 @@ function getM3U8Item(name, url) {
 
 let mdFile = path.join(__dirname, `radio.md`),
 	m3u8File = path.join(__dirname, `radio.m3u8`),
-	dataJsonFile = path.join(__dirname, `application`, `radio`, `data.json`);
+	readmeFile = path.join(__dirname, `README.md`),
+	dataJsonFile = path.join(__dirname, `application`, `radio`, `data.json`),
+	readmeString = fs.readFileSync(readmeFile, 'utf8');
 
 fs.unlinkSync(mdFile);
 fs.unlinkSync(m3u8File);
@@ -202,10 +204,17 @@ GETURLTOFILE('https://www.radiorecord.ru/api/stations/', 'record.json').then(asy
 
 	fs.writeFileSync(dataJsonFile, JSON.stringify(obj, null, "\t"), {encoding: 'utf8'});
 
-	mdWrite.write(`\r\n\r\n[Playlist](radio.m3u8)`);
-
+	mdWrite.write(`\n\n[Playlist](radio.m3u8)`);
+	mdWrite.write(`\n\n`);
 	mdWrite.end();
 	m3u8Write.end();
+
+
+
+	let radioMD = fs.readFileSync(mdFile, 'utf8');
+	const regex = /<!--BeginStations-->(.*)<!--EndStations-->/gs;
+	const readme = readmeString.replace(/<!--BeginStations-->(.*)<!--EndStations-->/gs, `<!--BeginStations-->\n${radioMD}\n<!--EndStations-->`);
+	fs.writeFileSync(readmeFile, readme, {encoding: 'utf8'});
 }).catch(function(error){
 	console.log(error);
 });

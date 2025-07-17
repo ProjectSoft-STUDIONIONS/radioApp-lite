@@ -1,5 +1,7 @@
 ﻿#include "version.iss"  
 
+#define DirName 'YourRadioLight'
+
 #define RadioAppName "Your Radio Light"
 #define RadioAppPublisher "ProjectSoft"
 #define RadioAppURL "https://github.com/ProjectSoft-STUDIONIONS/radioApp-lite"

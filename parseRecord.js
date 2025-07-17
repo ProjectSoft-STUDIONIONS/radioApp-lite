@@ -12,7 +12,7 @@ function deleteFile(file) {
 }
 
 function getM3U8Item(name, url) {
-	return `\r\n#EXTINF:-1,${name}\r\n${url}`;
+	return `\n#EXTINF:-1,${name}\r\n${url}`;
 }
 
 function getMDItem (name, url) {

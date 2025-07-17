@@ -4,10 +4,6 @@ const fs = require('fs'),
 
 process.stdout.write('\033c');
 
-function padLeft(str, numChars = 4, char = ' ') {
-	return (Array.from({ length: numChars }).fill(char).join('') + str).slice(-1 * numChars)
-}
-
 function deleteFile(file) {
 	try {
 		fs.unlinkSync(file);
@@ -15,11 +11,12 @@ function deleteFile(file) {
 	return true;
 }
 
-function padRight(str, numChars = 4, char = ' ') {
-	return (str + Array.from({ length: numChars }).fill(char).join('')).slice(0, numChars)
-}
 function getM3U8Item(name, url) {
-	return `\r\n#EXTINF:-1,${name}\r\n${url}`;p
+	return `\r\n#EXTINF:-1,${name}\r\n${url}`;
+}
+
+function getMDItem (name, url) {
+	return `\n| ${name} | ${url} |`;
 }
 
 let mdFile = path.join(__dirname, `radio.md`),
@@ -50,6 +47,9 @@ m3u8Write.write(`#EXTM3U
 
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
+/**
+ * Закачка изображения
+ */
 const GETURLTOFILE = function(url, output) {
 		return new Promise(function(resolve, reject){
 			const options = new URL(url);
@@ -80,6 +80,9 @@ const GETURLTOFILE = function(url, output) {
 			});
 		});
 	},
+	/**
+	 * Ресайз и окраска иконки для cnfywbb Radio Record
+	 */
 	MAGICK = function(input, sufix, arg) {
 		return new Promise(function(resolve, reject){
 			const {exec} = require('child_process');
@@ -126,6 +129,9 @@ const GETURLTOFILE = function(url, output) {
 			});
 		});
 	},
+	/**
+	 * Генерируем иконку для станций Radio Records
+	 */
 	FAVICON = function(id){
 		return new Promise(function(resolve, reject){
 			const {exec} = require('child_process');
@@ -145,6 +151,9 @@ const GETURLTOFILE = function(url, output) {
 				});
 		});
 	},
+	/**
+	 * Генерируем иконку для локальных станций
+	 */
 	FAV_ICON = function(id, dir=''){
 		return new Promise(function(resolve, reject){
 			const {exec} = require('child_process');
@@ -191,14 +200,21 @@ GETURLTOFILE('https://www.radiorecord.ru/api/stations/', 'record.json').then(asy
 	let files = fs.readdirSync(filesDir).filter(fn => fn.endsWith('.json')).map(file => path.join(filesDir, file));
 	for(let f = 0; f < files.length; ++f){
 		let fileStation = JSON.parse(fs.readFileSync(files[f], 'utf8'));
+		/**
+		 * Ключ станции
+		 */
 		let key = Object.keys(fileStation)[0];
+		/**
+		 * Значения станции
+		 */
 		let values = Object.values(fileStation)[0];
 		mdWrite.write(`\n| ${values.name} | ${values.stream} |`);
 		m3u8Write.write(getM3U8Item(values.name, values.stream));
 		let date = new Date();
 		date.setTime(values.id);
-		// Обработка изображений
-		/** START */
+		/**
+		 * Обработка изображений
+		 */
 		if(!values.favicon) {
 			await FAV_ICON(values.id, path.normalize(filesDir));
 			let bigicon = fs.readFileSync(path.normalize(path.join(filesDir ,`${values.id}.png`)), {encoding: 'base64'});
@@ -207,13 +223,14 @@ GETURLTOFILE('https://www.radiorecord.ru/api/stations/', 'record.json').then(asy
 			values.image = `data:image/png;base64,${bigicon}`;
 			await deleteFile(path.normalize(path.join(filesDir ,`${values.id}_favicon.png`)));
 		}
-		/** END */
 		playlist[key] = values;
+		/**
+		 * Берём первую станцию если ещё нет
+		 */
 		if(!select) {
 			select = values.id;
 		}
 		console.log(values.name, "\n", date, values.id, values.stream, "\n");
-		//await delay(100);
 	}
 	/**
 	 * Парсинг Radio Record
@@ -236,20 +253,36 @@ GETURLTOFILE('https://www.radiorecord.ru/api/stations/', 'record.json').then(asy
 			+seconds
 		);
 		const id = date.getTime();
+		/**
+		 * Загружаем изображение для станции
+		 */
 		await GETURLTOFILE(icon, `${id}.png`);
+		/**
+		 * Генерируем картинки станции
+		 */
 		await MAGICK(`${id}.png`, 'big', true);
-		let bigicon = fs.readFileSync(`${id}_big.png`, {encoding: 'base64'});
 		await MAGICK(`${id}.png`, 'icon', false);
 		await FAVICON(id);
+		/**
+		 * Читаем полученные изображения
+		 */
+		let bigicon = fs.readFileSync(`${id}_big.png`, {encoding: 'base64'});
 		let favicon = fs.readFileSync(`${id}_favicon.png`, {encoding: 'base64'});
+		/**
+		 * Удаляем изображения
+		 */
 		await deleteFile(`${id}.png`);
 		await deleteFile(`${id}_icon.png`);
 		await deleteFile(`${id}_favicon.png`);
 		await deleteFile(`${id}_big.png`);
-
-		mdWrite.write(`\n| ${name} | ${stream} |`);
+		/**
+		 * Пишем список и плейлист
+		 */
+		mdWrite.write(getMDItem(name, stream));
 		m3u8Write.write(getM3U8Item(name, stream));
-
+		/**
+		 * Формируем станцию
+		 */
 		playlist[id] = {
 			"name": name,
 			"stream": stream,
@@ -257,26 +290,44 @@ GETURLTOFILE('https://www.radiorecord.ru/api/stations/', 'record.json').then(asy
 			"favicon": `data:image/png;base64,${favicon}`,
 			"image": `data:image/png;base64,${bigicon}`
 		};
+		/**
+		 * Берём первую станцию если ещё нет
+		 */
 		if(!select) {
 			select = id;
 		}
 		console.log(name, "\n", date, id, stream, "\n");
 	}
+	/**
+	 * Назначаем станции для конфигурации
+	 */
 	obj.stations = playlist;
+	/**
+	 * Указываем самую первую станцию из плейлиста
+	 */
 	obj.active = select;
+	/**
+	 * Сохраняем конфигурацию
+	 */
 	fs.writeFileSync(dataJsonFile, JSON.stringify(obj, null, "\t"), {encoding: 'utf8'});
 
 	mdWrite.write(`\n\n[Playlist](radio.m3u8)`);
 	mdWrite.write(`\n\n`);
+
 	mdWrite.end();
 	m3u8Write.end();
-
+	/**
+	 * Пауза для закрытия файлов
+	 */
 	await delay(1000);
-
+	/**
+	 * Перезаписываем README.md
+	 */
 	let radioMD = fs.readFileSync(mdFile, 'utf8');
 	const regex = /<!--BeginStations-->(.*)<!--EndStations-->/gs;
 	const readme = readmeString.replace(/<!--BeginStations-->(.*)<!--EndStations-->/gs, `<!--BeginStations-->\n${radioMD}\n<!--EndStations-->`);
 	fs.writeFileSync(readmeFile, readme, {encoding: 'utf8'});
+	await deleteFile(mdFile);
 	console.log("\n", colors.yellowBright("DONE!"), "\n");
 }).catch(function(error){
 	console.log(error);

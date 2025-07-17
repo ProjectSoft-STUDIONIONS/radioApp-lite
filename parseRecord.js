@@ -1,8 +1,18 @@
 const fs = require('fs'),
-	path = require('path');
+	path = require('path'),
+	colors = require('ansi-colors');
+
+process.stdout.write('\033c');
 
 function padLeft(str, numChars = 4, char = ' ') {
 	return (Array.from({ length: numChars }).fill(char).join('') + str).slice(-1 * numChars)
+}
+
+function deleteFile(file) {
+	try {
+		fs.unlinkSync(file);
+	}catch(e){}
+	return true;
 }
 
 function padRight(str, numChars = 4, char = ' ') {
@@ -18,9 +28,9 @@ let mdFile = path.join(__dirname, `radio.md`),
 	dataJsonFile = path.join(__dirname, `application`, `radio`, `data.json`),
 	readmeString = fs.readFileSync(readmeFile, 'utf8');
 
-fs.unlinkSync(mdFile);
-fs.unlinkSync(m3u8File);
-fs.unlinkSync(dataJsonFile);
+deleteFile(mdFile);
+deleteFile(m3u8File);
+deleteFile(dataJsonFile);
 
 let mdWrite = fs.createWriteStream(mdFile, {
 		flag: 'a',
@@ -48,13 +58,13 @@ const GETURLTOFILE = function(url, output) {
 			https.get(options, function(response){
 				if (response.statusCode !== 200) {
 					console.error(`Произошла ошибка: сервер отдал статус ${response.statusCode}`);
-					fs.unlinkSync(output);
+					deleteFile(output);
 					reject();
 					return;
 				}
 				response.pipe(file);
 			}).on('error', function(e){
-				fs.unlinkSync(output);
+				deleteFile(output);
 				console.error(e);
 				reject();
 			});
@@ -64,7 +74,7 @@ const GETURLTOFILE = function(url, output) {
 				});
 			});
 			file.on('error', (err) => {
-				fs.unlinkSync(output);
+				deleteFile(output);
 				console.error(err.message);
 				reject();
 			});
@@ -119,9 +129,10 @@ const GETURLTOFILE = function(url, output) {
 	FAVICON = function(id){
 		return new Promise(function(resolve, reject){
 			const {exec} = require('child_process');
+			let directory = path.normalize(__dirname);
 			let app = 'magick',
-				name = path.normalize(path.join(__dirname, `${id}_icon.png`)),
-				out = path.normalize(path.join(__dirname, `${id}_favicon.png`)),
+				name = path.normalize(path.join(directory, `${id}_icon.png`)),
+				out = path.normalize(path.join(directory, `${id}_favicon.png`)),
 				args = `${app} "${name}" -alpha on ( +clone -threshold -1 -negate -fill white -draw "circle 90,90 90,0" ) -compose copy_opacity -composite "${out}"`,
 				ls = exec(args, (error, stdout, stderr) => {
 					if (error) {
@@ -133,31 +144,77 @@ const GETURLTOFILE = function(url, output) {
 					}
 				});
 		});
+	},
+	FAV_ICON = function(id, dir=''){
+		return new Promise(function(resolve, reject){
+			const {exec} = require('child_process');
+			let directory = dir != '' ? path.normalize(dir) : path.normalize(__dirname);
+			let app = 'magick',
+				name = path.normalize(path.join(directory, `${id}.png`)),
+				temp = path.normalize(path.join(directory, `${id}_temp.png`)),
+				out = path.normalize(path.join(directory, `${id}_favicon.png`)),
+				args_temp = `${app} "${name}" -background transparent -gravity center -extent 180x180 "${temp}"`,
+				args = `${app} "${temp}" -alpha on ( +clone -threshold -1 -negate -fill white -draw "circle 90,90 90,0" ) -compose copy_opacity -composite "${out}"`;
+			exec(args_temp, (error, stdout, stderr) => {
+				if (error) {
+					reject(error);
+				} else if (stderr) {
+					reject(stderr);
+				} else {
+					exec(args, (err, stdo, stde) => {
+						if (err) {
+							reject(err);
+						} else if (stde) {
+							reject(stde);
+						} else {
+							deleteFile(temp);
+							resolve();
+						}
+					});
+				}
+			});
+		});
 	};
 	
 GETURLTOFILE('https://www.radiorecord.ru/api/stations/', 'record.json').then(async function(res){
 	const s = fs.readFileSync ('record.json', {encoding: 'utf8'});
 	const result = JSON.parse(s);
-	fs.unlinkSync('record.json');
+	deleteFile('record.json');
 	const stations = result.result.stations;
-	var obj = JSON.parse(fs.readFileSync('src/sources/data.json', 'utf8'));
+	let obj = JSON.parse(fs.readFileSync('src/sources/data.json', 'utf8')),
+	select = false;
 	const playlist = obj.stations || {};
 	/**
 	 * Загрузка локальных станций из src/sources/stations
 	 */
-	let filesDir = path.join(__dirname, 'src/sources/stations');
+	let filesDir = path.join(__dirname, 'src', 'sources', 'stations');
 	let files = fs.readdirSync(filesDir).filter(fn => fn.endsWith('.json')).map(file => path.join(filesDir, file));
 	for(let f = 0; f < files.length; ++f){
 		let fileStation = JSON.parse(fs.readFileSync(files[f], 'utf8'));
+		let key = Object.keys(fileStation)[0];
 		let values = Object.values(fileStation)[0];
-		playlist[Object.keys(fileStation)[0]] = Object.values(fileStation)[0];
 		mdWrite.write(`\n| ${values.name} | ${values.stream} |`);
 		m3u8Write.write(getM3U8Item(values.name, values.stream));
 		let date = new Date();
 		date.setTime(values.id);
+		// Обработка изображений
+		/** START */
+		if(!values.favicon) {
+			await FAV_ICON(values.id, path.normalize(filesDir));
+			let bigicon = fs.readFileSync(path.normalize(path.join(filesDir ,`${values.id}.png`)), {encoding: 'base64'});
+			let favicon = fs.readFileSync(path.normalize(path.join(filesDir ,`${values.id}_favicon.png`)), {encoding: 'base64'});
+			values.favicon = `data:image/png;base64,${favicon}`;
+			values.image = `data:image/png;base64,${bigicon}`;
+			await deleteFile(path.normalize(path.join(filesDir ,`${values.id}_favicon.png`)));
+		}
+		/** END */
+		playlist[key] = values;
+		if(!select) {
+			select = values.id;
+		}
 		console.log(values.name, "\n", date, values.id, values.stream, "\n");
+		//await delay(100);
 	}
-
 	/**
 	 * Парсинг Radio Record
 	 */
@@ -185,10 +242,10 @@ GETURLTOFILE('https://www.radiorecord.ru/api/stations/', 'record.json').then(asy
 		await MAGICK(`${id}.png`, 'icon', false);
 		await FAVICON(id);
 		let favicon = fs.readFileSync(`${id}_favicon.png`, {encoding: 'base64'});
-		fs.unlinkSync(`${id}.png`);
-		fs.unlinkSync(`${id}_big.png`);
-		fs.unlinkSync(`${id}_icon.png`);
-		fs.unlinkSync(`${id}_favicon.png`);
+		await deleteFile(`${id}.png`);
+		await deleteFile(`${id}_icon.png`);
+		await deleteFile(`${id}_favicon.png`);
+		await deleteFile(`${id}_big.png`);
 
 		mdWrite.write(`\n| ${name} | ${stream} |`);
 		m3u8Write.write(getM3U8Item(name, stream));
@@ -200,10 +257,13 @@ GETURLTOFILE('https://www.radiorecord.ru/api/stations/', 'record.json').then(asy
 			"favicon": `data:image/png;base64,${favicon}`,
 			"image": `data:image/png;base64,${bigicon}`
 		};
+		if(!select) {
+			select = id;
+		}
 		console.log(name, "\n", date, id, stream, "\n");
 	}
 	obj.stations = playlist;
-
+	obj.active = select;
 	fs.writeFileSync(dataJsonFile, JSON.stringify(obj, null, "\t"), {encoding: 'utf8'});
 
 	mdWrite.write(`\n\n[Playlist](radio.m3u8)`);
@@ -211,12 +271,13 @@ GETURLTOFILE('https://www.radiorecord.ru/api/stations/', 'record.json').then(asy
 	mdWrite.end();
 	m3u8Write.end();
 
-	await delay(2000);
+	await delay(1000);
 
 	let radioMD = fs.readFileSync(mdFile, 'utf8');
 	const regex = /<!--BeginStations-->(.*)<!--EndStations-->/gs;
 	const readme = readmeString.replace(/<!--BeginStations-->(.*)<!--EndStations-->/gs, `<!--BeginStations-->\n${radioMD}\n<!--EndStations-->`);
 	fs.writeFileSync(readmeFile, readme, {encoding: 'utf8'});
+	console.log("\n", colors.yellowBright("DONE!"), "\n");
 }).catch(function(error){
 	console.log(error);
 });

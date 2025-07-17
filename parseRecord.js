@@ -190,7 +190,12 @@ GETURLTOFILE('https://www.radiorecord.ru/api/stations/', 'record.json').then(asy
 	const result = JSON.parse(s);
 	deleteFile('record.json');
 	const stations = result.result.stations;
-	let obj = JSON.parse(fs.readFileSync('src/sources/data.json', 'utf8')),
+	let obj = {
+		stations: {},
+		active: 0,
+		notify: true,
+		volume: 1
+	},
 	select = false;
 	const playlist = obj.stations || {};
 	/**

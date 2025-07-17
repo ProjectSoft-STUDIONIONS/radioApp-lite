@@ -9,7 +9,6 @@
 				<div class="modal-wrapper">
 					<div class="cropie_big"></div>
 					<h2 class="modal-title text-center"></h2>
-					<span class="icon-close close"></span>
 					<div class="modal-inputs row">
 						<label class="modal-label container">
 							<input class="control name" type="text" value="" placeholder="${locale.insertName}">
@@ -34,7 +33,6 @@
 			</div>
 		</div>`,
 		_tplCopy = `<div class="modal clearfix">
-			<span class="icon-close close"></span>
 			<div class="modal-dialog">
 				<div class="modal-wrapper">
 					<h2 class="modal-title text-center"></h2>
@@ -48,7 +46,6 @@
 			</div>
 		</div>`,
 		_tplDelExpImp = `<div class="modal clearfix">
-			<span class="icon-close close"></span>
 			<div class="modal-dialog">
 				<div class="modal-wrapper">
 					<h2 class="modal-title text-center"></h2>
@@ -200,9 +197,9 @@
 					});
 					return !1;
 				});
-				setTimeout(()=>{
+				/*setTimeout(()=>{
 					$('input[type=range]', tpl).trigger('change');
-				}, 100);
+				}, 100);*/
 			}
 			$this.type = type;
 			$this.modal = tpl;

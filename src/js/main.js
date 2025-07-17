@@ -38,14 +38,15 @@
 							has = "?" + (new Date()).getTime(),
 							_imageIcon = data.favicon || false,
 							_imageBig = data.image || false,
-							_icon = ((fs.existsSync(dir + '\\' + _id + '.png'))	? dir + '\\' + _id + '.png' : false);
+							iconStr = `${dir}\\${_id}`,
+							_icon = ((fs.existsSync(`${iconStr}.png`))	? `${iconStr}.png` : false);
 						if(!_icon){
 							try{
 								if(_imageIcon && regex.test(_imageIcon)){
 									let strIcon = _imageIcon.split(",")[1],
 										buffer1 = Buffer.from(strIcon, "base64");
-									fs.writeFileSync(dir + '\\' + _id + '.png', buffer1);
-									_icon = dir + '\\' + _id + '.png';
+									_icon = `${iconStr}.png`;
+									fs.writeFileSync(_icon, buffer1);
 								}
 							}catch(e){
 								log(`Error _imageIcon ${_id}`, e);
@@ -54,7 +55,7 @@
 								if(_imageBig && regex.test(_imageBig)){
 									let strImage = _imageBig.split(",")[1],
 										buffer2 = Buffer.from(strImage, "base64");
-									fs.writeFileSync(dir + '\\' + _id + '_big.png', buffer2);
+									fs.writeFileSync(`${iconStr}_big.png`, buffer2);
 								}
 							}catch(e){
 								log(`Error _imageBig ${_id}`, e);
@@ -195,8 +196,8 @@
 						id = data.id,
 						title = data.streamMeta || data.name,
 						has = (new Date()).getTime();
-					icon = (fs.existsSync(dir + '\\' + id + '.png')	? dir + '\\' + id + '.png' : 'favicon.png'),
-					big = (fs.existsSync(dir + '\\' + id + '_big.png')	? dir + '\\' + id + '_big.png' : icon);
+					icon = (fs.existsSync(`${dir}\\${id}.png`)	? `${dir}\\${id}.png` : 'favicon.png'),
+					big = (fs.existsSync(`${dir}\\${id}_big.png`)	? `${dir}\\${id}_big.png` : icon);
 					tmpCrop.bind({
 						url: big,
 						backgroundColor: '#ffffff'
@@ -334,25 +335,25 @@
 				icy.get(player.stream, function (res) {
 					var _title = data.streamMeta ? (data.streamMeta.length > 5 ? data.streamMeta : data.name) : data.name,
 						// Icon 180x180
-						icon = (fs.existsSync(dir + '\\' + data.id + '.png') ? dir + '\\' + data.id + '.png' : 'favicon.png');
+						icon = (fs.existsSync(`${dir}\\${data.id}.png`) ? `${dir}\\${data.id}.png` : 'favicon.png');
 					// Big icon 360x180
-					icon = (fs.existsSync(dir + '\\' + data.id + '_big.png') ? dir + '\\' + data.id + '_big.png' : icon);
+					icon = (fs.existsSync(`${dir}\\${data.id}_big.png`) ? `${dir}\\${data.id}_big.png` : icon);
 					if(player.isPlaying()){
-						$('#radio-list li#st_' + data.id).data('streamMeta', _title);
+						$(`#radio-list li#st_${data.id}`).data('streamMeta', _title);
 					}else{
 						setTitle(locale.appName);
 					}
 					res.on('metadata', function (metadata) {
 						let parsed = icy.parse(metadata),
 							$_title = $.trim(parsed.StreamTitle) + '';
-						log($_title);
+						//log($_title);
 						if($_title.length > 5){
 							if(player.isPlaying()){
 								if($_title != previosStream){
 									// Отправить сообщение для отображения
 									if(data.id == $('#radio-list li.active').data('id')){
 										previosStream = $_title;
-										$('#radio-list li#st_' + data.id).data('streamMeta', $_title);
+										$(`#radio-list li#st_${data.id}`).data('streamMeta', $_title);
 										setTitle($_title + ' | ' + data.name + ' | ' + locale.appName);
 										spawnNotification(locale.appName, icon, previosStream + "\n" + data.name);
 									}
@@ -475,7 +476,7 @@
 							/**
 							 * Export radio stations
 							 **/
-							ImpExp.ExportSattions(json).then(function(data){
+							ExportSattions(json).then(function(data){
 								let _output = JSON.stringify(data, null, "\t");
 								dialog.saveFileDialog('radio-export', '.json', function(sfile){
 									$("main").addClass('loading');
@@ -514,7 +515,7 @@
 							dialog.openFileDialog(['.json'], false, function(result){
 								player.stop();
 								$("main").addClass('loading');
-								ImpExp.ImportStations(result).then(function(data){
+								ImportStations(result).then(function(data){
 									$("#radio-list").empty();
 									readFile();
 								}).catch(function(data){
@@ -576,7 +577,7 @@
 			let $this = $(this),
 				link = $this.attr('href');
 			$this.attr({
-				title: locale.goToWebsite + ` ${link}`
+				title:  `${locale.goToWebsite} ${link}`
 			});
 		});
 		$(document).on('click', '#radio-list span.icons', function(e){
@@ -599,7 +600,7 @@
 					_li.removeClass('stop').addClass('play preload'),
 					player.stream = data.stream,
 					$('#radio-list li').each(function(){$(this).data('streamMeta', '');}),
-					$text.text(data.name + ' | ' + locale.appName),
+					$text.text(`${data.name} | ${locale.appName}`),
 					player.play()
 				)
 			) : (
@@ -607,7 +608,7 @@
 				_li.addClass('active preload play').removeClass('stop'),
 				player.stream = data.stream,
 				$('#radio-list li').each(function(){$(this).data('streamMeta', '');}),
-				$text.text(data.name + ' | ' + locale.appName),
+				$text.text(`${data.name} | ${locale.appName}`),
 				player.play()
 			);
 			json.active = active = parseInt(data.id);
@@ -643,14 +644,14 @@
 				data.type = 'edit';
 				$.radioDialog.show(data, function(args){
 					if(args.type == data.type){
-						let $li = $('#st_' + args.id),
+						let $li = $(`#st_${args.id}`),
 							img = $('img', $li),
-							name = $('.station-name', '#st_' + args.id),
+							name = $('.station-name', `#st_${args.id}`),
 							has = "?" + (new Date()).getTime(),
-							_icon = ((fs.existsSync(dir + '\\' + args.id + '.png'))	? dir + '\\' + args.id + '.png' : 'favicon.png') + has;
+							_icon = ((fs.existsSync(`${dir}\\${args.id}.png`))	? `${dir}\\${args.id}.png` : 'favicon.png') + has;
 						
 						name.text(args.name);
-						$('#st_' + args.id).data({
+						$li.data({
 							id: args.id,
 							name: args.name,
 							stream: args.stream
@@ -685,13 +686,13 @@
 				data.type = 'delete';
 				$.radioDialog.show(data, function(args){
 					if(args.type == data.type){
-						if($('#st_' + args.id).hasClass('active')){
+						if($(`#st_${args.id}`).hasClass('active')){
 							/**
 							 * stop radio
 							 **/
 							 player.stop();
 						}
-						$('#st_' + args.id).remove();
+						$(`#st_${args.id}`).remove();
 						deleteItem(args.id);
 					}
 				});
@@ -772,7 +773,7 @@
 			notify = $notify.prop('checked');
 			if($loadDefault.prop('checked')){
 				player.stop();
-				ImpExp.DeleteRadioPath(dir).then(function(){
+				DeleteRadioPath(dir).then(function(){
 					$("#radio-list").empty();
 					active = 0;
 					writeFile(true).then(()=> {
@@ -783,7 +784,7 @@
 				
 			}else if($clear_stations.prop('checked')){
 				player.stop();
-				ImpExp.DeleteRadioPath(dir).then(function(){
+				DeleteRadioPath(dir).then(function(){
 					$("#radio-list").empty();
 					active = 0;
 					writeFile(true).then(()=> {
@@ -808,10 +809,6 @@
 			$settingsBlock[0].close();
 			return !1;
 		});
-		if(full){
-			$("main > .container").prepend(divCan);
-			$('body').addClass('appVisual');
-		}
 	}, 1000);
 
 	/**
@@ -852,12 +849,12 @@
 	});
 
 	/**
-	 * Test Function
-	 **/
-	$('.test').on('click', function(e){
-		e.preventDefault();
-		win.showDevTools(location.origin + '_;generated_background_page.html');
-		return !1;
+	 * Type range croppie
+	 * Обновление данных для оформления ползунка
+	 * Без этого просто никак.
+	 * Лучше всего слушать событие от document
+	 */
+	$(document).on('update.croppie', '.cropie', function(e) {
+		$('input[type=range]', e.target).trigger('change');
 	});
-
 }(jQuery));

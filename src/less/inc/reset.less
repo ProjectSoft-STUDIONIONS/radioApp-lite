@@ -20,6 +20,25 @@ body {
 	position: relative;
 	overflow: hidden;
 }
+dialog {
+	border-style: unset;
+	background-color: rgba(255, 255, 255, .95);
+	position: fixed;
+	z-index: -20000;
+	verflow-y: auto;
+	left: 0;
+	right: 0;
+	top: 28px;
+	bottom: 42px;
+	height: 100%;
+	width: 100%;
+	max-width: 100%;
+	// Height - (Top + Bottom)
+	max-height: calc(100% - 70px); // 42 + 28
+	&[open]{
+		z-index: 9999999;
+	}
+}
 img {
 	max-width: 100%;
 }
@@ -74,18 +93,6 @@ input[type=checkbox] {
 		clear: both;
 	}
 }
-.appBlock {
-	visibility: visible;
-	background-color: rgba(255, 255, 255, .95);
-	z-index: 99999;
-	opacity: 1;
-	position: fixed;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
-	transition: opacity 1s ease, z-index .3s ease;
-}
 .hidden {
 	visibility: hidden;
 	z-index: -100;
@@ -100,8 +107,8 @@ input[type=checkbox] {
 	padding-right: 15px;
 }
 a.github.icon-github {
-    font-size: 20px;
-    text-decoration: none;
+	font-size: 20px;
+	text-decoration: none;
 }
 .right,
 .left .writ {

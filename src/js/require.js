@@ -15,7 +15,7 @@ const gui = require('nw.gui'),
 	dialog = require(".\\modules\\nwdialog.js"),
 	{ StringDecoder } = require('string_decoder'),
 	decoder = new StringDecoder('utf8'),
-	ImpExp = require('.\\modules\\impexp.js'),
+	{ImportStations, ExportSattions, DeleteRadioPath} = require('.\\modules\\impexp.js'),
 	log = function(){
 		sdk && console.log(...arguments);
 	},

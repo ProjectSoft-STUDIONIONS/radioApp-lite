@@ -92,7 +92,7 @@ function AudioPlayer(document){
 	});
 	audio.controls = true;
 	audio.style.display = "none";
-	document.body.appendChild(audio);
+	//document.body.appendChild(audio);
 	function updateOnlineStatus(e){
 		var net = _net;
 		_status = e.type;

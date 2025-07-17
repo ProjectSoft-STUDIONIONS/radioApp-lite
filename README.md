@@ -183,4 +183,8 @@
 | Radio Record «2-step» | https://radiorecord.hostingradio.ru/2step96.aacp |
 | Radio Record «Complextro» | https://radiorecord.hostingradio.ru/complextro96.aacp |
 | Radio Record «Groove/Tribal» | https://radiorecord.hostingradio.ru/groovetribal96.aacp |
+
+[Playlist](radio.m3u8)
+
+
 <!--EndStations-->

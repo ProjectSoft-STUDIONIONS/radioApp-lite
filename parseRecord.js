@@ -38,6 +38,8 @@ mdWrite.write(`| Station Name | Strem link |
 m3u8Write.write(`#EXTM3U
 #PLAYLIST:Ваше Радио. Облегчённая версия.`);
 
+const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
+
 const GETURLTOFILE = function(url, output) {
 		return new Promise(function(resolve, reject){
 			const options = new URL(url);
@@ -209,7 +211,7 @@ GETURLTOFILE('https://www.radiorecord.ru/api/stations/', 'record.json').then(asy
 	mdWrite.end();
 	m3u8Write.end();
 
-
+	await delay(2000);
 
 	let radioMD = fs.readFileSync(mdFile, 'utf8');
 	const regex = /<!--BeginStations-->(.*)<!--EndStations-->/gs;

@@ -364,8 +364,8 @@ GETURLTOFILE('https://www.radiorecord.ru/api/stations/', 'record.json').then(asy
 	 */
 	fs.writeFileSync(dataJsonFile, JSON.stringify(obj, null, "\t"), {encoding: 'utf8'});
 
-	mdWrite.write(`\n\n[Playlist](radio.m3u8)`);
-	mdWrite.write(`\n\n`);
+	mdWrite.write(`\r\n\r\n[Playlist](radio.m3u8)`);
+	mdWrite.write(`\r\n\r\n`);
 
 	mdWrite.end();
 	m3u8Write.end();
@@ -381,7 +381,7 @@ GETURLTOFILE('https://www.radiorecord.ru/api/stations/', 'record.json').then(asy
 	const readme = readmeString.replace(/<!--BeginStations-->(.*)<!--EndStations-->/gs, `<!--BeginStations-->\n${radioMD}\n<!--EndStations-->`);
 	fs.writeFileSync(readmeFile, readme, {encoding: 'utf8'});
 	await deleteFile(mdFile);
-	console.log("\n", colors.yellowBright("DONE!"), "\n");
+	console.log("\r\n", colors.yellowBright("DONE!"), "\r\n");
 }).catch(function(error){
 	console.log(error);
 });

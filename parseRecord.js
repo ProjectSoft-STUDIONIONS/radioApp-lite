@@ -12,11 +12,11 @@ function deleteFile(file) {
 }
 
 function getM3U8Item(name, url) {
-	return `\n#EXTINF:-1,${name}\r\n${url}`;
+	return `\r\n#EXTINF:-1,${name}\r\n${url}`;
 }
 
 function getMDItem (name, url) {
-	return `\n| ${name} | ${url} |`;
+	return `\r\n| ${name} | ${url} |`;
 }
 
 let mdFile = path.join(__dirname, `radio.md`),
@@ -135,12 +135,31 @@ const GETURLTOFILE = function(url, output) {
 	FAVICON = function(id){
 		return new Promise(function(resolve, reject){
 			const {exec} = require('child_process');
-			let directory = path.normalize(__dirname);
-			let app = 'magick',
+			let directory = path.normalize(__dirname),
+				app = 'magick',
 				name = path.normalize(path.join(directory, `${id}_icon.png`)),
 				out = path.normalize(path.join(directory, `${id}_favicon.png`)),
-				args = `${app} "${name}" -alpha on ( +clone -threshold -1 -negate -fill white -draw "circle 90,90 90,0" ) -compose copy_opacity -composite "${out}"`,
-				ls = exec(args, (error, stdout, stderr) => {
+				args = [
+					`${app}`,
+					`"${name}"`,
+					`-alpha`,
+					`on`,
+					`(`,
+					`+clone`,
+					`-threshold`,
+					`-1`,
+					`-negate`,
+					`-fill`,
+					`white`,
+					`-draw`,
+					`"circle 90,90 90,0"`,
+					`)`,
+					`-compose`,
+					`copy_opacity`,
+					`-composite`,
+					`"${out}"`
+				],
+				ls = exec(args.join(` `), (error, stdout, stderr) => {
 					if (error) {
 						reject(error);
 					} else if (stderr) {
@@ -162,15 +181,44 @@ const GETURLTOFILE = function(url, output) {
 				name = path.normalize(path.join(directory, `${id}.png`)),
 				temp = path.normalize(path.join(directory, `${id}_temp.png`)),
 				out = path.normalize(path.join(directory, `${id}_favicon.png`)),
-				args_temp = `${app} "${name}" -background transparent -gravity center -extent 180x180 "${temp}"`,
-				args = `${app} "${temp}" -alpha on ( +clone -threshold -1 -negate -fill white -draw "circle 90,90 90,0" ) -compose copy_opacity -composite "${out}"`;
-			exec(args_temp, (error, stdout, stderr) => {
+				args_temp = [
+					`${app}`,
+					`"${name}"`,
+					`-background`,
+					`transparent`,
+					`-gravity`,
+					`center`,
+					`-extent`,
+					`180x180`,
+					`"${temp}"`
+				],
+				args = [
+					`${app}`,
+					`"${temp}"`,
+					`-alpha`,
+					`on`,
+					`(`,
+					`+clone`,
+					`-threshold`,
+					`-1`,
+					`-negate`,
+					`-fill`,
+					`white`,
+					`-draw`,
+					`"circle 90,90 90,0"`,
+					`)`,
+					`-compose`,
+					`copy_opacity`,
+					`-composite`,
+					`"${out}"`
+				];
+			exec(args_temp.join(` `), (error, stdout, stderr) => {
 				if (error) {
 					reject(error);
 				} else if (stderr) {
 					reject(stderr);
 				} else {
-					exec(args, (err, stdo, stde) => {
+					exec(args.join(` `), (err, stdo, stde) => {
 						if (err) {
 							reject(err);
 						} else if (stde) {

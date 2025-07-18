@@ -1,6 +1,8 @@
 * text=auto
 
 **/*.json text eol=lf
+**/*.md text eol=crlf
+**/*.m3u8 text eol=crlf
 
 /.github export-ignore
 /.gitattributes export-ignore

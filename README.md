@@ -67,6 +67,7 @@
 | Радио Монте-Карло | https://montecarlo.hostingradio.ru/montecarlo96.aacp |
 | Радио Energy Самара | https://srv21.gpmradio.ru:8443/stream/air/aac/64/99 |
 | Авторадио | https://srv01.gpmradio.ru/stream/air/aac/64/100 |
+| Дальнобой FM | https://dalnoboyfm.radiopark2000x.ru:4005/stream |
 | Radio Record «Record» | https://radiorecord.hostingradio.ru/rr_main96.aacp |
 | Radio Record «Russian Mix» | https://radiorecord.hostingradio.ru/rus96.aacp |
 | Radio Record «Mashup» | https://radiorecord.hostingradio.ru/mashup96.aacp |

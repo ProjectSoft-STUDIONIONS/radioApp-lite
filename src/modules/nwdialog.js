@@ -132,9 +132,4 @@ NwDialog.prototype = {
 
 }
 
-if (typeof exports == 'undefined') {
-	nw.Dialog = new NwDialog();
-	window.dialog = new NwDialog();
-} else {
-	module.exports = new NwDialog();
-}
+module.exports = new NwDialog();

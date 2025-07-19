@@ -1,8 +1,5 @@
 var EventDispatcher = require(__dirname + '/eventdispatcher.js'),
-	sdk = (nw.process.versions["nw-flavor"] == "sdk"),
-	log = function(){
-		sdk && console.log.call(arguments);
-	},
+	{ log } = require(__dirname + '/log.js'),
 	_isPlaying = false,
 	_isProgress = false,
 	_net = false,
@@ -168,8 +165,4 @@ AudioPlayer.prototype = {
 }
 Object.assign(AudioPlayer.prototype, EventDispatcher.prototype);
 
-if (typeof exports == 'undefined') {
-    window.AudioPlayer = AudioPlayer;
-} else {
-    module.exports = AudioPlayer;
-}
+module.exports = AudioPlayer;

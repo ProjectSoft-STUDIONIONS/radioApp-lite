@@ -51,7 +51,6 @@
 | Hunter.FM «Gospel» | https://live.hunter.fm/gospel_low |
 | Hunter.FM «Sertanejo» | https://live.hunter.fm/sertanejo_low |
 | Hunter.FM «Pop» | https://live.hunter.fm/pop_low |
-| POP FM Биробиджан | http://5.8.213.195:8000/popfm_80 |
 | Retrowave.One Radio | https://waveretro.ru:8443/stream |
 | Радио 7 | https://radio7.hostingradio.ru:8040/radio7128.mp3 |
 | Радио «Europa Plus» | https://europaplus.hostingradio.ru:8030/ep128 |
@@ -64,7 +63,6 @@
 | Радио Родных Дорог | https://stream1.radiord.ru:8000/live128.mp3 |
 | Русское радио | https://rusradio.hostingradio.ru/rusradio96.aacp |
 | Радио Шансон | https://chanson.hostingradio.ru:8041/chanson256.mp3 |
-| Радио Монте-Карло | https://montecarlo.hostingradio.ru/montecarlo96.aacp |
 | Радио Energy Самара | https://srv21.gpmradio.ru:8443/stream/air/aac/64/99 |
 | Авторадио | https://srv01.gpmradio.ru/stream/air/aac/64/100 |
 | Дальнобой FM | https://dalnoboyfm.radiopark2000x.ru:4005/stream |

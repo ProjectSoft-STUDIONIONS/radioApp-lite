@@ -99,8 +99,5 @@ class LocaleApp {
 }
 
 var locale = new LocaleApp();
-if(typeof exports == "undefined"){
-	window.locale = locale;
-}else{
-	module.exports = locale;
-}
+
+module.exports = locale;

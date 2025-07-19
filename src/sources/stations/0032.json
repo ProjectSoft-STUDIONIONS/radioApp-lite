@@ -2,7 +2,7 @@
 	"1752566478351": {
 		"name": "Радио 7",
 		"stream": "https://radio7.hostingradio.ru:8040/radio7128.mp3",
-		"id": "1752566478351",
+		"id": 1752566478351,
 		"favicon": false,
 		"image": false
 	}

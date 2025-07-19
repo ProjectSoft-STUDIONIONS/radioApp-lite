@@ -1,18 +1,15 @@
 const fs = require('fs'),
 	path = require('path'),
-	sdk = (nw.process.versions["nw-flavor"] == "sdk"),
-	dir = nw.App.dataPath + "\\radio",
-	dirFile = dir + "\\data.json",
+	dir = path.normalize(path.join(nw.App.dataPath, "radio")),
+	dirFile = path.normalize(path.join(dir, "data.json")),
 	{ StringDecoder } = require('string_decoder'),
 	decoder = new StringDecoder('utf8'),
-	log = function(){
-		sdk && console.log.call(arguments);
-	};
+	{ log } = require(__dirname + '/log.js');
 /**
  * Functions module
  **/
 var readFileIcon = async function(id){
-	let icon = (fs.existsSync(dir + '\\' + id + '.png')	? dir + '\\' + id + '.png' : 'favicon.png');
+	let icon = (fs.existsSync(path.normalize(path.join(dir, `${id}.png`)))	? path.normalize(path.join(dir, `${id}.png`)) : 'favicon.png');
 	return "data:image/png;base64," + fs.readFileSync(icon).toString('base64');
 };
 /**
@@ -38,6 +35,7 @@ const DeleteRadioPath = function (directory) {
 		}
 	});
 },
+
 ExportSattions = function(json){
 	return new Promise(function(resolve, reject){
 		if(typeof json == 'object'){
@@ -55,8 +53,10 @@ ExportSattions = function(json){
 		//json.stations;
 		for (let prop in json.stations) {
 			json.stations[prop].id = parseInt(prop);
-			let icon = (fs.existsSync(dir + '\\' + prop + '.png')	? dir + '\\' + prop + '.png' : 'favicon.png');
-			let image = (fs.existsSync(dir + '\\' + prop + '_big.png')	? dir + '\\' + prop + '_big.png' : icon);
+			let iconFilePath = path.normalize(path.join(dir, `${prop}.png`));
+			let imageFilePath = path.normalize(path.join(dir, `${prop}_big.png`));
+			let icon = (fs.existsSync(iconFilePath)	? iconFilePath : 'favicon.png');
+			let image = (fs.existsSync(imageFilePath)	? imageFilePath : icon);
 			json.stations[prop].favicon = "data:image/png;base64," + fs.readFileSync(icon).toString('base64');
 			json.stations[prop].image = "data:image/png;base64," + fs.readFileSync(image).toString('base64');
 		}
@@ -102,9 +102,9 @@ ImportStations = function(file){
 								/**
 								 * Save Favicon station
 								 **/
-								fs.writeFileSync(dir + `/${_json["stations"][prop].id}.png`, base64.split('data:image/png;base64,')[1], {encoding: 'base64'});
+								fs.writeFileSync(path.normalize(path.join(dir, `${_json["stations"][prop].id}.png`)), base64.split('data:image/png;base64,')[1], {encoding: 'base64'});
 								if(regex.test(image_base64)){
-									fs.writeFileSync(dir + `/${_json["stations"][prop].id}_big.png`, image_base64.split('data:image/png;base64,')[1], {encoding: 'base64'});
+									fs.writeFileSync(path.normalize(path.join(dir, `${_json["stations"][prop].id}_big.png`)), image_base64.split('data:image/png;base64,')[1], {encoding: 'base64'});
 								}
 							}
 						}
@@ -125,13 +125,8 @@ ImportStations = function(file){
 	});
 };
 
-if (typeof exports == 'undefined') {
-	window.ExportSattions = ExportSattions;
-	window.ImportStations = ImportStations;
-} else {
-	module.exports = {
-		ExportSattions: ExportSattions,
-		ImportStations: ImportStations,
-		DeleteRadioPath: DeleteRadioPath
-	};
-}
+module.exports = {
+	ExportSattions: ExportSattions,
+	ImportStations: ImportStations,
+	DeleteRadioPath: DeleteRadioPath
+};

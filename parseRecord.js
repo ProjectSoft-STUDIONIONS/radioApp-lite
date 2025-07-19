@@ -2,6 +2,8 @@ const fs = require('fs'),
 	path = require('path'),
 	colors = require('ansi-colors');
 
+const filesDir = path.join(__dirname, 'src', 'sources', 'stations');
+
 process.stdout.write('\033c');
 
 function deleteFile(file) {
@@ -87,9 +89,9 @@ const GETURLTOFILE = function(url, output) {
 		return new Promise(function(resolve, reject){
 			const {exec} = require('child_process');
 			let app = 'magick',
-				id = input.split('.')[0],
-				name = path.normalize(path.join(__dirname, input)),
-				out = path.normalize(path.join(__dirname, `${id}_${sufix}.png`)),
+				id = path.basename(input, path.extname(input)),
+				name = input,
+				out = path.normalize(path.join(filesDir ,`${id}_${sufix}.png`)),
 				ls,
 				a = [
 					`${app}`,
@@ -137,8 +139,8 @@ const GETURLTOFILE = function(url, output) {
 			const {exec} = require('child_process');
 			let directory = path.normalize(__dirname),
 				app = 'magick',
-				name = path.normalize(path.join(directory, `${id}_icon.png`)),
-				out = path.normalize(path.join(directory, `${id}_favicon.png`)),
+				name = path.normalize(path.join(filesDir, `${id}_icon.png`)),
+				out = path.normalize(path.join(filesDir, `${id}_favicon.png`)),
 				args = [
 					`${app}`,
 					`"${name}"`,
@@ -176,7 +178,7 @@ const GETURLTOFILE = function(url, output) {
 	FAV_ICON = function(id, dir=''){
 		return new Promise(function(resolve, reject){
 			const {exec} = require('child_process');
-			let directory = dir != '' ? path.normalize(dir) : path.normalize(__dirname);
+			let directory = dir != '' ? path.normalize(dir) : path.normalize(filesDir);
 			let app = 'magick',
 				name = path.normalize(path.join(directory, `${id}.png`)),
 				temp = path.normalize(path.join(directory, `${id}_temp.png`)),
@@ -249,7 +251,6 @@ GETURLTOFILE('https://www.radiorecord.ru/api/stations/', 'record.json').then(asy
 	/**
 	 * Загрузка локальных станций из src/sources/stations
 	 */
-	let filesDir = path.join(__dirname, 'src', 'sources', 'stations');
 	let files = fs.readdirSync(filesDir).filter(fn => fn.endsWith('.json')).map(file => path.join(filesDir, file));
 	for(let f = 0; f < files.length; ++f){
 		let fileStation = JSON.parse(fs.readFileSync(files[f], 'utf8'));
@@ -261,21 +262,32 @@ GETURLTOFILE('https://www.radiorecord.ru/api/stations/', 'record.json').then(asy
 		 * Значения станции
 		 */
 		let values = Object.values(fileStation)[0];
-		mdWrite.write(`\n| ${values.name} | ${values.stream} |`);
-		m3u8Write.write(getM3U8Item(values.name, values.stream));
-		let date = new Date();
-		date.setTime(values.id);
+		values.id = parseInt(key);
+		/**
+		 * Проверяем есть ли изображение
+		 * Если его нет - станцию не добавляем.
+		 * Так проще отслеживать станции
+		 * Именно по имени изображения
+		 * 
+		 * Чтобы оставить изображение, но не добавлять станцию
+		 * переименуем файл изображения добавив суфикс _delete
+		 * Было 1752607042854.png Стало 1752607042854_delete.png
+		 */
+		if(!fs.existsSync(path.normalize(path.join(filesDir ,`${values.id}.png`)))) {
+			console.log(values.name, "\n", colors.redBright(`Станция не добавлена`), colors.yellowBright(path.basename(files[f])), "\n");
+			continue;
+		}
 		/**
 		 * Обработка изображений
 		 */
-		if(!values.favicon) {
-			await FAV_ICON(values.id, path.normalize(filesDir));
-			let bigicon = fs.readFileSync(path.normalize(path.join(filesDir ,`${values.id}.png`)), {encoding: 'base64'});
-			let favicon = fs.readFileSync(path.normalize(path.join(filesDir ,`${values.id}_favicon.png`)), {encoding: 'base64'});
-			values.favicon = `data:image/png;base64,${favicon}`;
-			values.image = `data:image/png;base64,${bigicon}`;
-			await deleteFile(path.normalize(path.join(filesDir ,`${values.id}_favicon.png`)));
-		}
+		await FAV_ICON(values.id);
+		let bigicon = fs.readFileSync(path.normalize(path.join(filesDir ,`${values.id}.png`)), {encoding: 'base64'});
+		let favicon = fs.readFileSync(path.normalize(path.join(filesDir ,`${values.id}_favicon.png`)), {encoding: 'base64'});
+		values.favicon = `data:image/png;base64,${favicon}`;
+		values.image = `data:image/png;base64,${bigicon}`;
+		await deleteFile(path.normalize(path.join(filesDir ,`${values.id}_favicon.png`)));
+
+
 		playlist[key] = values;
 		/**
 		 * Берём первую станцию если ещё нет
@@ -283,7 +295,14 @@ GETURLTOFILE('https://www.radiorecord.ru/api/stations/', 'record.json').then(asy
 		if(!select) {
 			select = values.id;
 		}
-		console.log(values.name, "\n", date, values.id, values.stream, "\n");
+		/**
+		 * Пишем
+		 */
+		mdWrite.write(`\n| ${values.name} | ${values.stream} |`);
+		m3u8Write.write(getM3U8Item(values.name, values.stream));
+		let date = new Date();
+		date.setTime(values.id);
+		console.log(values.name, "\n", date, values.id, colors.cyanBright(values.stream), "\n");
 	}
 	/**
 	 * Парсинг Radio Record
@@ -309,25 +328,25 @@ GETURLTOFILE('https://www.radiorecord.ru/api/stations/', 'record.json').then(asy
 		/**
 		 * Загружаем изображение для станции
 		 */
-		await GETURLTOFILE(icon, `${id}.png`);
+		await GETURLTOFILE(icon, path.normalize(path.join(filesDir ,`${id}.png`)));
 		/**
 		 * Генерируем картинки станции
 		 */
-		await MAGICK(`${id}.png`, 'big', true);
-		await MAGICK(`${id}.png`, 'icon', false);
+		await MAGICK(path.normalize(path.join(filesDir ,`${id}.png`)), 'big', true);
+		await MAGICK(path.normalize(path.join(filesDir ,`${id}.png`)), 'icon', false);
 		await FAVICON(id);
 		/**
 		 * Читаем полученные изображения
 		 */
-		let bigicon = fs.readFileSync(`${id}_big.png`, {encoding: 'base64'});
-		let favicon = fs.readFileSync(`${id}_favicon.png`, {encoding: 'base64'});
+		let bigicon = fs.readFileSync(path.normalize(path.join(filesDir ,`${id}_big.png`)), {encoding: 'base64'});
+		let favicon = fs.readFileSync(path.normalize(path.join(filesDir ,`${id}_favicon.png`)), {encoding: 'base64'});
 		/**
 		 * Удаляем изображения
 		 */
-		await deleteFile(`${id}.png`);
-		await deleteFile(`${id}_icon.png`);
-		await deleteFile(`${id}_favicon.png`);
-		await deleteFile(`${id}_big.png`);
+		await deleteFile(path.normalize(path.join(filesDir ,`${id}.png`)));
+		await deleteFile(path.normalize(path.join(filesDir ,`${id}_icon.png`)));
+		await deleteFile(path.normalize(path.join(filesDir ,`${id}_favicon.png`)));
+		await deleteFile(path.normalize(path.join(filesDir ,`${id}_big.png`)));
 		/**
 		 * Пишем список и плейлист
 		 */
@@ -349,7 +368,7 @@ GETURLTOFILE('https://www.radiorecord.ru/api/stations/', 'record.json').then(asy
 		if(!select) {
 			select = id;
 		}
-		console.log(name, "\n", date, id, stream, "\n");
+		console.log(name, "\n", date, id, colors.cyanBright(stream), "\n");
 	}
 	/**
 	 * Назначаем станции для конфигурации

@@ -2,7 +2,7 @@
 	"1752605507246": {
 		"name": "Радио Родных Дорог",
 		"stream": "https://stream1.radiord.ru:8000/live128.mp3",
-		"id": 1752605507246,
+		"id": null,
 		"favicon": false,
 		"image": false
 	}

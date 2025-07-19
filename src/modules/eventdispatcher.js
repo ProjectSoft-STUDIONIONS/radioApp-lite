@@ -1,8 +1,6 @@
+const { log } = require(__dirname + '/log.js');
 var EventDispatcher = function () {};
-const sdk = (nw.process.versions["nw-flavor"] == "sdk"),
-	log = function(){
-		sdk && console.log.call(arguments);
-	}
+
 Object.assign( EventDispatcher.prototype, {
 	addEventListener: function ( type, listener ) {
 		if ( this._listeners === undefined ) this._listeners = {};
@@ -50,8 +48,5 @@ Object.assign( EventDispatcher.prototype, {
 		}
 	}
 });
-if (typeof exports == 'undefined') {
-	window.EventDispatcher = EventDispatcher;
-} else {
-	module.exports = EventDispatcher;
-}
+
+module.exports = EventDispatcher;

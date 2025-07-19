@@ -1,6 +1,4 @@
-
-const sdk = (nw.process.versions["nw-flavor"] == "sdk");
-// sdk &&  nw.Window.get().showDevTools();
+(nw.process.versions["nw-flavor"] == "sdk") &&  nw.Window.get().showDevTools();
 const gui = require('nw.gui'),
 	full = (nw.App.argv.indexOf('--full') >= 0),
 	win = nw.Window.get(),
@@ -16,9 +14,7 @@ const gui = require('nw.gui'),
 	{ StringDecoder } = require('string_decoder'),
 	decoder = new StringDecoder('utf8'),
 	{ImportStations, ExportSattions, DeleteRadioPath} = require('.\\modules\\impexp.js'),
-	log = function(){
-		sdk && console.log(...arguments);
-	},
+	{ log } = require('.\\modules\\log.js'),
 	quitError = function(error){
 		alert(error);
 		nw.App.quit();

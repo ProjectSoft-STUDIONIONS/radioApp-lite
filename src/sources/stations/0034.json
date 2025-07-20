@@ -4,6 +4,7 @@
 		"stream": "https://epdop.hostingradio.ru:8033/fresh64.aac",
 		"id": null,
 		"favicon": false,
-		"image": false
+		"image": false,
+		"genre": []
 	}
 }

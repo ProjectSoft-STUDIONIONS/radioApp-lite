@@ -4,6 +4,7 @@
 		"stream": "https://europaplus.hostingradio.ru:8014/ep-new128.mp3",
 		"id": null,
 		"favicon": false,
-		"image": false
+		"image": false,
+		"genre": []
 	}
 }

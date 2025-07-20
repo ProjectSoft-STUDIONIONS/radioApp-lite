@@ -4,6 +4,7 @@
 		"stream": "https://waveretro.ru:8443/stream",
 		"id": null,
 		"favicon": false,
-		"image": false
+		"image": false,
+		"genre": []
 	}
 }

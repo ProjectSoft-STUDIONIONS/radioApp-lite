@@ -4,6 +4,7 @@
 		"stream": "https://montecarlo.hostingradio.ru/montecarlo96.aacp",
 		"id": null,
 		"favicon": false,
-		"image": false
+		"image": false,
+		"genre": []
 	}
 }

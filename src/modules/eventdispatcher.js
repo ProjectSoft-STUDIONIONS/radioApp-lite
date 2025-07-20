@@ -1,4 +1,3 @@
-const { log } = require(__dirname + '/log.js');
 var EventDispatcher = function () {};
 
 Object.assign( EventDispatcher.prototype, {

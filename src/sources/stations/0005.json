@@ -4,6 +4,10 @@
 		"stream": "https://nashe1.hostingradio.ru/nashesongs.mp3",
 		"id": null,
 		"favicon": false,
-		"image": false
+		"image": false,
+		"genre": [
+			"RUSSIAN",
+			"ROCK"
+		]
 	}
 }

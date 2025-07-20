@@ -1,9 +1,6 @@
 'use strict';
 var sdk = (nw.process.versions["nw-flavor"] == "sdk"),
-	_context = typeof global.DOMDocument === 'undefined' ? document : global.DOMDocument,
-	log = function(){
-		sdk && console.log.call(arguments);
-	};
+	_context = typeof global.DOMDocument === 'undefined' ? document : global.DOMDocument;
 function isArray(value){
 	return Object.prototype.toString.call(value) === '[object Array]';
 }

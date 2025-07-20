@@ -4,6 +4,7 @@
 		"stream": "https://live.hunter.fm/smash_low",
 		"id": null,
 		"favicon": false,
-		"image": false
+		"image": false,
+		"genre": []
 	}
 }

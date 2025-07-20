@@ -4,6 +4,7 @@
 		"stream": "https://dfm-insomnia.hostingradio.ru/insomnia96.aacp",
 		"id": null,
 		"favicon": false,
-		"image": false
+		"image": false,
+		"genre": []
 	}
 }

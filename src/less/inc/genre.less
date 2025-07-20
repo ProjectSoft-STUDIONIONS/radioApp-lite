@@ -1,0 +1,67 @@
+.loading {
+	.genre {
+		&_list {
+			visibility: hidden;
+			opacity: 0;
+		}
+	}
+}
+
+.genre {
+	position: absolute;
+	top: 0;
+	right: 0;
+	z-index: 10;
+	max-height: 100%;
+	overflow-y: auto;
+	padding-left: 15px;
+	&_list {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+		visibility: visible;
+		opacity: 1;
+		transition: opacity .3s ease;
+	}
+	&_item {
+		box-shadow: 0px 0px 2px #000000;
+		font-size: 12px;
+		cursor: pointer;
+		&,
+		span {
+			background-color: #ffffff;
+			color: #333333;
+			white-space: nowrap;
+			user-select: none;
+			border-top-left-radius: 5px;
+			border-bottom-left-radius: 5px;
+			transition: margin-left .3s linear, padding-right .3s linear, box-shadow .3s linear;
+		}
+		span {
+			pointer-events: none;
+			display: block;
+			padding-left: 10px;
+			padding-right: 10px;
+			padding-top: 5px;
+			padding-bottom: 5px;
+		}
+		&:hover,
+		&.active {
+			margin-left: -10px;
+			box-shadow: 0px 0px 0px #000000;
+			span {
+				position: relative;
+				box-shadow: 0px 0 5px #000;
+				padding-right: 20px;
+				z-index: 1;
+			}
+		}
+		&.active {
+			&,
+			span {
+				background-color: #333333;
+				color: #ffffff;
+			}
+		}
+	}
+}

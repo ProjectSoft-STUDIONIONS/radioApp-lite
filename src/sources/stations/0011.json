@@ -4,6 +4,7 @@
 		"stream": "https://dfm-dfmdeep.hostingradio.ru/dfmdeep96.aacp",
 		"id": null,
 		"favicon": false,
-		"image": false
+		"image": false,
+		"genre": []
 	}
 }

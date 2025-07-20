@@ -3,7 +3,7 @@
 	"version": "3.1.4",
 	"comments": "Ваше Радио. Облегчённая версия.",
 	"description": "Ваше Радио. Облегчённая версия. Самостоятельное добавление радио потока. Импорт/Экспорт плейлиста радиостанций.",
-	"buildDate": "19 July 2025 11:08:23",
+	"buildDate": "20 July 2025 13:57:25",
 	"author": "ProjectSoft",
 	"homepage": "https://projectsoft.ru/",
 	"license": "MIT",
@@ -30,10 +30,10 @@
 		"toolbar": true,
 		"visible": true,
 		"visible_on_all_workspaces": true,
-		"min_width": 600,
-		"min_height": 520,
-		"width": 600,
-		"height": 520
+		"min_width": 730,
+		"min_height": 700,
+		"width": 730,
+		"height": 700
 	},
 	"devDependencies": {},
 	"dependencies": {

@@ -1,3 +1,6 @@
+/**
+ * /[^а-яА-Яa-zA-Z0-9]+/
+ */
 const fs = require('fs'),
 	path = require('path'),
 	colors = require('ansi-colors');
@@ -238,8 +241,11 @@ const GETURLTOFILE = function(url, output) {
 GETURLTOFILE('https://www.radiorecord.ru/api/stations/', 'record.json').then(async function(res){
 	const s = fs.readFileSync ('record.json', {encoding: 'utf8'});
 	const result = JSON.parse(s);
-	deleteFile('record.json');
+
+	let sets = new Set();
+
 	const stations = result.result.stations;
+	deleteFile('record.json');
 	let obj = {
 		stations: {},
 		active: 0,
@@ -263,6 +269,11 @@ GETURLTOFILE('https://www.radiorecord.ru/api/stations/', 'record.json').then(asy
 		 */
 		let values = Object.values(fileStation)[0];
 		values.id = parseInt(key);
+		if(!values.genre) {
+			values.genre = [];
+		}
+		values.genre.map((gn) => sets.add(gn));
+
 		/**
 		 * Проверяем есть ли изображение
 		 * Если его нет - станцию не добавляем.
@@ -325,6 +336,7 @@ GETURLTOFILE('https://www.radiorecord.ru/api/stations/', 'record.json').then(asy
 			+seconds
 		);
 		const id = date.getTime();
+		let genre = station.genre.map((st) => st.name);
 		/**
 		 * Загружаем изображение для станции
 		 */
@@ -352,6 +364,7 @@ GETURLTOFILE('https://www.radiorecord.ru/api/stations/', 'record.json').then(asy
 		 */
 		mdWrite.write(getMDItem(name, stream));
 		m3u8Write.write(getM3U8Item(name, stream));
+		genre.map((gn) => sets.add(gn));
 		/**
 		 * Формируем станцию
 		 */
@@ -360,7 +373,8 @@ GETURLTOFILE('https://www.radiorecord.ru/api/stations/', 'record.json').then(asy
 			"stream": stream,
 			"id": id,
 			"favicon": `data:image/png;base64,${favicon}`,
-			"image": `data:image/png;base64,${bigicon}`
+			"image": `data:image/png;base64,${bigicon}`,
+			"genre": genre
 		};
 		/**
 		 * Берём первую станцию если ещё нет
@@ -378,6 +392,11 @@ GETURLTOFILE('https://www.radiorecord.ru/api/stations/', 'record.json').then(asy
 	 * Указываем самую первую станцию из плейлиста
 	 */
 	obj.active = select;
+	/**
+	 * Указываем используемые жанры
+	 */
+	obj.genre = [...sets];
+	
 	/**
 	 * Сохраняем конфигурацию
 	 */

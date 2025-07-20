@@ -3,8 +3,7 @@ const fs = require('fs'),
 	dir = path.normalize(path.join(nw.App.dataPath, "radio")),
 	dirFile = path.normalize(path.join(dir, "data.json")),
 	{ StringDecoder } = require('string_decoder'),
-	decoder = new StringDecoder('utf8'),
-	{ log } = require(__dirname + '/log.js');
+	decoder = new StringDecoder('utf8');
 /**
  * Functions module
  **/
@@ -55,8 +54,8 @@ ExportSattions = function(json){
 			json.stations[prop].id = parseInt(prop);
 			let iconFilePath = path.normalize(path.join(dir, `${prop}.png`));
 			let imageFilePath = path.normalize(path.join(dir, `${prop}_big.png`));
-			let icon = (fs.existsSync(iconFilePath)	? iconFilePath : 'favicon.png');
-			let image = (fs.existsSync(imageFilePath)	? imageFilePath : icon);
+			let icon = (fs.existsSync(iconFilePath)	? iconFilePath : 'image_fav.png');
+			let image = (fs.existsSync(imageFilePath)	? imageFilePath : 'image_big.png');
 			json.stations[prop].favicon = "data:image/png;base64," + fs.readFileSync(icon).toString('base64');
 			json.stations[prop].image = "data:image/png;base64," + fs.readFileSync(image).toString('base64');
 		}

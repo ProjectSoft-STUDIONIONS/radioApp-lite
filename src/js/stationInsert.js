@@ -147,7 +147,7 @@
 				$fav = $(".fileicon", tpl);
 				icon = dir + `\\${$this.id}.png`;
 				imageIcon = dir + `\\${$this.id}_big.png`;
-				icon = (fs.existsSync(imageIcon) ? imageIcon : (fs.existsSync(icon) ? icon : 'favicon.png')) + "?" + (new Date()).getTime();
+				icon = (fs.existsSync(imageIcon) ? imageIcon : (fs.existsSync(icon) ? icon : 'image_big.png')) + "?" + (new Date()).getTime();
 				$crp.croppie({
 					viewport: {
 						width: 180,

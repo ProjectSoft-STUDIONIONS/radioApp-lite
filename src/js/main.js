@@ -26,7 +26,8 @@
 		parser = null,
 		getMetaInterval = 0,
 		notifyInterval = 0,
-		previosStream = '';
+		previosStream = '',
+		mixitupVar;
 	const regex = /^data:image\/png;base64,iVBORw0KGgo/;
 
 	const addListItem = async function(data){
@@ -35,6 +36,7 @@
 						let _id = data.id,
 							_name = data.name,
 							_stream = data.stream,
+							_genre = data.genre || [],
 							has = "?" + (new Date()).getTime(),
 							_imageIcon = data.favicon || false,
 							_imageBig = data.image || false,
@@ -61,8 +63,17 @@
 								log(`Error _imageBig ${_id}`, e);
 							}
 						}
-						_icon = (!_icon) ? 'favicon.png' : _icon;
-						let _tmp = $(`<li id="st_${_id}" class="radio-item stop">
+						_icon = (!_icon) ? 'image_fav.png' : _icon;
+						let classNames = "";
+						let genreNames = _genre.map((gn) => {
+							let name = translit(gn).toLowerCase();
+							return name;
+						});
+						for(let g_names in genreNames){
+							classNames += ` ${genreNames[g_names]}`
+						}
+						classNames = classNames.length ? classNames : " none";
+						let _tmp = $(`<li id="st_${_id}" class="radio-item stop${classNames}">
 							<div class="radio-item-box">
 								<div class="radio-item-icon">
 									<span class="icons"></span>
@@ -83,16 +94,18 @@
 						_tmp.data({
 							id: _id,
 							name: _name,
-							stream: _stream
+							stream: _stream,
+							genre: _genre
 						});
 						$('#radio-list').append(_tmp);
 						if(active == _id){
 							_tmp.addClass('active');
 						}
-						return !0;
+						return _tmp;
 					}
 					return !1;
 				}catch(e){
+					log(e);
 					return !1;
 				}
 			},
@@ -105,6 +118,7 @@
 						notify: notify,
 						volume: volume
 					};
+				
 				clearTimeout(aniInterval);
 				$("main").addClass('loading');
 				try {
@@ -112,9 +126,11 @@
 					_json = fs.readFileSync(file);
 					_json = decoder.write(_json);
 					_json = JSON.parse(_json);
+					let setters = new Set();
 					json.stations = _json["stations"];
 					json.active = active = _json["active"] ? parseInt(_json["active"]) : active;
 					json.notify = notify = _json["notify"] ? _json["notify"] : notify;
+					json.genre = _json.genre || [];
 					$notify.prop('checked', notify);
 					_json.volume = parseFloat(_json["volume"]) >= 0 ? parseFloat(_json["volume"]) : volume;
 					_json.volume = volume = Math.min(1, Math.max(0, parseFloat(_json.volume)));
@@ -124,12 +140,31 @@
 						style: '--background-range: ' + t + '%'
 					}).val(t);
 					$('p.left').removeClass('visible').text(t + '%');
+
 					$('#radio-list').empty();
 					for (let prop in json.stations) {
 						let st = json.stations[prop];
+						st.genre = st.genre || [];
+						for (let gn in st.genre) {
+							setters.add(st.genre[gn]);
+						}
 						st.id = parseInt(prop);
 						await addListItem(st);
 					}
+					/**
+					 * Genre
+					 */
+					json.genre = [...setters];
+					let arr = [...setters];
+					arr.sort();
+					$('#genre').empty();
+					$('#genre').append($(`<li class="genre_item active" data-filter="all"><span>Все</span></li>`));
+					for(let gr in arr){
+						let genreName = translit(arr[gr]).toLowerCase();
+						$('#genre').append($(`<li class="genre_item" data-filter=".${genreName}"><span>${arr[gr]}</span></li>`));
+					}
+					//mixitupVar && mixitupVar.destroy();
+					//mixitupVar = null;
 				} catch(e){
 					//
 				} finally {
@@ -143,25 +178,37 @@
 			writeFile = function(isRead){
 				return new Promise(function(resolve, reject){
 					isRead = typeof isRead === 'boolean' ? isRead : false;
-					var file = dirFile,
-						_output = "{}";
+					let file = dirFile,
+						_output = "{}",
+						genreSet = new Set();
 					json.stations = {};
 					json.active = parseInt($("#radio-list li.active").length ? $("#radio-list li.active").data('id') : 0);
 					json.notify = notify;
 					json.volume = Math.min(1, Math.max(0, parseFloat($("#volume").val() / 100)));
+
 					$('#radio-list li').each(function(){
 						let $this = $(this),
 							data = $this.data(),
-							id = parseInt($this.prop('id').split('_')[1]);
+							id = parseInt($this.prop('id').split('_')[1]),
+							genre = data.genre || [];
+						for(let index in genre) {
+							genreSet.add(genre[index]);
+						}
 						json.stations[id] = {
 							name: data.name,
-							stream: data.stream
+							stream: data.stream,
+							genre: genre
 						};
 					});
+					// Жанры
+					let arrGenre = [...genreSet];
+					arrGenre.sort();
+					json.genre = arrGenre;
+					// Преобразуем
 					_output = JSON.stringify(json);
 					fs.writeFile(dirFile, _output, 'utf8', (err) => {
 						/**
-						 * If there is no error, then we read the file, otherwise we close the program 
+						 * Если ошибок нет читаем файл 
 						 **/
 						if(!err){
 							isRead && readFile();
@@ -196,8 +243,8 @@
 						id = data.id,
 						title = data.streamMeta || data.name,
 						has = (new Date()).getTime();
-					icon = (fs.existsSync(`${dir}\\${id}.png`)	? `${dir}\\${id}.png` : 'favicon.png'),
-					big = (fs.existsSync(`${dir}\\${id}_big.png`)	? `${dir}\\${id}_big.png` : icon);
+					icon = (fs.existsSync(`${dir}\\${id}.png`)	? `${dir}\\${id}.png` : 'image_fav.png'),
+					big = (fs.existsSync(`${dir}\\${id}_big.png`)	? `${dir}\\${id}_big.png` : 'image_big.png');
 					tmpCrop.bind({
 						url: big,
 						backgroundColor: '#ffffff'
@@ -217,7 +264,7 @@
 						});
 					});
 				}else{
-					icon  = "data:image/png;base64," + fs.readFileSync('favicon.png').toString('base64');
+					icon  = "data:image/png;base64," + fs.readFileSync('image_fav.png').toString('base64');
 					navigator.mediaSession.metadata = new MediaMetadata({
 						title: locale.appName,
 						artist: "",
@@ -335,9 +382,9 @@
 				icy.get(player.stream, function (res) {
 					var _title = data.streamMeta ? (data.streamMeta.length > 5 ? data.streamMeta : data.name) : data.name,
 						// Icon 180x180
-						icon = (fs.existsSync(`${dir}\\${data.id}.png`) ? `${dir}\\${data.id}.png` : 'favicon.png');
+						icon = (fs.existsSync(`${dir}\\${data.id}.png`) ? `${dir}\\${data.id}.png` : 'image_fav.png');
 					// Big icon 360x180
-					icon = (fs.existsSync(`${dir}\\${data.id}_big.png`) ? `${dir}\\${data.id}_big.png` : icon);
+					icon = (fs.existsSync(`${dir}\\${data.id}_big.png`) ? `${dir}\\${data.id}_big.png` : 'image_big.png');
 					if(player.isPlaying()){
 						$(`#radio-list li#st_${data.id}`).data('streamMeta', _title);
 					}else{
@@ -346,7 +393,6 @@
 					res.on('metadata', function (metadata) {
 						let parsed = icy.parse(metadata),
 							$_title = $.trim(parsed.StreamTitle) + '';
-						//log($_title);
 						if($_title.length > 5){
 							if(player.isPlaying()){
 								if($_title != previosStream){
@@ -438,10 +484,14 @@
 					}, function(args){
 						$("main").addClass('loading');
 						if(args.type == 'insert'){
-							addListItem(args).then(function(){
+							addListItem(args).then(function(el){
 								log('add station and writeFile')
 								writeFile(false).then(function(){
 									$("main").removeClass('loading');
+									log(el);
+									if(el){
+										scrollToEl(el);
+									}
 								}).catch(function(){
 									alert(locale.appRepeat);
 									$("main").removeClass('loading');
@@ -648,7 +698,7 @@
 							img = $('img', $li),
 							name = $('.station-name', `#st_${args.id}`),
 							has = "?" + (new Date()).getTime(),
-							_icon = ((fs.existsSync(`${dir}\\${args.id}.png`))	? `${dir}\\${args.id}.png` : 'favicon.png') + has;
+							_icon = ((fs.existsSync(`${dir}\\${args.id}.png`))	? `${dir}\\${args.id}.png` : 'image_big.png') + has;
 						
 						name.text(args.name);
 						$li.data({
@@ -749,6 +799,18 @@
 			$.radioDialog.close();
 			$settingsBlock[0].showModal();
 			return !1;
+		}).on('click', '.genre_list li', (e) => {
+			let targ = e.target;
+			let fil = $(targ).data('filter');
+			//mixitup-radio-item-active
+			$('.genre_list li').removeClass('active');
+			$(targ).addClass('active');
+			$('#radio-list li').removeClass('hidden');
+			if(fil != 'all') {
+				$(`#radio-list li`).addClass(`hidden`);
+				$(`#radio-list li${fil}`).removeClass(`hidden`);
+			}
+			scrollToEl($(`#radio-list li.active`));
 		}).trigger('change');
 		/**
 		 * Adding UI Sortable

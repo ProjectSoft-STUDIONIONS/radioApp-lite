@@ -4,6 +4,7 @@
 		"stream": "http://stream1.hostingradio.ru:8010/15_aac_96",
 		"id": null,
 		"favicon": false,
-		"image": false
+		"image": false,
+		"genre": []
 	}
 }

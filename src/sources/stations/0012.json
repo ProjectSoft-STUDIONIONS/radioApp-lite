@@ -4,6 +4,10 @@
 		"stream": "https://dfm-dfmrusdance.hostingradio.ru/dfmrusdance96.aacp",
 		"id": null,
 		"favicon": false,
-		"image": false
+		"image": false,
+		"genre": [
+			"RUSSIAN",
+			"DANCE"
+		]
 	}
 }

@@ -1,5 +1,6 @@
 module.exports = function(grunt) {
 	process.removeAllListeners('warning');
+	process.stdout.write('\033c');
 	require('dotenv').config();
 
 	// target=true - nwjs sdk = nortmal
@@ -25,6 +26,7 @@ module.exports = function(grunt) {
 	require('./modules/Downloader.js')(grunt);
 	require('./modules/Build.js')(grunt);
 	require('./modules/Versions.js')(grunt);
+	require('./modules/Clear.js')(grunt);
 
 	const path = require('path'),
 		uniqid = function () {
@@ -85,6 +87,7 @@ module.exports = function(grunt) {
 						src: "**",
 						dest: "build/"
 					},
+					/**
 					{
 						//-  --load-extension=jfdmelgfepjcmlljpdeajbiiibkehnih
 						expand: true,
@@ -92,6 +95,7 @@ module.exports = function(grunt) {
 						src: "**",
 						dest: "application/butterchurn"
 					},
+					*/
 				]
 			}
 		},
@@ -204,7 +208,7 @@ module.exports = function(grunt) {
 					'bower_components/jquery/dist/jquery.js',
 					'test/js/jquery.ui.nogit.js',
 					'bower_components/jquery.scrollTo/jquery.scrollTo.js',
-					'bower_components/Croppie/croppie.js',
+					'bower_components/Croppie/croppie.js'
 				],
 				dest: 'test/js/plugins.js',
 			},
@@ -312,6 +316,9 @@ module.exports = function(grunt) {
 				command: __dirname + '/build/nw.exe ' + __dirname + '/application'
 			}
 		},
+		clear_console: {
+			main: {}
+		}
 	});
 	const tasks = [
 		'clean:all',
@@ -328,5 +335,9 @@ module.exports = function(grunt) {
 	update && tasks.push('downloader');
 	tasks.push('unzip', 'version_edit:main', 'copy:main', 'zip:main', 'clean:vk', 'buildnw:main');
 	target && tasks.push('innosetup:main');
+	/**
+	 * Очистим консоль
+	 */
+	tasks.push('clear_console');
 	grunt.registerTask('default', tasks);
 }

@@ -4,6 +4,9 @@
 		"stream": "https://srv01.gpmradio.ru/stream/air/aac/64/100",
 		"id": null,
 		"favicon": false,
-		"image": false
+		"image": false,
+		"genre": [
+			"Дорожное"
+		]
 	}
 }

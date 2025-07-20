@@ -4,6 +4,9 @@
 		"stream": "https://dalnoboyfm.radiopark2000x.ru:4005/stream",
 		"id": null,
 		"favicon": false,
-		"image": false
+		"image": false,
+		"genre": [
+			"Дорожное"
+		]
 	}
 }

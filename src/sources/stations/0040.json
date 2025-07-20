@@ -4,6 +4,9 @@
 		"stream": "https://stream1.radiord.ru:8000/live128.mp3",
 		"id": null,
 		"favicon": false,
-		"image": false
+		"image": false,
+		"genre": [
+			"Дорожное"
+		]
 	}
 }

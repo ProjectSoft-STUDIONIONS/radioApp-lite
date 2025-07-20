@@ -4,6 +4,9 @@
 		"stream": "https://dfm-dancehall.hostingradio.ru/dancehall96.aacp",
 		"id": null,
 		"favicon": false,
-		"image": false
+		"image": false,
+		"genre": [
+			"DANCE"
+		]
 	}
 }

@@ -30,6 +30,8 @@
 | Король и Шут | https://stream04.pcradio.ru/Korol_i_Shut-med |
 | Радио DFM «Дискач 90-х» | https://dfm-disc90.hostingradio.ru/disc9096.aacp |
 | Радио DFM «DANCE» | https://dfm.hostingradio.ru/dfm96.aacp |
+| Радио DFM «POP DANCE» | https://dfm-popdance.hostingradio.ru/popdance96.aacp |
+| Радио DFM «RUSSIAN GOLD» | https://dfm-russiangold.hostingradio.ru/russiangold96.aacp |
 | Радио DFM «DANCE HALL» | https://dfm-dancehall.hostingradio.ru/dancehall96.aacp |
 | Радио DFM «INSOMNIA» | https://dfm-insomnia.hostingradio.ru/insomnia96.aacp |
 | Радио DFM «DEEP» | https://dfm-dfmdeep.hostingradio.ru/dfmdeep96.aacp |
@@ -38,6 +40,7 @@
 | Радио DFM «РУССКИЙ РЕЙВ» | https://dfm-russianrave.hostingradio.ru/russianrave96.aacp |
 | Радио DFM «PRTY» | https://dfm-party.hostingradio.ru/dfmparty96.aacp |
 | Радио DFM «SLAP BASS» | https://dfm-slapbass.hostingradio.ru/slapbass96.aacp |
+| Радио DFM «Space Music» | https://dfm-space.hostingradio.ru/dfmspace96.aacp |
 | Дорожное радио | http://stream1.hostingradio.ru:8010/15_aac_96 |
 | Ретро FM | http://retroserver.streamr.ru:8043/retro64 |
 | Hunter.FM «80's» | https://live.hunter.fm/80s_high |
@@ -51,6 +54,7 @@
 | Hunter.FM «Gospel» | https://live.hunter.fm/gospel_low |
 | Hunter.FM «Sertanejo» | https://live.hunter.fm/sertanejo_low |
 | Hunter.FM «Pop» | https://live.hunter.fm/pop_low |
+| POP FM Биробиджан | https://stream.popfm-bir.ru:1045/stream |
 | Retrowave.One Radio | https://waveretro.ru:8443/stream |
 | Радио 7 | https://radio7.hostingradio.ru:8040/radio7128.mp3 |
 | Радио «Europa Plus» | https://europaplus.hostingradio.ru:8030/ep128 |
@@ -63,6 +67,7 @@
 | Радио Родных Дорог | https://stream1.radiord.ru:8000/live128.mp3 |
 | Русское радио | https://rusradio.hostingradio.ru/rusradio96.aacp |
 | Радио Шансон | https://chanson.hostingradio.ru:8041/chanson256.mp3 |
+| Радио Монте-Карло | https://montecarlo.hostingradio.ru/montecarlo96.aacp |
 | Радио Energy Самара | https://srv21.gpmradio.ru:8443/stream/air/aac/64/99 |
 | Авторадио | https://srv01.gpmradio.ru/stream/air/aac/64/100 |
 | Дальнобой FM | https://dalnoboyfm.radiopark2000x.ru:4005/stream |

@@ -4,6 +4,7 @@
 		"stream": "https://epdop.hostingradio.ru:8033/epparty128.mp3",
 		"id": null,
 		"favicon": false,
-		"image": false
+		"image": false,
+		"genre": []
 	}
 }

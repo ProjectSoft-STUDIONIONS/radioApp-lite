@@ -4,6 +4,9 @@
 		"stream": "https://live.hunter.fm/80s_high",
 		"id": null,
 		"favicon": false,
-		"image": false
+		"image": false,
+		"genre": [
+			"Эпохи"
+		]
 	}
 }

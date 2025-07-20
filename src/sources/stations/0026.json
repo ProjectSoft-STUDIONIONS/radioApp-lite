@@ -4,6 +4,7 @@
 		"stream": "https://live.hunter.fm/pisadinha_low",
 		"id": null,
 		"favicon": false,
-		"image": false
+		"image": false,
+		"genre": []
 	}
 }

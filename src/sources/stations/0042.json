@@ -4,6 +4,9 @@
 		"stream": "https://chanson.hostingradio.ru:8041/chanson256.mp3",
 		"id": null,
 		"favicon": false,
-		"image": false
+		"image": false,
+		"genre": [
+			"Шансон"
+		]
 	}
 }

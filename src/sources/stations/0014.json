@@ -4,6 +4,9 @@
 		"stream": "https://dfm-russianrave.hostingradio.ru/russianrave96.aacp",
 		"id": null,
 		"favicon": false,
-		"image": false
+		"image": false,
+		"genre": [
+			"RUSSIAN"
+		]
 	}
 }

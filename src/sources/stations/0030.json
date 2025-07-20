@@ -1,9 +1,12 @@
 {
 	"1741329362135": {
 		"name": "POP FM Биробиджан",
-		"stream": "http://5.8.213.195:8000/popfm_80",
+		"stream": "https://stream.popfm-bir.ru:1045/stream",
 		"id": null,
 		"favicon": false,
-		"image": false
+		"image": false,
+		"genre": [
+			"POP"
+		]
 	}
 }

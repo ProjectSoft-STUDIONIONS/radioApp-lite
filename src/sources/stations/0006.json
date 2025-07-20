@@ -4,6 +4,10 @@
 		"stream": "https://stream04.pcradio.ru/Korol_i_Shut-med",
 		"id": null,
 		"favicon": false,
-		"image": false
+		"image": false,
+		"genre": [
+			"RUSSIAN",
+			"ROCK"
+		]
 	}
 }

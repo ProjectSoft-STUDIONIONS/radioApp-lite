@@ -16,6 +16,10 @@ https://stream04.pcradio.ru/Korol_i_Shut-med
 https://dfm-disc90.hostingradio.ru/disc9096.aacp
 #EXTINF:-1,Радио DFM «DANCE»
 https://dfm.hostingradio.ru/dfm96.aacp
+#EXTINF:-1,Радио DFM «POP DANCE»
+https://dfm-popdance.hostingradio.ru/popdance96.aacp
+#EXTINF:-1,Радио DFM «RUSSIAN GOLD»
+https://dfm-russiangold.hostingradio.ru/russiangold96.aacp
 #EXTINF:-1,Радио DFM «DANCE HALL»
 https://dfm-dancehall.hostingradio.ru/dancehall96.aacp
 #EXTINF:-1,Радио DFM «INSOMNIA»
@@ -32,6 +36,8 @@ https://dfm-russianrave.hostingradio.ru/russianrave96.aacp
 https://dfm-party.hostingradio.ru/dfmparty96.aacp
 #EXTINF:-1,Радио DFM «SLAP BASS»
 https://dfm-slapbass.hostingradio.ru/slapbass96.aacp
+#EXTINF:-1,Радио DFM «Space Music»
+https://dfm-space.hostingradio.ru/dfmspace96.aacp
 #EXTINF:-1,Дорожное радио
 http://stream1.hostingradio.ru:8010/15_aac_96
 #EXTINF:-1,Ретро FM
@@ -58,6 +64,8 @@ https://live.hunter.fm/gospel_low
 https://live.hunter.fm/sertanejo_low
 #EXTINF:-1,Hunter.FM «Pop»
 https://live.hunter.fm/pop_low
+#EXTINF:-1,POP FM Биробиджан
+https://stream.popfm-bir.ru:1045/stream
 #EXTINF:-1,Retrowave.One Radio
 https://waveretro.ru:8443/stream
 #EXTINF:-1,Радио 7
@@ -82,6 +90,8 @@ https://stream1.radiord.ru:8000/live128.mp3
 https://rusradio.hostingradio.ru/rusradio96.aacp
 #EXTINF:-1,Радио Шансон
 https://chanson.hostingradio.ru:8041/chanson256.mp3
+#EXTINF:-1,Радио Монте-Карло
+https://montecarlo.hostingradio.ru/montecarlo96.aacp
 #EXTINF:-1,Радио Energy Самара
 https://srv21.gpmradio.ru:8443/stream/air/aac/64/99
 #EXTINF:-1,Авторадио

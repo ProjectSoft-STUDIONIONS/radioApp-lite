@@ -4,6 +4,7 @@
 		"stream": "https://srv21.gpmradio.ru:8443/stream/air/aac/64/99",
 		"id": null,
 		"favicon": false,
-		"image": false
+		"image": false,
+		"genre": []
 	}
 }

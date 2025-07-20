@@ -1,5 +1,4 @@
 var EventDispatcher = require(__dirname + '/eventdispatcher.js'),
-	{ log } = require(__dirname + '/log.js'),
 	_isPlaying = false,
 	_isProgress = false,
 	_net = false,

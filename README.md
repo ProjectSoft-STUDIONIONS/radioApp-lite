@@ -19,9 +19,11 @@
 --------------------------------------------
 
 ## Список радиостанций
+
 <!--BeginStations-->
+
 | Station Name | Strem link |
-			| ------------------- | ------------------- |
+| ------------------- | ------------------- |
 | Наше Радио | https://nashe1.hostingradio.ru:80/nashe-128.mp3 |
 | Наше Радио 2.0 | https://nashe1.hostingradio.ru:18000/nashe20-128.mp3 |
 | НАШЕ Радио «Классик Рок» | http://nashe1.hostingradio.ru/nasheclassic.mp3 |

@@ -237,10 +237,8 @@ module.exports = function(grunt) {
 					emitClose: false
 				});
 
-			mdWrite.write(`| Station Name | Strem link |
-			| ------------------- | ------------------- |`);
-			m3u8Write.write(`#EXTM3U
-			#PLAYLIST:Ваше Радио. Облегчённая версия.`);
+			mdWrite.write(`\r\n| Station Name | Strem link |\r\n| ------------------- | ------------------- |`);
+			m3u8Write.write(`#EXTM3U\r\n#PLAYLIST:Ваше Радио. Облегчённая версия.`);
 
 			GETURLTOFILE('https://www.radiorecord.ru/api/stations/', './record.json').then(async function(res){
 				const s = fs.readFileSync ('./record.json', {encoding: 'utf8'});

@@ -6,7 +6,9 @@
 		"favicon": false,
 		"image": false,
 		"genre": [
-			"RUSSIAN"
+			"RUSSIAN",
+			"POP",
+			"DANCE"
 		]
 	}
 }

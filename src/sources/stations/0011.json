@@ -5,6 +5,8 @@
 		"id": null,
 		"favicon": false,
 		"image": false,
-		"genre": []
+		"genre": [
+			"DEEP"
+		]
 	}
 }

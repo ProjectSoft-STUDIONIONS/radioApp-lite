@@ -21,7 +21,7 @@
 ## Список радиостанций
 <!--BeginStations-->
 | Station Name | Strem link |
-| ------------------- | ------------------- |
+			| ------------------- | ------------------- |
 | Наше Радио | https://nashe1.hostingradio.ru:80/nashe-128.mp3 |
 | Наше Радио 2.0 | https://nashe1.hostingradio.ru:18000/nashe20-128.mp3 |
 | НАШЕ Радио «Классик Рок» | http://nashe1.hostingradio.ru/nasheclassic.mp3 |
@@ -47,7 +47,6 @@
 | Hunter.FM «SMASH» | https://live.hunter.fm/smash_low |
 | Hunter.FM «Pop2K» | https://live.hunter.fm/pop2k_low |
 | Hunter.FM «Lofi» | https://live.hunter.fm/lofi_low |
-| Hunter.FM «Tropical» | https://live.hunter.fm/tropical_low |
 | Hunter.FM «Tropical» | https://live.hunter.fm/tropical_low |
 | Hunter.FM «Rock» | https://live.hunter.fm/rock_low |
 | Hunter.FM «Pisadinha» | https://live.hunter.fm/pisadinha_low |

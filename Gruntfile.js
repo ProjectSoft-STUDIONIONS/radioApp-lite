@@ -1,12 +1,13 @@
 module.exports = function(grunt) {
 	process.removeAllListeners('warning');
-	process.stdout.write('\033c');
+	//process.stdout.write('\033c');
 	require('dotenv').config();
 
 	// target=true - nwjs sdk = nortmal
 	// target=false - nwjs sdk = sdk
 	// update=true - произвести скачивание nwjs и ffmpeg
 	// update=false - не производить скачивание nwjs и ffmpeg
+	// record=true - Запустить парсинг радио рекорд и генерирование файла data.json
 	// В корне проекта присутствие файла .env обязятельно
 	// Параметры NWJS_TARGET и NWJS_UPDATE должны быть заданы. 
 	// При первом запуске или смене SDK NWJS_UPDATE должен быть равен 1
@@ -14,6 +15,7 @@ module.exports = function(grunt) {
 
 	const target = process.env.NWJS_TARGET == "1" ? true : false,
 		update = process.env.NWJS_UPDATE == "1" ? true : false,
+		record = process.env.RECORD == "1" ? true : false,
 		version = process.env.NWJS_VERSION == "0" ? false : process.env.NWJS_VERSION; // 0.87.0
 
 	console.log(target, update, version);
@@ -27,6 +29,7 @@ module.exports = function(grunt) {
 	require('./modules/Build.js')(grunt);
 	require('./modules/Versions.js')(grunt);
 	require('./modules/Clear.js')(grunt);
+	require('./modules/parse_record.js')(grunt);
 
 	const path = require('path'),
 		uniqid = function () {
@@ -44,6 +47,13 @@ module.exports = function(grunt) {
 	grunt.initConfig({
 		globalConfig: gc,
 		pkg: pkg,
+		parse_record: {
+			main: {
+				options: {
+					update: record
+				}
+			}
+		},
 		clean: {
 			options: {
 				force: true
@@ -321,6 +331,8 @@ module.exports = function(grunt) {
 		}
 	});
 	const tasks = [
+		'clear_console',
+		'parse_record',
 		'clean:all',
 		'webfont',
 		'ttf2woff2',

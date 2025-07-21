@@ -1,5 +1,5 @@
 #EXTM3U
-#PLAYLIST:Ваше Радио. Облегчённая версия.
+			#PLAYLIST:Ваше Радио. Облегчённая версия.
 #EXTINF:-1,Наше Радио
 https://nashe1.hostingradio.ru:80/nashe-128.mp3
 #EXTINF:-1,Наше Радио 2.0
@@ -50,8 +50,6 @@ https://live.hunter.fm/smash_low
 https://live.hunter.fm/pop2k_low
 #EXTINF:-1,Hunter.FM «Lofi»
 https://live.hunter.fm/lofi_low
-#EXTINF:-1,Hunter.FM «Tropical»
-https://live.hunter.fm/tropical_low
 #EXTINF:-1,Hunter.FM «Tropical»
 https://live.hunter.fm/tropical_low
 #EXTINF:-1,Hunter.FM «Rock»

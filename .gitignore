@@ -3,7 +3,11 @@ package-lock.json
 *.nw
 *.bat
 *.sublime-workspace
+*_icon.png
+*_favicon.png
+*_big.png
 test.js
+radio.md
 /*.png
 /*.jpg
 /*.jpeg

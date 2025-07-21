@@ -404,7 +404,7 @@ module.exports = function(grunt) {
 				 */
 				fs.writeFileSync(dataJsonFile, JSON.stringify(obj, null, "\t"), {encoding: 'utf8'});
 
-				mdWrite.write(`\r\n\r\n[Playlist](radio.m3u8)`);
+				mdWrite.write(`\r\n\r\n[Playlist](radio.m3u8?raw=true)`);
 				mdWrite.write(`\r\n\r\n`);
 
 				mdWrite.end();

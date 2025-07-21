@@ -189,7 +189,7 @@
 | Radio Record «Complextro» | https://radiorecord.hostingradio.ru/complextro96.aacp |
 | Radio Record «Groove/Tribal» | https://radiorecord.hostingradio.ru/groovetribal96.aacp |
 
-[Playlist](radio.m3u8)
+[Playlist](radio.m3u8?raw=true)
 
 
 <!--EndStations-->

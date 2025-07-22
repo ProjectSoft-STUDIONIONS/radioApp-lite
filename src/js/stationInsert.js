@@ -25,6 +25,9 @@
 							<div class="fileicon icon-add-photo" title="${locale.addIcon}"></div>
 						</div>
 					</div>
+					<div class="modal-tags">
+						<tags-editor list="" genre=""></tags-editor>
+					</div>
 					<div class="modal-buttons">
 						<button class="control ok" type="button">${locale.ok}</button>
 						<button class="control cancel" type="button">${locale.cancel}</button>
@@ -145,6 +148,13 @@
 				$crp = $(".cropie", tpl);
 				$bigCrp = $('.cropie_big', tpl);
 				$fav = $(".fileicon", tpl);
+				let $tags = $("tags-editor", tpl);
+				if(typeof settings.genre == "object") {
+					$tags[0].setAttribute('list', settings.genre);
+				}
+				if(typeof settings.global_genre == "object") {
+					$tags[0].setAttribute('genre', settings.global_genre);
+				}
 				icon = dir + `\\${$this.id}.png`;
 				imageIcon = dir + `\\${$this.id}_big.png`;
 				icon = (fs.existsSync(imageIcon) ? imageIcon : (fs.existsSync(icon) ? icon : 'image_big.png')) + "?" + (new Date()).getTime();
@@ -233,7 +243,9 @@
 					id = self.id,
 					$crp = null,
 					$bigCrp = null,
-					si = null;
+					si = null,
+					global_genre,
+					genre;
 				if(typeof self.modal == 'object'){
 					switch (type) {
 						case 'insert':
@@ -242,7 +254,8 @@
 							name = $.trim($('input.name', self.modal).val());
 							stream = $.trim($('input.stream', self.modal).val());
 							$crp = $('.cropie', self.modal);
-							$bigCrp = $('.cropie_big', self.modal)
+							$bigCrp = $('.cropie_big', self.modal);
+							genre = $('tags-editor', self.modal)[0].value;
 							if(!name || !stream){
 								$('input.name', self.modal).focus();
 								resolve({
@@ -265,7 +278,8 @@
 												stream: stream,
 												id: id,
 												si: si,
-												type: type
+												type: type,
+												genre: genre
 											});
 										});
 									});

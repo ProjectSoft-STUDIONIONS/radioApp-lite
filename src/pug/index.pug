@@ -3,7 +3,7 @@ html
 	head
 		meta(http-equiv="Content-Type" content="text/html; charset=UTF-8")
 		meta(name="viewport" content="width=device-width, initial-scale=1")
-		link(rel="stylesheet" type="text/css" href="css/main.css")
+		link(rel="stylesheet" type="text/css" href="css/main.css?" + hash)
 		base(href="/")
 	body(ondragstart="return false;" ondrop="return false;" class=target)
 		#TitleBar
@@ -62,5 +62,6 @@ html
 					button#okSettings(type="button")
 					button#noSettings(type="button")
 		#cropTmp
-		script(type="text/javascript" src="js/plugins.js")
-		script(type="text/javascript" src="js/main.js")
+		script(type="text/javascript" src="js/tags-editor.js?" + hash)
+		script(type="text/javascript" src="js/plugins.js?" + hash)
+		script(type="text/javascript" src="js/main.js?" + hash)

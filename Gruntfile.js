@@ -97,6 +97,12 @@ module.exports = function(grunt) {
 						src: "**",
 						dest: "build/"
 					},
+					{
+						expand: true,
+						cwd: "src/js",
+						src: "tags-editor.js",
+						dest: "application/js"
+					},
 					/**
 					{
 						//-  --load-extension=jfdmelgfepjcmlljpdeajbiiibkehnih

@@ -204,8 +204,18 @@
 					let arrGenre = [...genreSet];
 					arrGenre.sort();
 					json.genre = arrGenre;
+					if(!isRead) {
+						$('#genre').empty();
+						$('#genre').append($(`<li class="genre_item active" data-filter="all"><span>Все</span></li>`));
+						for(let gr in arrGenre){
+							let genreName = translit(arrGenre[gr]).toLowerCase();
+							$('#genre').append($(`<li class="genre_item" data-filter=".${genreName}"><span>${arrGenre[gr]}</span></li>`));
+						}
+						$('#genre li.genre_item.active').trigger('click');
+						$('#genre li.genre_item.active').click();
+					}
 					// Преобразуем
-					_output = JSON.stringify(json);
+					_output = JSON.stringify(json, null, "\t");
 					fs.writeFile(dirFile, _output, 'utf8', (err) => {
 						/**
 						 * Если ошибок нет читаем файл 
@@ -675,6 +685,11 @@
 			editStationItem.label = '   ' + locale.editTitle + stn;
 			removeStationItem.label = '   ' + locale.deleteTitle + stn;
 			copyStationItem.label = '   ' + locale.copyTitle + stn;
+
+			if(typeof data.genre != 'object'){
+				data.genre = [];
+			}
+			data.global_genre = [...json.genre];
 			/**
 			 * copy link stream
 			 **/
@@ -701,11 +716,24 @@
 							_icon = ((fs.existsSync(`${dir}\\${args.id}.png`))	? `${dir}\\${args.id}.png` : 'image_big.png') + has;
 						
 						name.text(args.name);
+						let genreNames = args.genre.map((gn) => {
+							let name = translit(gn).toLowerCase();
+							return name;
+						});
+						let globalGenre = json.genre.map((gn) => {
+							let name = translit(gn).toLowerCase();
+							return name;
+						});
+						let classNames = genreNames.join(" ");
+						let globalNames = globalGenre.join(" ");
 						$li.data({
 							id: args.id,
 							name: args.name,
-							stream: args.stream
+							stream: args.stream,
+							genre: args.genre
 						});
+						$li.removeClass(globalNames);
+						$li.addClass(classNames);
 						if($li.hasClass('active') && $li.hasClass('play')){
 							/**
 							 * stop radio

@@ -244,7 +244,6 @@
 					$crp = null,
 					$bigCrp = null,
 					si = null,
-					global_genre,
 					genre;
 				if(typeof self.modal == 'object'){
 					switch (type) {

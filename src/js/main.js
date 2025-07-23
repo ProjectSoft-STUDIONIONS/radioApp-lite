@@ -490,7 +490,9 @@
 				icon: 'images/add.png',
 				click: function() {
 					$.radioDialog.show({
-						type: 'insert'
+						type: 'insert',
+						global_genre: [...json.genre],
+						genre: []
 					}, function(args){
 						$("main").addClass('loading');
 						if(args.type == 'insert'){

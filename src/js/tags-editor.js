@@ -38,12 +38,16 @@ class TagsEditor extends HTMLElement {
 		tagList.innerHTML = "";
 		for(let index in value){
 			let tag = value[index];
-			let tagEl = document.createElement('span');
-			let closeEl = document.createElement('i');
-			closeEl.classList.add('icon-close');
-			tagEl.appendChild(document.createTextNode(tag));
-			tagEl.appendChild(closeEl);
-			tagList.appendChild(tagEl);
+			try {
+				if(tag && tag.length){
+					let tagEl = document.createElement('span');
+					let closeEl = document.createElement('i');
+					closeEl.classList.add('icon-close');
+					tagEl.appendChild(document.createTextNode(tag));
+					tagEl.appendChild(closeEl);
+					tagList.appendChild(tagEl);
+				}
+			} catch(e) {}
 		}
 	}
 
@@ -120,14 +124,17 @@ class TagsEditor extends HTMLElement {
 										.replace(/\s+/g, " ")
 										.replace(/_+/g, "_")
 										.replace(/-+/g, "-")
+										.replace(/\/+/g, "/")
 										.replace(/[\s_-]+$/g, "")
 										.trim();
 							value = value.charAt(0).toUpperCase() + value.slice(1);
-							if(value){
-								let setters = new Set(this.value);
-								setters.add(value.trim());
-								this.setAttribute('list', [...setters].sort());
-							}
+							try {
+								if(value && value.length){
+									let setters = new Set(this.value);
+									setters.add(value.trim());
+									this.setAttribute('list', [...setters].sort());
+								}
+							} catch(e){}
 							target.value = "";
 							return !1;
 							break;
@@ -144,9 +151,10 @@ class TagsEditor extends HTMLElement {
 							value = value.replace(/[^а-яА-Яa-zA-Z0-9\s_/-]+/g, "")
 										.replace(/^[\s_-]+/g, "")
 										.replace(/\s+/g, " ")
+										.replace(/_-|-_/g, "_")
 										.replace(/_+/g, "_")
 										.replace(/-+/g, "-")
-										.replace(/_-|-_/g, "_");
+										.replace(/\/+/g, "/");
 							value = value.charAt(0).toUpperCase() + value.slice(1);
 							target.value = value;
 							return !1;
@@ -218,7 +226,11 @@ class TagsEditor extends HTMLElement {
 			}
 			setters = new Set(old);
 			for(let val in value){
-				setters.add(value[val]);
+				try{
+					if(value[val] && value[val].length){
+						setters.add(value[val]);
+					}
+				}catch(e){}
 			}
 			let arr = [...setters];
 			this.setAttribute('list', arr);
@@ -246,12 +258,14 @@ class TagsEditor extends HTMLElement {
 		this.setAttribute('genre', genre);
 		for(let sel in genre) {
 			let selText = genre[sel];
-			if(selText) {
-				let option = document.createElement('option');
-				option.value = selText;
-				option.textContent = selText;
-				select.appendChild(option);
-			}
+			try {
+				if(selText && selText.length) {
+					let option = document.createElement('option');
+					option.value = selText;
+					option.textContent = selText;
+					select.appendChild(option);
+				}
+			} catch(e) {}
 		}
 		tags.addEventListener('click', this.handlerClick.bind(this));
 		tags.addEventListener('keydown', this.handlerInput.bind(this));
@@ -259,9 +273,7 @@ class TagsEditor extends HTMLElement {
 		tags.addEventListener('input', this.handlerInput.bind(this));
 	}
 
-	disconnectedCallback() {
-		console.log('Disconnect');
-	}
+	disconnectedCallback() {}
 }
 
 customElements.define("tags-editor", TagsEditor);

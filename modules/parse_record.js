@@ -19,8 +19,11 @@ module.exports = function(grunt) {
 		return `\r\n#EXTINF:-1,${name}\r\n${url}`;
 	}
 
-	function getMDItem (name, url) {
-		return `\r\n| ${name} | ${url} |`;
+	function getMDItem (name, url, genre = []) {
+		let gn = [...genre];
+		gn = gn.map((e) => {return '`' + e + '`';}).join(", ");
+		console.log(gn);
+		return `\r\n| ${name} | ${url} | ${gn} |`;
 	}
 
 	const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
@@ -237,7 +240,7 @@ module.exports = function(grunt) {
 					emitClose: false
 				});
 
-			mdWrite.write(`\r\n| Station Name | Strem link |\r\n| ------------------- | ------------------- |`);
+			mdWrite.write(`\r\n| Station Name | Strem link | Genre |\r\n| ------------------- | ------------------- | ------------------- |`);
 			m3u8Write.write(`#EXTM3U\r\n#PLAYLIST:Ваше Радио. Облегчённая версия.`);
 
 			GETURLTOFILE('https://www.radiorecord.ru/api/stations/', './record.json').then(async function(res){
@@ -274,6 +277,7 @@ module.exports = function(grunt) {
 					if(!values.genre) {
 						values.genre = [];
 					}
+					let genre = [...values.genre];
 					values.genre.map((gn) => sets.add(gn));
 
 					/**
@@ -311,7 +315,7 @@ module.exports = function(grunt) {
 					/**
 					 * Пишем
 					 */
-					mdWrite.write(`\n| ${values.name} | ${values.stream} |`);
+					mdWrite.write(getMDItem(values.name, values.stream, genre));
 					m3u8Write.write(getM3U8Item(values.name, values.stream));
 					let date = new Date();
 					date.setTime(values.id);
@@ -364,7 +368,7 @@ module.exports = function(grunt) {
 					/**
 					 * Пишем список и плейлист
 					 */
-					mdWrite.write(getMDItem(name, stream));
+					mdWrite.write(getMDItem(name, stream, genre));
 					m3u8Write.write(getM3U8Item(name, stream));
 					genre.map((gn) => sets.add(gn));
 					/**

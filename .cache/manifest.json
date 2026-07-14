@@ -1,8 +1,218 @@
 {
-    "latest": "v0.101.2",
-    "stable": "v0.101.2",
+    "latest": "v0.113.0",
+    "stable": "v0.113.0",
     "lts": "v0.14.7",
     "versions": [
+        {
+            "version": "v0.113.0",
+            "date": "2026/07/02",
+            "files": ["win-x64", "win-ia32", "win-arm64", "linux-x64", "linux-arm64", "osx-x64", "osx-arm64"],
+            "flavors": ["normal", "sdk"],
+            "components": {
+                "node": "26.1.0",
+                "chromium": "150.0.7871.46"
+            }
+        },
+        {
+            "version": "v0.112.0",
+            "date": "2026/05/24",
+            "files": ["win-x64", "win-ia32", "win-arm64", "linux-x64", "linux-arm64", "osx-x64", "osx-arm64"],
+            "flavors": ["normal", "sdk"],
+            "components": {
+                "node": "26.1.0",
+                "chromium": "149.0.7827.29"
+            }
+        },
+        {
+            "version": "v0.111.3",
+            "date": "2026/05/17",
+            "files": ["win-x64", "win-ia32", "win-arm64", "linux-x64", "linux-arm64", "osx-x64", "osx-arm64"],
+            "flavors": ["normal", "sdk"],
+            "components": {
+                "node": "26.1.0",
+                "chromium": "148.0.7778.97"
+            }
+        },
+        {
+            "version": "v0.111.2",
+            "date": "2026/05/11",
+            "files": ["win-x64", "win-ia32", "win-arm64", "linux-x64", "linux-arm64", "osx-x64", "osx-arm64"],
+            "flavors": ["normal", "sdk"],
+            "components": {
+                "node": "26.0.0",
+                "chromium": "148.0.7778.97"
+            }
+        },
+        {
+            "version": "v0.111.1",
+            "date": "2026/04/30",
+            "files": ["win-x64", "win-ia32", "win-arm64", "linux-x64", "linux-arm64", "osx-x64", "osx-arm64"],
+            "flavors": ["normal", "sdk"],
+            "components": {
+                "node": "25.9.0",
+                "chromium": "148.0.7778.97"
+            }
+        },
+        {
+            "version": "v0.111.0",
+            "date": "2026/04/23",
+            "files": ["win-x64", "win-ia32", "win-arm64", "linux-x64", "linux-ia32", "osx-x64", "osx-arm64"],
+            "flavors": ["normal", "sdk"],
+            "components": {
+                "node": "25.8.2",
+                "chromium": "148.0.7778.56"
+            }
+        },
+        {
+            "version": "v0.110.1",
+            "date": "2026/03/28",
+            "files": ["win-x64", "win-ia32", "win-arm64", "linux-x64", "linux-ia32", "osx-x64", "osx-arm64"],
+            "flavors": ["normal", "sdk"],
+            "components": {
+                "node": "25.8.2",
+                "chromium": "147.0.7727.24"
+            }
+        },
+        {
+            "version": "v0.110.0",
+            "date": "2026/03/25",
+            "files": ["win-x64", "win-ia32", "win-arm64", "linux-x64", "linux-ia32", "osx-x64", "osx-arm64"],
+            "flavors": ["normal", "sdk"],
+            "components": {
+                "node": "25.6.1",
+                "chromium": "147.0.7727.24"
+            }
+        },
+        {
+            "version": "v0.109.1",
+            "date": "2026/03/21",
+            "files": ["win-x64", "win-ia32", "win-arm64", "linux-x64", "linux-ia32", "osx-x64", "osx-arm64"],
+            "flavors": ["normal", "sdk"],
+            "components": {
+                "node": "25.6.1",
+                "chromium": "146.0.7680.80"
+            }
+        },
+        {
+            "version": "v0.109.0",
+            "date": "2026/03/03",
+            "files": ["win-x64", "win-ia32", "win-arm64", "linux-x64", "linux-ia32", "osx-x64", "osx-arm64"],
+            "flavors": ["normal", "sdk"],
+            "components": {
+                "node": "25.2.1",
+                "chromium": "146.0.7680.31"
+            }
+        },
+        {
+            "version": "v0.108.0",
+            "date": "2026/02/15",
+            "files": ["win-x64", "win-ia32", "win-arm64", "linux-x64", "linux-ia32", "osx-x64", "osx-arm64"],
+            "flavors": ["normal", "sdk"],
+            "components": {
+                "node": "25.2.1",
+                "chromium": "145.0.7632.76"
+            }
+        },
+        {
+            "version": "v0.107.0",
+            "date": "2026/01/11",
+            "files": ["win-x64", "win-ia32", "win-arm64", "linux-x64", "linux-ia32", "osx-x64", "osx-arm64"],
+            "flavors": ["normal", "sdk"],
+            "components": {
+                "node": "25.2.1",
+                "chromium": "144.0.7559.59"
+            }
+        },
+        {
+            "version": "v0.106.1",
+            "date": "2025/12/26",
+            "files": ["win-x64", "win-ia32", "win-arm64", "linux-x64", "linux-ia32", "osx-x64", "osx-arm64"],
+            "flavors": ["normal", "sdk"],
+            "components": {
+                "node": "25.2.1",
+                "chromium": "143.0.7499.170"
+            }
+        },
+        {
+            "version": "v0.106.0",
+            "date": "2025/11/23",
+            "files": ["win-x64", "win-ia32", "linux-x64", "linux-ia32", "osx-x64", "osx-arm64"],
+            "flavors": ["normal", "sdk"],
+            "components": {
+                "node": "25.1.0",
+                "chromium": "143.0.7499.40"
+            }
+        },
+        {
+            "version": "v0.105.0",
+            "date": "2025/10/24",
+            "files": ["win-x64", "win-ia32", "linux-x64", "linux-ia32", "osx-x64", "osx-arm64"],
+            "flavors": ["normal", "sdk"],
+            "components": {
+                "node": "24.9.0",
+                "chromium": "142.0.7444.53"
+            }
+        },
+        {
+            "version": "v0.104.1",
+            "date": "2025/10/07",
+            "files": ["win-x64", "win-ia32", "linux-x64", "linux-ia32", "osx-x64", "osx-arm64"],
+            "flavors": ["normal", "sdk"],
+            "components": {
+                "node": "24.9.0",
+                "chromium": "141.0.7390.55"
+            }
+        },
+        {
+            "version": "v0.104.0",
+            "date": "2025/09/30",
+            "files": ["win-x64", "win-ia32", "linux-x64", "linux-ia32", "osx-x64", "osx-arm64"],
+            "flavors": ["normal", "sdk"],
+            "components": {
+                "node": "24.7.0",
+                "chromium": "141.0.7390.37"
+            }
+        },
+        {
+            "version": "v0.103.1",
+            "date": "2025/09/09",
+            "files": ["win-x64", "win-ia32", "linux-x64", "linux-ia32", "osx-x64", "osx-arm64"],
+            "flavors": ["normal", "sdk"],
+            "components": {
+                "node": "24.7.0",
+                "chromium": "140.0.7339.81"
+            }
+        },
+        {
+            "version": "v0.103.0",
+            "date": "2025/08/28",
+            "files": ["win-x64", "win-ia32", "linux-x64", "linux-ia32", "osx-x64", "osx-arm64"],
+            "flavors": ["normal", "sdk"],
+            "components": {
+                "node": "24.5.0",
+                "chromium": "140.0.7339.41"
+            }
+        },
+        {
+            "version": "v0.102.1",
+            "date": "2025/08/14",
+            "files": ["win-x64", "win-ia32", "linux-x64", "linux-ia32", "osx-x64", "osx-arm64"],
+            "flavors": ["normal", "sdk"],
+            "components": {
+                "node": "24.5.0",
+                "chromium": "139.0.7258.128"
+            }
+        },
+        {
+            "version": "v0.102.0",
+            "date": "2025/07/31",
+            "files": ["win-x64", "win-ia32", "linux-x64", "linux-ia32", "osx-x64", "osx-arm64"],
+            "flavors": ["normal", "sdk"],
+            "components": {
+                "node": "24.3.0",
+                "chromium": "139.0.7258.66"
+            }
+        },
         {
             "version": "v0.101.2",
             "date": "2025/07/03",

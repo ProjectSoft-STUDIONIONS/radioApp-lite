@@ -4,64 +4,64 @@
 			type: 'insert'
 		},
 		imageIcon = 'favicon.png',
-		_tpl = `<div class="modal clearfix">
-			<div class="modal-dialog">
-				<div class="modal-wrapper">
-					<div class="cropie_big"></div>
-					<h2 class="modal-title text-center"></h2>
-					<div class="modal-inputs row">
-						<label class="modal-label container">
-							<input class="control name" type="text" value="" placeholder="${locale.insertName}">
-							<span>${locale.insertName}</span>
-						</label>
-						<label class="modal-label container">
-							<input class="control stream" type="text" value="" placeholder="${locale.inserStream}">
-							<span>${locale.inserStream}</span>
-						</label>
-					</div>
-					<div class="modal-crop">
-						<div class="cropie"></div>
-						<div class="modal-fileicon">
-							<div class="fileicon icon-add-photo" title="${locale.addIcon}"></div>
-						</div>
-					</div>
-					<div class="modal-tags">
-						<tags-editor list="" genre=""></tags-editor>
-					</div>
-					<div class="modal-buttons">
-						<button class="control ok" type="button">${locale.ok}</button>
-						<button class="control cancel" type="button">${locale.cancel}</button>
-					</div>
-				</div>
-			</div>
-		</div>`,
-		_tplCopy = `<div class="modal clearfix">
-			<div class="modal-dialog">
-				<div class="modal-wrapper">
-					<h2 class="modal-title text-center"></h2>
-					<div class="modal-inputs row">
-						<p class="container"></p>
-					</div>
-					<div class="modal-buttons">
-						<button class="control btn ok" type="button">${locale.ok}</button>
-					</div>
-				</div>
-			</div>
-		</div>`,
-		_tplDelExpImp = `<div class="modal clearfix">
-			<div class="modal-dialog">
-				<div class="modal-wrapper">
-					<h2 class="modal-title text-center"></h2>
-					<div class="modal-inputs row">
-						<p class="container"></p>
-					</div>
-					<div class="modal-buttons">
-						<button class="control btn ok" type="button">${locale.ok}</button>
-						<button class="control btn cancel" type="button">${locale.cancel}</button>
-					</div>
-				</div>
-			</div>
-		</div>`,
+		_tpl = `<div class="modal clearfix">` +
+			`<div class="modal-dialog">` +
+				`<div class="modal-wrapper">` +
+					`<div class="cropie_big"></div>` +
+					`<h2 class="modal-title text-center"></h2>` +
+					`<div class="modal-inputs row">` +
+						`<label class="modal-label container">` +
+							`<input class="control name" type="text" value="" placeholder="${locale.insertName}">` +
+							`<span>${locale.insertName}</span>` +
+						`</label>` +
+						`<label class="modal-label container">` +
+							`<input class="control stream" type="text" value="" placeholder="${locale.inserStream}">` +
+							`<span>${locale.inserStream}</span>` +
+						`</label>` +
+					`</div>` +
+					`<div class="modal-crop">` +
+						`<div class="cropie"></div>` +
+						`<div class="modal-fileicon">` +
+							`<div class="fileicon icon-add-photo" title="${locale.addIcon}"></div>` +
+						`</div>` +
+					`</div>` +
+					`<div class="modal-tags">` +
+						`<tags-editor list="" genre=""></tags-editor>` +
+					`</div>` +
+					`<div class="modal-buttons">` +
+						`<button class="control ok" type="button">${locale.ok}</button>` +
+						`<button class="control cancel" type="button">${locale.cancel}</button>` +
+					`</div>` +
+				`</div>` +
+			`</div>` +
+		`</div>`,
+		_tplCopy = `<div class="modal clearfix">` +
+			`<div class="modal-dialog">` +
+				`<div class="modal-wrapper">` +
+					`<h2 class="modal-title text-center"></h2>` +
+					`<div class="modal-inputs row">` +
+						`<p class="container"></p>` +
+					`</div>` +
+					`<div class="modal-buttons">` +
+						`<button class="control btn ok" type="button">${locale.ok}</button>` +
+					`</div>` +
+				`</div>` +
+			`</div>` +
+		`</div>`,
+		_tplDelExpImp = `<div class="modal clearfix">` +
+			`<div class="modal-dialog">` +
+				`<div class="modal-wrapper">` +
+					`<h2 class="modal-title text-center"></h2>` +
+					`<div class="modal-inputs row">` +
+						`<p class="container"></p>` +
+					`</div>` +
+					`<div class="modal-buttons">` +
+						`<button class="control btn ok" type="button">${locale.ok}</button>` +
+						`<button class="control btn cancel" type="button">${locale.cancel}</button>` +
+					`</div>` +
+				`</div>` +
+			`</div>` +
+		`</div>`,
 		blobToBuffer = function(blob) {
 			return new Promise(function(resolve, reject){
 				if (typeof Blob === 'undefined' || !(blob instanceof Blob)) {

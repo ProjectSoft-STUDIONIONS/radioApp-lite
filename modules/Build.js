@@ -1,7 +1,7 @@
 module.exports = function(grunt) {
 	const fs = require("fs");
 	const path = require("path");
-	const rcedit = require("rcedit");
+	const { rcedit } = require("rcedit");
 
 	const resourceEdit = function(){
 		return new Promise(async function(resolve, reject){
@@ -25,9 +25,12 @@ module.exports = function(grunt) {
 					"SpecialBuild": app.name,
 				},
 			};
-			await rcedit('build/nw.exe', rcEditOptions);
-			await fs.renameSync('build/nw.exe', 'build/YourRadio.exe')
-			resolve();
+			rcedit('build/nw.exe', rcEditOptions).then( async data => {
+				await fs.renameSync('build/nw.exe', 'build/YourRadio.exe');
+				resolve();
+			}).catch( async e => {
+				reject(e);
+			} );
 		});
 	}
 	

@@ -73,24 +73,24 @@
 							classNames += ` ${genreNames[g_names]}`
 						}
 						classNames = classNames.length ? classNames : " none";
-						let _tmp = $(`<li id="st_${_id}" class="radio-item stop${classNames}">
-							<div class="radio-item-box">
-								<div class="radio-item-icon">
-									<span class="icons"></span>
-									<span class="favicon"><img src="${_icon + has}" alt="${_name}"></span>
-								</div>
-								<div class="radio-item-wrap">
-									<span class="station-name">${_name}</span>
-								</div>
-								<div class="radio-item-handler">
-									<span class="icon-handler">
-										<span class="top">▲</span>
-										<span class="center">●</span>
-										<span class="bottom">▼</span>
-									</span>
-								</div>
-							</div>
-						</li>`);
+						let _tmp = $(`<li id="st_${_id}" class="radio-item stop${classNames}">` +
+							`<div class="radio-item-box">` +
+								`<div class="radio-item-icon">` +
+									`<span class="icons"></span>` +
+									`<span class="favicon"><img src="${_icon + has}" alt="${_name}"></span>` +
+								`</div>` +
+								`<div class="radio-item-wrap">` +
+									`<span class="station-name">${_name}</span>` +
+								`</div>` +
+								`<div class="radio-item-handler">` +
+									`<span class="icon-handler">` +
+										`<span class="top">▲</span>` +
+										`<span class="center">●</span>` +
+										`<span class="bottom">▼</span>` +
+									`</span>` +
+								`</div>` +
+							`</div>` +
+						`</li>`);
 						_tmp.data({
 							id: _id,
 							name: _name,

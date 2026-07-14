@@ -36,8 +36,6 @@ https://dfm-russianrave.hostingradio.ru/russianrave96.aacp
 https://dfm-party.hostingradio.ru/dfmparty96.aacp
 #EXTINF:-1,Радио DFM «SLAP BASS»
 https://dfm-slapbass.hostingradio.ru/slapbass96.aacp
-#EXTINF:-1,Радио DFM «Space Music»
-https://dfm-space.hostingradio.ru/dfmspace96.aacp
 #EXTINF:-1,Дорожное радио
 http://stream1.hostingradio.ru:8010/15_aac_96
 #EXTINF:-1,Ретро FM
@@ -64,8 +62,6 @@ https://live.hunter.fm/sertanejo_low
 https://live.hunter.fm/pop_low
 #EXTINF:-1,POP FM Биробиджан
 https://stream.popfm-bir.ru:1045/stream
-#EXTINF:-1,Retrowave.One Radio
-https://waveretro.ru:8443/stream
 #EXTINF:-1,Радио 7
 https://radio7.hostingradio.ru:8040/radio7128.mp3
 #EXTINF:-1,Радио «Europa Plus»
@@ -90,18 +86,14 @@ https://rusradio.hostingradio.ru/rusradio96.aacp
 https://chanson.hostingradio.ru:8041/chanson256.mp3
 #EXTINF:-1,Радио Монте-Карло
 https://montecarlo.hostingradio.ru/montecarlo96.aacp
-#EXTINF:-1,Радио Energy Самара
-https://srv21.gpmradio.ru:8443/stream/air/aac/64/99
-#EXTINF:-1,Авторадио
-https://srv01.gpmradio.ru/stream/air/aac/64/100
 #EXTINF:-1,Дальнобой FM
-https://dalnoboyfm.radiopark2000x.ru:4005/stream
+https://srv02.gpmradio.ru:8443/stream/personal/aacp/64/1690790
 #EXTINF:-1,Radio Record «Record»
 https://radiorecord.hostingradio.ru/rr_main96.aacp
 #EXTINF:-1,Radio Record «Russian Mix»
 https://radiorecord.hostingradio.ru/rus96.aacp
-#EXTINF:-1,Radio Record «Mashup»
-https://radiorecord.hostingradio.ru/mashup96.aacp
+#EXTINF:-1,Radio Record «Хиты всех времен»
+https://radiorecord.hostingradio.ru/alltimers96.aacp
 #EXTINF:-1,Radio Record «Супердискотека 90-х»
 https://radiorecord.hostingradio.ru/sd9096.aacp
 #EXTINF:-1,Radio Record «Russian Hits»
@@ -150,6 +142,8 @@ https://radiorecord.hostingradio.ru/russiangold96.aacp
 https://radiorecord.hostingradio.ru/beach96.aacp
 #EXTINF:-1,Radio Record «Pirate Station»
 https://radiorecord.hostingradio.ru/ps96.aacp
+#EXTINF:-1,Radio Record «Mashup»
+https://radiorecord.hostingradio.ru/mashup96.aacp
 #EXTINF:-1,Radio Record «Innocence»
 https://radiorecord.hostingradio.ru/ibiza96.aacp
 #EXTINF:-1,Radio Record «Медляк FM»
@@ -298,14 +292,8 @@ https://radiorecord.hostingradio.ru/djgvozd96.aacp
 https://radiorecord.hostingradio.ru/edmhits96.aacp
 #EXTINF:-1,Radio Record «Tecktonik»
 https://radiorecord.hostingradio.ru/tecktonik96.aacp
-#EXTINF:-1,Radio Record «Christmas Chill»
-https://radiorecord.hostingradio.ru/christmaschill96.aacp
-#EXTINF:-1,Radio Record «Christmas»
-https://radiorecord.hostingradio.ru/christmas96.aacp
 #EXTINF:-1,Radio Record «Jungle»
 https://radiorecord.hostingradio.ru/jungle96.aacp
-#EXTINF:-1,Radio Record «Русская Зима»
-https://radiorecord.hostingradio.ru/ruszima96.aacp
 #EXTINF:-1,Radio Record «Hypnotic»
 https://radiorecord.hostingradio.ru/hypno96.aacp
 #EXTINF:-1,Radio Record «UK Garage»
@@ -328,3 +316,9 @@ https://radiorecord.hostingradio.ru/2step96.aacp
 https://radiorecord.hostingradio.ru/complextro96.aacp
 #EXTINF:-1,Radio Record «Groove/Tribal»
 https://radiorecord.hostingradio.ru/groovetribal96.aacp
+#EXTINF:-1,Radio Record «Christmas Chill»
+https://radiorecord.hostingradio.ru/christmaschill96.aacp
+#EXTINF:-1,Radio Record «Christmas»
+https://radiorecord.hostingradio.ru/christmas96.aacp
+#EXTINF:-1,Radio Record «Русская Зима»
+https://radiorecord.hostingradio.ru/ruszima96.aacp

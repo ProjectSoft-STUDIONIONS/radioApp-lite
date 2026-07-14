@@ -249,12 +249,18 @@ module.exports = function(grunt) {
 				getFFMPEG().then(async function(){
 					done();
 				}).catch(function(error){
+					grunt.fail.fatal("Error FFMPEG");
+					return false;
 					done("Error FFMPEG");
 				});
 			}).catch(function(error){
+				grunt.fail.fatal("Error NMJS");
+				return false;
 				done("Error NMJS");
 			});
 		}).catch(function(error){
+			grunt.fail.fatal("Error MANIFEST");
+			return false;
 			done("Error MANIFEST");
 		})
 	});

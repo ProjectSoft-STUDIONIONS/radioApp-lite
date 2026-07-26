@@ -149,6 +149,8 @@
 				$bigCrp = $('.cropie_big', tpl);
 				$fav = $(".fileicon", tpl);
 				let $tags = $("tags-editor", tpl);
+				let urlIcon = null,
+					urlBig = null;
 				if(typeof settings.genre == "object") {
 					$tags[0].setAttribute('list', settings.genre);
 				}
@@ -157,7 +159,8 @@
 				}
 				icon = dir + `\\${$this.id}.png`;
 				imageIcon = dir + `\\${$this.id}_big.png`;
-				icon = (fs.existsSync(imageIcon) ? imageIcon : (fs.existsSync(icon) ? icon : 'image_big.png')) + "?" + (new Date()).getTime();
+				urlIcon = 
+				icon = (fs.existsSync(imageIcon) ? `${GLOB_SERVER.URL}/${$this.id}_big.png` : (fs.existsSync(icon) ? `${GLOB_SERVER.URL}/${$this.id}.png` : 'image_big.png')) + "?" + (new Date()).getTime();
 				$crp.croppie({
 					viewport: {
 						width: 180,

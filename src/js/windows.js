@@ -176,4 +176,4 @@
 		win.setMinimumSize(w, h);
 		win.resizeTo(w, h);
 	});
-}(jQuery))
+}(jQuery));

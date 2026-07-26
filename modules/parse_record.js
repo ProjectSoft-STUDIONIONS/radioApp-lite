@@ -346,13 +346,21 @@ module.exports = function(grunt) {
 					/**
 					 * Загружаем изображение для станции
 					 */
-					await GETURLTOFILE(icon, path.normalize(path.join(filesDir ,`${id}.png`)));
+					await GETURLTOFILE(icon, path.normalize(path.join(filesDir ,`${id}.png`))).catch((e) => {
+						done(e);
+					});
 					/**
 					 * Генерируем картинки станции
 					 */
-					await MAGICK(path.normalize(path.join(filesDir ,`${id}.png`)), 'big', true);
-					await MAGICK(path.normalize(path.join(filesDir ,`${id}.png`)), 'icon', false);
-					await FAVICON(id);
+					await MAGICK(path.normalize(path.join(filesDir ,`${id}.png`)), 'big', true).catch((e) => {
+						done(e);
+					});;
+					await MAGICK(path.normalize(path.join(filesDir ,`${id}.png`)), 'icon', false).catch((e) => {
+						done(e);
+					});;
+					await FAVICON(id).catch((e) => {
+						done(e);
+					});;
 					/**
 					 * Читаем полученные изображения
 					 */

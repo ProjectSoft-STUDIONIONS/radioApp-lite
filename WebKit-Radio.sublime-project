@@ -16,7 +16,7 @@
 		{
 			"name": "Запуск сборки проекта",
 			"working_dir": "${project_path}",
-			"cmd": ["start", "/wait", "npm", "run", "test"],
+			"cmd": ["start", "/wait", "npm", "run", "build"],
 			"shell": true
 		},
 		{

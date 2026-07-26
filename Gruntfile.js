@@ -17,8 +17,12 @@ module.exports = function(grunt) {
 		update = process.env.NWJS_UPDATE == "1" ? true : false,
 		record = process.env.RECORD == "1" ? true : false,
 		version = process.env.NWJS_VERSION == "0" ? false : process.env.NWJS_VERSION; // 0.87.0
-
-	console.log(target, update, version);
+	console.table({
+		target: target,
+		update: update,
+		record: record,
+		version: version
+	});
 	console.log(grunt.template.date(new Date().getTime(), 'yyyy-mm-dd'));
 
 	grunt.loadNpmTasks('innosetup-compiler');
@@ -336,6 +340,7 @@ module.exports = function(grunt) {
 			main: {}
 		}
 	});
+
 	const tasks = [
 		'clear_console',
 		'parse_record',
@@ -351,7 +356,7 @@ module.exports = function(grunt) {
 		'pug:main',
 	];
 	update && tasks.push('downloader');
-	tasks.push('unzip', 'version_edit:main', 'copy:main', 'zip:main', 'clean:vk', 'buildnw:main');
+	tasks.push('unzip', 'version_edit:main', 'copy:main', 'zip', 'clean:vk', 'buildnw:main');
 	target && tasks.push('innosetup:main');
 	/**
 	 * Очистим консоль

@@ -30,6 +30,85 @@
 		mixitupVar;
 	const regex = /^data:image\/png;base64,iVBORw0KGgo/;
 
+	const http = require('http');
+	const fs = require('fs');
+	const path = require('path');
+	const { App } = require('nw.gui');
+
+	const DATA_DIR = path.normalize(path.join(App.dataPath, 'radio'));
+
+	const startImageServer = (attemptPort) => {
+		const server = http.createServer((req, res) => {
+			if (req.method !== 'GET' || !req.url.startsWith('/radio/')) {
+				res.writeHead(404, { 'Content-Type': 'text/plain' });
+				res.end('Not found');
+				return;
+			}
+
+			const queryStart = req.url.indexOf('?');
+			const pathPart = queryStart === -1 ? req.url : req.url.substring(0, queryStart);
+
+			const fileName = decodeURIComponent(pathPart.substring('/radio/'.length));
+			const filePath = path.join(DATA_DIR, fileName);
+
+			// Защита от выхода за пределы DATA_DIR
+			const realDir = path.resolve(DATA_DIR);
+			const realFile = path.resolve(filePath);
+			if (!realFile.startsWith(realDir)) {
+				res.writeHead(403, { 'Content-Type': 'text/plain' });
+				res.end('Forbidden');
+				return;
+			}
+
+			fs.readFile(filePath, (err, data) => {
+				if (err) {
+					res.writeHead(404, { 'Content-Type': 'text/plain' });
+					res.end('File not found');
+					return;
+				}
+
+				let mimeType = 'application/octet-stream';
+				const ext = path.extname(fileName).toLowerCase();
+				if (ext === '.png') mimeType = 'image/png';
+				else if (ext === '.jpg' || ext === '.jpeg') mimeType = 'image/jpeg';
+				else if (ext === '.gif') mimeType = 'image/gif';
+				else if (ext === '.webp') mimeType = 'image/webp';
+
+				res.writeHead(200, {
+					'Content-Type': mimeType,
+					'Cache-Control': 'no-cache, no-store, must-revalidate',
+					'Pragma': 'no-cache',
+					'Expires': '0',
+				});
+				res.end(data);
+			});
+		});
+
+		server.listen(attemptPort, () => {
+			const port = server.address().port;
+			GLOB_SERVER.PORT = port;
+			GLOB_SERVER.HOST = 'localhost';
+			GLOB_SERVER.URL = `http://${GLOB_SERVER.HOST}:${GLOB_SERVER.PORT}/radio`;
+			//console.log(`✅ Image server ready: http://${GLOB_SERVER.HOST}:${GLOB_SERVER.PORT}/radio/`);
+			//console.log('Serving from:', DATA_DIR);
+			// Только после старта сервера запускаем обычный рендер
+			resumeInit();
+		});
+
+		server.on('error', (err) => {
+			if (err.code === 'EADDRINUSE') {
+				console.log(`⚠️ Port ${attemptPort} busy. Trying ${attemptPort + 1}...`);
+				// Рекурсивно пробуем следующий порт
+				startImageServer(attemptPort + 1);
+				return;
+			}
+			console.error('Server error:', err);
+		});
+	};
+
+	// Стартуем сервер
+	startImageServer(3000);
+
 	const addListItem = async function(data){
 				try{
 					if(data.name && data.stream){
@@ -63,7 +142,7 @@
 								log(`Error _imageBig ${_id}`, e);
 							}
 						}
-						_icon = (!_icon) ? 'image_fav.png' : _icon;
+						_icon = (!_icon) ? 'image_fav.png' : GLOB_SERVER.URL + `/${_id}.png`;
 						let classNames = "";
 						let genreNames = _genre.map((gn) => {
 							let name = translit(gn).toLowerCase();
@@ -246,33 +325,33 @@
 				}
 			},
 			updateSessionMetaData = function() {
-				let icon;
+				let icon, big;
 				if(player.isPlaying() &&  $('li.radio-item.active').length){
 					let $li = $('li.radio-item.active'),
 						data = $li.data(),
 						id = data.id,
 						title = data.streamMeta || data.name,
 						has = (new Date()).getTime();
-					icon = (fs.existsSync(`${dir}\\${id}.png`)	? `${dir}\\${id}.png` : 'image_fav.png'),
-					big = (fs.existsSync(`${dir}\\${id}_big.png`)	? `${dir}\\${id}_big.png` : 'image_big.png');
-					tmpCrop.bind({
-						url: big,
-						backgroundColor: '#ffffff'
-					}).then(function(){
-						tmpCrop.result({
-							type: 'base64',
-							size: 'viewport',
-							format: 'png',
-							backgroundColor: '#ffffff'
-						}).then(function(base64){
+					icon = (fs.existsSync(`${dir}\\${id}.png`)	? `${GLOB_SERVER.URL}/${id}.png` : 'image_fav.png'),
+					big = (fs.existsSync(`${dir}\\${id}_big.png`)	? `${GLOB_SERVER.URL}/${id}_big.png` : 'image_big.png');
+					//tmpCrop.bind({
+					//	url: big,
+					//	backgroundColor: '#ffffff'
+					//}).then(function(){
+						//tmpCrop.result({
+						//	type: 'base64',
+						//	size: 'viewport',
+						//	format: 'png',
+						//	backgroundColor: '#ffffff'
+						//}).then(function(base64){
 							navigator.mediaSession.metadata = new MediaMetadata({
 								title: title,
 								artist: data.name + ' | ' + locale.appName,
 								album: "",
-								artwork: [{src: base64, type: "image/png", sizes: '128x128'}]
+								artwork: [{src: big, type: "image/png", sizes: '128x128'}]
 							});
-						});
-					});
+						//});
+					//});
 				}else{
 					icon  = "data:image/png;base64," + fs.readFileSync('image_fav.png').toString('base64');
 					navigator.mediaSession.metadata = new MediaMetadata({
@@ -392,9 +471,9 @@
 				icy.get(player.stream, function (res) {
 					var _title = data.streamMeta ? (data.streamMeta.length > 5 ? data.streamMeta : data.name) : data.name,
 						// Icon 180x180
-						icon = (fs.existsSync(`${dir}\\${data.id}.png`) ? `${dir}\\${data.id}.png` : 'image_fav.png');
+						icon = (fs.existsSync(`${dir}\\${data.id}.png`) ? `${GLOB_SERVER.URL}/${data.id}.png` : 'image_fav.png');
 					// Big icon 360x180
-					icon = (fs.existsSync(`${dir}\\${data.id}_big.png`) ? `${dir}\\${data.id}_big.png` : 'image_big.png');
+					icon = (fs.existsSync(`${dir}\\${data.id}_big.png`) ? `${GLOB_SERVER.URL}/${data.id}_big.png` : 'image_big.png');
 					if(player.isPlaying()){
 						$(`#radio-list li#st_${data.id}`).data('streamMeta', _title);
 					}else{
@@ -444,16 +523,17 @@
 			// Вывод оповещения браузера
 			spawnNotification = function(body, icon, title) {
 				var options = {
-					body: body,
-					icon: icon
-				};
+						body: body,
+						icon: icon
+					},
+					has = "?" + (new Date()).getTime();
 				spawnNotificationClose();
 				var opt = {
 					type: "image",
 					title: body,
 					message: title,
 					iconUrl: 'favicon.png',
-					imageUrl: icon
+					imageUrl: `${icon}${has}`
 				};
 				notify && chrome.notifications.create('your-radio-webkit', opt, function(){});
 			},
@@ -623,7 +703,7 @@
 	/**
 	 * Run App Radio
 	 **/
-	setTimeout(()=>{
+	const resumeInit = () => {
 		init(false);
 		/* set lang */
 		$('.settingsTitle').text(locale.settingsTitle);
@@ -715,7 +795,7 @@
 							img = $('img', $li),
 							name = $('.station-name', `#st_${args.id}`),
 							has = "?" + (new Date()).getTime(),
-							_icon = ((fs.existsSync(`${dir}\\${args.id}.png`))	? `${dir}\\${args.id}.png` : 'image_big.png') + has;
+							_icon = ((fs.existsSync(`${dir}\\${args.id}.png`))	? `${GLOB_SERVER.URL}/${args.id}.png` : 'image_big.png') + has;
 						
 						name.text(args.name);
 						let genreNames = args.genre.map((gn) => {
@@ -901,7 +981,7 @@
 			$settingsBlock[0].close();
 			return !1;
 		});
-	}, 1000);
+	};
 
 	/**
 	 * Set App title
@@ -949,4 +1029,7 @@
 	$(document).on('update.croppie', '.cropie', function(e) {
 		$('input[type=range]', e.target).trigger('change');
 	});
+
+	// Поднимаем сервер
+
 }(jQuery));

@@ -1,4 +1,11 @@
 (nw.process.versions["nw-flavor"] == "sdk") &&  nw.Window.get().showDevTools();
+
+const GLOB_SERVER = {
+	HOST: null,
+	PORT: null,
+	URL: null
+};
+
 const gui = require('nw.gui'),
 	fs = require('fs'),
 	fse = require('fs-extra'),

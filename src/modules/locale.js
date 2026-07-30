@@ -96,6 +96,18 @@ class LocaleApp {
 	get goToWebsite() {
 		return chrome.i18n.getMessage('goToWebsite');
 	}
+	get Forbidden() {
+		return chrome.i18n.getMessage('Forbidden');
+	}
+	get ForbiddenText() {
+		return chrome.i18n.getMessage('ForbiddenText');
+	}
+	get NotFound() {
+		return chrome.i18n.getMessage('NotFound');
+	}
+	get NotFoundText() {
+		return chrome.i18n.getMessage('NotFoundText');
+	}
 }
 
 var locale = new LocaleApp();

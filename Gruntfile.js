@@ -18,9 +18,9 @@ module.exports = function(grunt) {
 		record = process.env.RECORD == "1" ? true : false,
 		version = process.env.NWJS_VERSION == "0" ? false : process.env.NWJS_VERSION; // 0.87.0
 	console.table({
-		target: target,
-		update: update,
-		record: record,
+		target: target ? 'Normal' : 'SDK',
+		update: update ? 'Download' : 'Cache',
+		record: record ? 'Parse' : 'None',
 		version: version
 	});
 	console.log(grunt.template.date(new Date().getTime(), 'yyyy-mm-dd'));

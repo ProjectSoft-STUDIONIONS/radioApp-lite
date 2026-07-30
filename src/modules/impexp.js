@@ -23,7 +23,7 @@ const DeleteRadioPath = function (directory) {
 				let curPath = directory + "/" + file,
 					ext = path.extname(curPath).toLowerCase();
 				if(!fs.statSync(curPath).isDirectory()) {
-					if(ext != '.json'){
+					if(ext != '.json' && '.ico'){
 						fs.unlinkSync(curPath);
 					}
 				}

@@ -37,42 +37,76 @@
 
 	const DATA_DIR = path.normalize(path.join(App.dataPath, 'radio'));
 
+	const errorTpl = (obj) => {
+		return `<!DOCTYPE html>
+<html lang="ru">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+		<meta name="viewport" content="width=device-width,initial-scale=1"/>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+		<meta name="SKYPE_TOOLBAR" content="SKYPE_TOOLBAR_PARSER_COMPATIBLE"/>
+		<title>Ваше Радио</title>
+		<meta name="color-scheme" content="light"/>
+		<meta name="theme-color" content="#fff"/>
+		<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon"/>
+	</head>
+	<body style="margin:0;padding:10;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;">
+		<h1>${obj.title}</h1>
+		<p>${obj.text}</p>
+	</body>
+</html>`;
+	};
+
 	const startImageServer = (attemptPort) => {
+		const obj = {
+			title: "",
+			text: ""
+		};
 		const server = http.createServer((req, res) => {
-			if (req.method !== 'GET' || !req.url.startsWith('/radio/')) {
-				res.writeHead(404, { 'Content-Type': 'text/plain' });
-				res.end('Not found');
+			if (req.method !== 'GET') {
+				res.writeHead(404, { 'Content-Type': 'text/html; charset=utf8' });
+				obj.title = locale.NotFound;
+				obj.text = locale.NotFoundText;
+				res.end(errorTpl(obj));
 				return;
 			}
-
+			//console.log(!req.url.startsWith('/'));
+			if(!req.url.startsWith('/')) {
+				res.writeHead(403, { 'Content-Type': 'text/html; charset=utf8' });
+				obj.title = locale.Forbidden;
+				obj.text = locale.ForbiddenText;
+				res.end(errorTpl(obj));
+				return;
+			}
 			const queryStart = req.url.indexOf('?');
 			const pathPart = queryStart === -1 ? req.url : req.url.substring(0, queryStart);
-
-			const fileName = decodeURIComponent(pathPart.substring('/radio/'.length));
+			const fileName = decodeURIComponent(pathPart.substring('/'.length));
 			const filePath = path.join(DATA_DIR, fileName);
-
-			// Защита от выхода за пределы DATA_DIR
 			const realDir = path.resolve(DATA_DIR);
 			const realFile = path.resolve(filePath);
-			if (!realFile.startsWith(realDir)) {
-				res.writeHead(403, { 'Content-Type': 'text/plain' });
-				res.end('Forbidden');
+			// Если к контейнеру
+			// Защита от выхода за пределы DATA_DIR
+			if (String(fileName).trim() == "" || !realFile.startsWith(realDir)) {
+				res.writeHead(403, { 'Content-Type': 'text/html; charset=utf8' });
+				obj.title = locale.Forbidden;
+				obj.text = locale.ForbiddenText;
+				res.end(errorTpl(obj));
 				return;
 			}
 
 			fs.readFile(filePath, (err, data) => {
 				if (err) {
-					res.writeHead(404, { 'Content-Type': 'text/plain' });
-					res.end('File not found');
+					res.writeHead(404, { 'Content-Type': 'text/html; charset=utf8' });
+					obj.title = locale.NotFound;
+					obj.text = locale.NotFoundText;
+					res.end(errorTpl(obj));
 					return;
 				}
 
-				let mimeType = 'application/octet-stream';
+				// Определяем тип файла
 				const ext = path.extname(fileName).toLowerCase();
-				if (ext === '.png') mimeType = 'image/png';
-				else if (ext === '.jpg' || ext === '.jpeg') mimeType = 'image/jpeg';
-				else if (ext === '.gif') mimeType = 'image/gif';
-				else if (ext === '.webp') mimeType = 'image/webp';
+				let mimeType = mime.getType(path.extname(fileName).toLowerCase());
+				mimeType = mimeType ? mimeType : 'application/octet-stream';
 
 				res.writeHead(200, {
 					'Content-Type': mimeType,
@@ -87,22 +121,20 @@
 		server.listen(attemptPort, () => {
 			const port = server.address().port;
 			GLOB_SERVER.PORT = port;
-			GLOB_SERVER.HOST = 'localhost';
-			GLOB_SERVER.URL = `http://${GLOB_SERVER.HOST}:${GLOB_SERVER.PORT}/radio`;
-			//console.log(`✅ Image server ready: http://${GLOB_SERVER.HOST}:${GLOB_SERVER.PORT}/radio/`);
-			//console.log('Serving from:', DATA_DIR);
+			//GLOB_SERVER.HOST = 'yourradiolight';
+			GLOB_SERVER.URL = `http://${GLOB_SERVER.HOST}:${GLOB_SERVER.PORT}`;
 			// Только после старта сервера запускаем обычный рендер
 			resumeInit();
 		});
 
 		server.on('error', (err) => {
 			if (err.code === 'EADDRINUSE') {
-				console.log(`⚠️ Port ${attemptPort} busy. Trying ${attemptPort + 1}...`);
+				alert(`⚠️ Port ${attemptPort} busy. Trying ${attemptPort + 1}...`);
 				// Рекурсивно пробуем следующий порт
 				startImageServer(attemptPort + 1);
 				return;
 			}
-			console.error('Server error:', err);
+			console.log('Server error:', JSON.stringify(err, null, "\t"));
 		});
 	};
 
@@ -559,117 +591,115 @@
 	/**
 	 * Context Menu Constants 
 	 **/
-	const	copyStationItem = new nw.MenuItem({
-				label: '   ' + locale.copyTitle,
-				type: 'normal',
-				icon: 'images/copy.png'
-			}),
-			addStationItem = new nw.MenuItem({
-				label: '   ' + locale.insertTitle,
-				type: 'normal',
-				icon: 'images/add.png',
-				click: function() {
-					$.radioDialog.show({
-						type: 'insert',
-						global_genre: [...json.genre],
-						genre: []
-					}, function(args){
-						$("main").addClass('loading');
-						if(args.type == 'insert'){
-							addListItem(args).then(function(el){
-								log('add station and writeFile')
-								writeFile(false).then(function(){
-									$("main").removeClass('loading');
-									log(el);
-									if(el){
-										scrollToEl(el);
-									}
-								}).catch(function(){
-									alert(locale.appRepeat);
-									$("main").removeClass('loading');
-								});
+	const copyStationItem = new nw.MenuItem({
+			label: '   ' + locale.copyTitle,
+			type: 'normal',
+			icon: 'images/copy.png'
+		}),
+		addStationItem = new nw.MenuItem({
+			label: '   ' + locale.insertTitle,
+			type: 'normal',
+			icon: 'images/add.png',
+			click: function() {
+				$.radioDialog.show({
+					type: 'insert',
+					global_genre: [...json.genre],
+					genre: []
+				}, function(args){
+					$("main").addClass('loading');
+					if(args.type == 'insert'){
+						addListItem(args).then(function(el){
+							log('add station and writeFile')
+							writeFile(false).then(function(){
+								$("main").removeClass('loading');
+								log(el);
+								if(el){
+									scrollToEl(el);
+								}
+							}).catch(function(){
+								alert(locale.appRepeat);
+								$("main").removeClass('loading');
 							});
-						}
-					});
-				}
-			}),
-			editStationItem = new nw.MenuItem({
-				label: '   ' + locale.editTitle,
-				type: 'normal',
-				icon: 'images/edit.png'
-			}),
-			removeStationItem = new nw.MenuItem({
-				label: '   ' + locale.deleteTitle,
-				type: 'normal',
-				icon: 'images/delete.png'
-			}),
-			separator = nw.MenuItem({
-				type: 'separator'
-			}),
-			exportStations = new nw.MenuItem({
-				label: '   ' + locale.exportTitle,
-				type: 'normal',
-				icon: 'images/export.png',
-				click: function() {
-					$.radioDialog.show({
-						type: 'export'
-					}, function(args){
-						if(args.type == 'export'){
-							/**
-							 * Export radio stations
-							 **/
-							ExportSattions(json).then(function(data){
-								let _output = JSON.stringify(data, null, "\t");
-								dialog.saveFileDialog('radio-export', '.json', function(sfile){
-									$("main").addClass('loading');
-									fs.writeFile(sfile, _output, 'utf8', (err) => {
-										/**
-										 * If there is no error,
-										 * then we read the file,
-										 * otherwise we close the program 
-										 **/
-										 $("main").removeClass('loading');
-										if(!err){
-											//isRead && readFile();
-
-										}else{
-											quitError(locale.appError);
-										}
-									});
-								});
-							}).catch(function(data){
-								log(data);
-							});
-							
-						}
-					});
-				}
-			}),
-			importStations = new nw.MenuItem({
-				label: '   ' + locale.importTitle,
-				type: 'normal',
-				icon: 'images/import.png',
-				click: function() {
-					$.radioDialog.show({
-						type: 'import'
-					}, function(args){
-						if(args.type == 'import'){
-							dialog.openFileDialog(['.json'], false, function(result){
-								player.stop();
+						});
+					}
+				});
+			}
+		}),
+		editStationItem = new nw.MenuItem({
+			label: '   ' + locale.editTitle,
+			type: 'normal',
+			icon: 'images/edit.png'
+		}),
+		removeStationItem = new nw.MenuItem({
+			label: '   ' + locale.deleteTitle,
+			type: 'normal',
+			icon: 'images/delete.png'
+		}),
+		separator = nw.MenuItem({
+			type: 'separator'
+		}),
+		exportStations = new nw.MenuItem({
+			label: '   ' + locale.exportTitle,
+			type: 'normal',
+			icon: 'images/export.png',
+			click: function() {
+				$.radioDialog.show({
+					type: 'export'
+				}, function(args){
+					if(args.type == 'export'){
+						/**
+						 * Export radio stations
+						 **/
+						ExportSattions(json).then(function(data){
+							let _output = JSON.stringify(data, null, "\t");
+							dialog.saveFileDialog('radio-export', '.json', function(sfile){
 								$("main").addClass('loading');
-								ImportStations(result).then(function(data){
-									$("#radio-list").empty();
-									readFile();
-								}).catch(function(data){
-									alert(data);
+								fs.writeFile(sfile, _output, 'utf8', (err) => {
+									/**
+									 * If there is no error,
+									 * then we read the file,
+									 * otherwise we close the program 
+									 **/
+									 $("main").removeClass('loading');
+									if(!err){
+										//isRead && readFile();
+									}else{
+										quitError(locale.appError);
+									}
 								});
 							});
-						}
-					});
-				}
-			}),
-			menu = new nw.Menu(),
-			menuLi = new nw.Menu();
+						}).catch(function(data){
+							log(data);
+						});
+					}
+				});
+			}
+		}),
+		importStations = new nw.MenuItem({
+			label: '   ' + locale.importTitle,
+			type: 'normal',
+			icon: 'images/import.png',
+			click: function() {
+				$.radioDialog.show({
+					type: 'import'
+				}, function(args){
+					if(args.type == 'import'){
+						dialog.openFileDialog(['.json'], false, function(result){
+							player.stop();
+							$("main").addClass('loading');
+							ImportStations(result).then(function(data){
+								$("#radio-list").empty();
+								readFile();
+							}).catch(function(data){
+								alert(data);
+							});
+						});
+					}
+				});
+			}
+		}),
+		menu = new nw.Menu(),
+		menuLi = new nw.Menu();
 	/**
 	 * Collecting the context menu
 	 **/

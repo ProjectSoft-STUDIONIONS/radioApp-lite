@@ -22,7 +22,10 @@ module.exports = function(grunt) {
 	function getMDItem (name, url, genre = []) {
 		let gn = [...genre];
 		gn = gn.map((e) => {return '`' + e + '`';}).join(", ");
-		console.log(gn);
+		grunt.log.writeln([colors.yellowBright("   Name: ") + name]);
+		grunt.log.writeln([colors.yellowBright("  Genre: ") + genre.join(", ")]);
+		grunt.log.writeln([colors.yellowBright(" Stream: ") + colors.cyan(url)]);
+		console.log("\n");
 		return `\r\n| ${name} | ${url} | ${gn} |`;
 	}
 
@@ -44,9 +47,9 @@ module.exports = function(grunt) {
 						return;
 					}
 					response.pipe(file);
-				}).on('error', function(e){
+				}).on('error', function(err){
 					deleteFile(output);
-					console.error(e);
+					grunt.fail.warn([err], 1);
 					reject();
 				});
 				file.on('finish', () => {
@@ -56,7 +59,7 @@ module.exports = function(grunt) {
 				});
 				file.on('error', (err) => {
 					deleteFile(output);
-					console.error(err.message);
+					grunt.fail.warn([err], 1);
 					reject();
 				});
 			});
@@ -101,8 +104,10 @@ module.exports = function(grunt) {
 				a.push(`"${out}"`);
 				ls = exec(a.join(' '), (error, stdout, stderr) => {
 					if (error) {
+						grunt.fail.warn(error, 1);
 						reject(error);
 					} else if (stderr) {
+						grunt.fail.warn(stderr, 1);
 						reject(stderr);
 					} else {
 						resolve();
@@ -142,8 +147,10 @@ module.exports = function(grunt) {
 					],
 					ls = exec(args.join(` `), (error, stdout, stderr) => {
 						if (error) {
+							grunt.fail.warn(error, 1);
 							reject(error);
 						} else if (stderr) {
+							grunt.fail.warn(stderr, 1);
 							reject(stderr);
 						} else {
 							resolve();
@@ -195,14 +202,18 @@ module.exports = function(grunt) {
 					];
 				exec(args_temp.join(` `), (error, stdout, stderr) => {
 					if (error) {
+						grunt.fail.warn(error, 1);
 						reject(error);
 					} else if (stderr) {
+						grunt.fail.warn(stderr, 1);
 						reject(stderr);
 					} else {
 						exec(args.join(` `), (err, stdo, stde) => {
 							if (err) {
+								grunt.fail.warn(err, 1);
 								reject(err);
 							} else if (stde) {
+								grunt.fail.warn(stde, 1);
 								reject(stde);
 							} else {
 								deleteFile(temp);
@@ -315,11 +326,8 @@ module.exports = function(grunt) {
 					/**
 					 * Пишем
 					 */
-					mdWrite.write(getMDItem(values.name, values.stream, genre));
 					m3u8Write.write(getM3U8Item(values.name, values.stream));
-					let date = new Date();
-					date.setTime(values.id);
-					console.log(values.name, "\n", date, values.id, colors.cyanBright(values.stream), "\n");
+					mdWrite.write(getMDItem(values.name, values.stream, genre));
 				}
 				/**
 				 * Парсинг Radio Record
@@ -376,8 +384,8 @@ module.exports = function(grunt) {
 					/**
 					 * Пишем список и плейлист
 					 */
-					mdWrite.write(getMDItem(name, stream, genre));
 					m3u8Write.write(getM3U8Item(name, stream));
+					mdWrite.write(getMDItem(name, stream, genre));
 					genre.map((gn) => sets.add(gn));
 					/**
 					 * Формируем станцию
@@ -396,7 +404,7 @@ module.exports = function(grunt) {
 					if(!select) {
 						select = id;
 					}
-					console.log(name, "\n", date, id, colors.cyanBright(stream), "\n");
+					//console.log(name, "\n", date, id, colors.cyanBright(stream), "\n");
 				}
 				/**
 				 * Назначаем станции для конфигурации
@@ -433,9 +441,10 @@ module.exports = function(grunt) {
 				const readme = readmeString.replace(/<!--BeginStations-->(.*)<!--EndStations-->/gs, `<!--BeginStations-->\n${radioMD}\n<!--EndStations-->`);
 				fs.writeFileSync(readmeFile, readme, {encoding: 'utf8'});
 				await deleteFile(mdFile);
-				console.log("\r\n", colors.yellowBright("DONE!"), "\r\n");
+				console.log("\n", colors.yellowBright("DONE!"), "\n");
 				done();
 			}).catch(function(error){
+				grunt.fail.warn(error, 1);
 				done(error);
 			});
 		} else {

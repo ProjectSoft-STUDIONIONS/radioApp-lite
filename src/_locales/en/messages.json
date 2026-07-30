@@ -94,5 +94,17 @@
 	},
 	"goToWebsite": {
 		"message": "Go to website:"
+	},
+	"Forbidden": {
+		"message": "Forbidden"
+	},
+	"ForbiddenText": {
+		"message": "Access to the requested resource is prohibited"
+	},
+	"NotFound": {
+		"message": "Not Found"
+	},
+	"NotFoundText": {
+		"message": "The requested resource is missing"
 	}
 }

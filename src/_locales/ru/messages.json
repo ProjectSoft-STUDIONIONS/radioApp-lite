@@ -94,5 +94,17 @@
 	},
 	"goToWebsite": {
 		"message": "Перейти на сайт:"
+	},
+	"Forbidden": {
+		"message": "Доступ запрещён"
+	},
+	"ForbiddenText": {
+		"message": "Запрещён доступ к запрашиваемому ресурсу"
+	},
+	"NotFound": {
+		"message": "Ресурс не найден"
+	},
+	"NotFoundText": {
+		"message": "Запрашиваемый ресурс отсутствует"
 	}
 }

@@ -1,9 +1,9 @@
 (nw.process.versions["nw-flavor"] == "sdk") &&  nw.Window.get().showDevTools();
 
 const GLOB_SERVER = {
-	HOST: null,
-	PORT: null,
-	URL: null
+	HOST: 'localhost',
+	PORT: 0,
+	URL: ''
 };
 
 const gui = require('nw.gui'),
@@ -11,6 +11,7 @@ const gui = require('nw.gui'),
 	fse = require('fs-extra'),
 	ph = require('path'),
 	icy = require('icy'),
+	mime = require('mime').default,
 	full = (nw.App.argv.indexOf('--full') >= 0),
 	win = nw.Window.get(),
 	dir = ph.normalize(ph.join(nw.App.dataPath, "radio")),

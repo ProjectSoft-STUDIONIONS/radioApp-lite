@@ -354,6 +354,7 @@
 				if(typeof title == 'string'){
 					title = title.replace(/\s+/g, ' ');
 					$('#TitleBar-text > span').text(title);
+					win.title = title;
 				}
 			},
 			updateSessionMetaData = function() {
@@ -366,32 +367,31 @@
 						has = (new Date()).getTime();
 					icon = (fs.existsSync(`${dir}\\${id}.png`)	? `${GLOB_SERVER.URL}/${id}.png` : 'image_fav.png'),
 					big = (fs.existsSync(`${dir}\\${id}_big.png`)	? `${GLOB_SERVER.URL}/${id}_big.png` : 'image_big.png');
-					//tmpCrop.bind({
-					//	url: big,
-					//	backgroundColor: '#ffffff'
-					//}).then(function(){
-						//tmpCrop.result({
-						//	type: 'base64',
-						//	size: 'viewport',
-						//	format: 'png',
-						//	backgroundColor: '#ffffff'
-						//}).then(function(base64){
-							navigator.mediaSession.metadata = new MediaMetadata({
-								title: title,
-								artist: data.name + ' | ' + locale.appName,
-								album: "",
-								artwork: [{src: big, type: "image/png", sizes: '128x128'}]
-							});
-						//});
-					//});
+					
+					window.navigator.mediaSession.metadata = new MediaMetadata({
+						title: title,
+						artist: data.name + ' | ' + locale.appName,
+						album: "",
+						artwork: [{src: icon, type: "image/png", sizes: '128x128'}]
+					});
+					if (window.navigator.mediaSession.setActionState) {
+						window.navigator.mediaSession.setActionState('playing');
+					} else {
+						window.navigator.mediaSession.playbackState = 'playing';
+					}
 				}else{
 					icon  = "data:image/png;base64," + fs.readFileSync('image_fav.png').toString('base64');
-					navigator.mediaSession.metadata = new MediaMetadata({
+					window.navigator.mediaSession.metadata = new MediaMetadata({
 						title: locale.appName,
 						artist: "",
 						album: "",
 						artwork: [{src: icon, type: "image/png", sizes: '128x128'}]
 					});
+					if (window.navigator.mediaSession.setActionState) {
+						window.navigator.mediaSession.setActionState('paused');
+					} else {
+						window.navigator.mediaSession.playbackState = 'paused';
+					}
 				}
 			},
 			json = {

@@ -5,12 +5,14 @@ const GLOB_SERVER = {
 	PORT: 0,
 	URL: ''
 };
-
+//const addon = require(ph.normalize(ph.join(__dirname, "locale.js")))require('../audio_session.node');
+//console.log(addon);
 const gui = require('nw.gui'),
 	fs = require('fs'),
 	fse = require('fs-extra'),
 	ph = require('path'),
 	icy = require('icy'),
+	// addon = require(ph.join(gui.__dirname, `audio_session.node`)),
 	mime = require('mime').default,
 	full = (nw.App.argv.indexOf('--full') >= 0),
 	win = nw.Window.get(),

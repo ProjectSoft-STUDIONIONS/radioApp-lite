@@ -16,14 +16,8 @@ module.exports = function(grunt) {
 	const target = process.env.NWJS_TARGET == "1" ? true : false,
 		update = process.env.NWJS_UPDATE == "1" ? true : false,
 		record = process.env.RECORD == "1" ? true : false,
-		version = process.env.NWJS_VERSION == "0" ? false : process.env.NWJS_VERSION; // 0.87.0
-	console.table({
-		target: target ? 'Normal' : 'SDK',
-		update: update ? 'Download' : 'Cache',
-		record: record ? 'Parse' : 'None',
-		version: version
-	});
-	console.log(grunt.template.date(new Date().getTime(), 'yyyy-mm-dd'));
+		version = process.env.NWJS_VERSION == "0" ? false : process.env.NWJS_VERSION, // 0.87.0
+		vrs = version ? version : "Latest";
 
 	grunt.loadNpmTasks('innosetup-compiler');
 
@@ -39,7 +33,8 @@ module.exports = function(grunt) {
 		uniqid = function () {
 			let result = URL.createObjectURL(new Blob([])).slice(-36).replace(/-/g, '');
 			return result;
-		};
+		},
+		{ log, logTable } = require('./modules/log.js');
 
 	var gc = {
 			sdk: target ? 'normal' : 'sdk',
@@ -333,7 +328,7 @@ module.exports = function(grunt) {
 			// Compiling install file
 			// Run YourRadio
 			main: {
-				command: __dirname + '/build/nw.exe ' + __dirname + '/application'
+				command: `${__dirname}\\build\\nw.exe ${__dirname}\\application`
 			}
 		},
 		clear_console: {
@@ -358,9 +353,15 @@ module.exports = function(grunt) {
 	update && tasks.push('downloader');
 	tasks.push('unzip', 'version_edit:main', 'copy:main', 'zip', 'clean:vk', 'buildnw:main');
 	target && tasks.push('innosetup:main');
-	/**
-	 * Очистим консоль
-	 */
-	tasks.push('clear_console');
+
+	logTable({
+		"Версия NWJS": vrs,
+		"Сборка NWJS": target ? 'Normal' : 'SDK',
+		"Обновление": update ? 'Download' : 'Cache',
+		"Парсинг Record": record ? 'Parse' : 'None',
+		"Дата": grunt.template.date(new Date().getTime(), 'yyyy-mm-dd'),
+		"Время": grunt.template.date(new Date().getTime(), 'hh:MM:ss'),
+	});
+
 	grunt.registerTask('default', tasks);
 }

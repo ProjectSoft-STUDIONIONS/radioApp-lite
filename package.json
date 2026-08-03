@@ -34,7 +34,6 @@
 		"grunt-contrib-watch": "latest",
 		"grunt-exec": "latest",
 		"grunt-replace": "latest",
-		"grunt-ttf2woff2": "latest",
 		"grunt-webfont": "latest",
 		"grunt-zip": "latest",
 		"innosetup-compiler": "github:ProjectSoft-STUDIONIONS/node-innosetup-compiler",
@@ -45,5 +44,12 @@
 		"rcedit": "latest",
 		"time-grunt": "github:ProjectSoft-STUDIONIONS/time-grunt",
 		"ttf2woff2": "^5.0.0"
+	},
+	"devDependencies": {
+		"grunt-ttf2woff2": "^1.0.1",
+		"readable-stream": "4.7.0"
+	},
+	"allowScripts": {
+		"ttf2woff2@8.0.1": true
 	}
 }

@@ -4,14 +4,18 @@ module.exports = function(grunt) {
 	 */
 	const fs = require('fs'),
 		path = require('path'),
-		colors = require('ansi-colors');
+		colors = require('ansi-colors'),
+		{ log, logTable, logStation, logError, breakLn } = require('./log.js');
 
 	const filesDir = path.join(`.`, 'src', 'sources', 'stations');
 
 	function deleteFile(file) {
-		try {
+		if(grunt.file.isFile(file)) {
+			return grunt.file.delete(file, {force: true});
+		}
+		/*try {
 			fs.unlinkSync(file);
-		}catch(e){}
+		}catch(e){}*/
 		return true;
 	}
 
@@ -22,10 +26,11 @@ module.exports = function(grunt) {
 	function getMDItem (name, url, genre = []) {
 		let gn = [...genre];
 		gn = gn.map((e) => {return '`' + e + '`';}).join(", ");
-		grunt.log.writeln([colors.yellowBright("   Name: ") + name]);
-		grunt.log.writeln([colors.yellowBright("  Genre: ") + genre.join(", ")]);
-		grunt.log.writeln([colors.yellowBright(" Stream: ") + colors.cyan(url)]);
-		console.log("\n");
+		logStation({
+			"Имя": name,
+			"Жанр": genre.join(", "),
+			"Стрим": url
+		});
 		return `\r\n| ${name} | ${url} | ${gn} |`;
 	}
 
@@ -41,8 +46,8 @@ module.exports = function(grunt) {
 				const https = require('node:https');
 				https.get(options, function(response){
 					if (response.statusCode !== 200) {
-						console.error(`Произошла ошибка: сервер отдал статус ${response.statusCode}`);
 						deleteFile(output);
+						grunt.fail.warn(`Произошла ошибка: сервер отдал статус ${response.statusCode}`, 1);
 						reject();
 						return;
 					}
@@ -65,7 +70,7 @@ module.exports = function(grunt) {
 			});
 		},
 		/**
-		 * Ресайз и окраска иконки для cnfywbb Radio Record
+		 * Ресайз и окраска иконки для станций Radio Record
 		 */
 		MAGICK = function(input, sufix, arg) {
 			return new Promise(function(resolve, reject){
@@ -441,7 +446,7 @@ module.exports = function(grunt) {
 				const readme = readmeString.replace(/<!--BeginStations-->(.*)<!--EndStations-->/gs, `<!--BeginStations-->\n${radioMD}\n<!--EndStations-->`);
 				fs.writeFileSync(readmeFile, readme, {encoding: 'utf8'});
 				await deleteFile(mdFile);
-				console.log("\n", colors.yellowBright("DONE!"), "\n");
+				log(colors.yellowBright("Парсинг завершён".toUpperCase()), true);
 				done();
 			}).catch(function(error){
 				grunt.fail.warn(error, 1);

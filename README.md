@@ -89,6 +89,8 @@
 
 ## Список радиостанций
 
+[**Скачать плейлист M3U8**](/../../raw/refs/heads/main/radio.m3u8)
+
 <!--BeginStations-->
 
 |      | Station Name | Strem link | Genre |
@@ -256,5 +258,3 @@
 | 🌐‍🎧 | **Radio Record «Christmas»** | `https://radiorecord.hostingradio.ru/christmas96.aacp` | `OLDSCHOOL`, `POP`, `RUSSIAN`, `Новый год` |
 | 🌐‍🎧 | **Radio Record «Русская Зима»** | `https://radiorecord.hostingradio.ru/ruszima96.aacp` | `RUSSIAN`, `Новый год` |
 <!--EndStations-->
-
-[**Скачать плейлист M3U8**](/../../raw/refs/heads/main/radio.m3u8)

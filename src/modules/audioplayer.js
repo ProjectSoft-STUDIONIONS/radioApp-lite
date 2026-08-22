@@ -77,7 +77,7 @@ var EventDispatcher = require(__dirname + '/eventdispatcher.js'),
 	},
 	audio;
 	
-function AudioPlayer(document){
+function AudioPlayer(window, document){
 	var dispatchHandlers = [], i=0;
 	_this = this;
 	audio = new Audio();
@@ -88,7 +88,7 @@ function AudioPlayer(document){
 	});
 	audio.controls = true;
 	audio.style.display = "none";
-	//document.body.appendChild(audio);
+	document.body.appendChild(audio);
 	function updateOnlineStatus(e){
 		var net = _net;
 		_status = e.type;
@@ -161,7 +161,8 @@ AudioPlayer.prototype = {
 	set playing(value){
 		throw new Error('not set playing');
 	}
-}
+};
+
 Object.assign(AudioPlayer.prototype, EventDispatcher.prototype);
 
-module.exports = AudioPlayer;
+module.exports = (window, document) => new AudioPlayer(window, document);

@@ -1,48 +1,48 @@
 #EXTM3U
 #PLAYLIST:Ваше Радио. Облегчённая версия.
-#EXTINF:-1,Наше Радио
+#EXTINF:-1,Наше Радио (RUSSIAN, ROCK)
 https://nashe1.hostingradio.ru:80/nashe-128.mp3
-#EXTINF:-1,Наше Радио 2.0
+#EXTINF:-1,Наше Радио 2.0 (RUSSIAN, ROCK)
 https://nashe1.hostingradio.ru:18000/nashe20-128.mp3
-#EXTINF:-1,НАШЕ Радио «Классик Рок»
+#EXTINF:-1,НАШЕ Радио «Классик Рок» (RUSSIAN, ROCK)
 http://nashe1.hostingradio.ru/nasheclassic.mp3
-#EXTINF:-1,НАШЕ Радио «Панки хой!»
+#EXTINF:-1,НАШЕ Радио «Панки хой!» (RUSSIAN, ROCK)
 http://nashe1.hostingradio.ru/nashepunks.mp3
-#EXTINF:-1,НАШЕ Радио «Щас спою!»
+#EXTINF:-1,НАШЕ Радио «Щас спою!» (RUSSIAN, ROCK)
 https://nashe1.hostingradio.ru/nashesongs.mp3
-#EXTINF:-1,Король и Шут
+#EXTINF:-1,Король и Шут (RUSSIAN, ROCK)
 https://stream04.pcradio.ru/Korol_i_Shut-med
-#EXTINF:-1,Радио DFM «Дискач 90-х»
+#EXTINF:-1,Радио DFM «Дискач 90-х» (Эпохи)
 https://dfm-disc90.hostingradio.ru/disc9096.aacp
-#EXTINF:-1,Радио DFM «DANCE»
+#EXTINF:-1,Радио DFM «DANCE» (DANCE)
 https://dfm.hostingradio.ru/dfm96.aacp
-#EXTINF:-1,Радио DFM «POP DANCE»
+#EXTINF:-1,Радио DFM «POP DANCE» (POP, DANCE)
 https://dfm-popdance.hostingradio.ru/popdance96.aacp
-#EXTINF:-1,Радио DFM «RUSSIAN GOLD»
+#EXTINF:-1,Радио DFM «RUSSIAN GOLD» (RUSSIAN, DANCE)
 https://dfm-russiangold.hostingradio.ru/russiangold96.aacp
-#EXTINF:-1,Радио DFM «DANCE HALL»
+#EXTINF:-1,Радио DFM «DANCE HALL» (DANCE)
 https://dfm-dancehall.hostingradio.ru/dancehall96.aacp
 #EXTINF:-1,Радио DFM «INSOMNIA»
 https://dfm-insomnia.hostingradio.ru/insomnia96.aacp
-#EXTINF:-1,Радио DFM «DEEP»
+#EXTINF:-1,Радио DFM «DEEP» (HOUSE)
 https://dfm-dfmdeep.hostingradio.ru/dfmdeep96.aacp
-#EXTINF:-1,Радио DFM RUSSIAN «DANCE»
+#EXTINF:-1,Радио DFM RUSSIAN «DANCE» (RUSSIAN, DANCE)
 https://dfm-dfmrusdance.hostingradio.ru/dfmrusdance96.aacp
-#EXTINF:-1,Радио DFM «GANGSTA DEEP»
+#EXTINF:-1,Радио DFM «GANGSTA DEEP» (HOUSE)
 https://dfm-gangstadeep.hostingradio.ru/gangstadeep96.aacp
-#EXTINF:-1,Радио DFM «РУССКИЙ РЕЙВ»
+#EXTINF:-1,Радио DFM «РУССКИЙ РЕЙВ» (RUSSIAN)
 https://dfm-russianrave.hostingradio.ru/russianrave96.aacp
 #EXTINF:-1,Радио DFM «PRTY»
 https://dfm-party.hostingradio.ru/dfmparty96.aacp
-#EXTINF:-1,Радио DFM «SLAP BASS»
+#EXTINF:-1,Радио DFM «SLAP BASS» (BASS)
 https://dfm-slapbass.hostingradio.ru/slapbass96.aacp
-#EXTINF:-1,Ваше Радио (vashe-radio.ru)
+#EXTINF:-1,Ваше Радио (vashe-radio.ru) (RUSSIAN, Дорожное, Эпохи)
 https://listen10.myradio24.com/paradox
-#EXTINF:-1,Дорожное радио
+#EXTINF:-1,Дорожное радио (Дорожное)
 http://stream1.hostingradio.ru:8010/15_aac_96
-#EXTINF:-1,Ретро FM
+#EXTINF:-1,Ретро FM (Эпохи)
 http://retroserver.streamr.ru:8043/retro64
-#EXTINF:-1,Hunter.FM «80's»
+#EXTINF:-1,Hunter.FM «80's» (Эпохи)
 https://live.hunter.fm/80s_high
 #EXTINF:-1,Hunter.FM «SMASH»
 https://live.hunter.fm/smash_low
@@ -50,9 +50,9 @@ https://live.hunter.fm/smash_low
 https://live.hunter.fm/pop2k_low
 #EXTINF:-1,Hunter.FM «Lofi»
 https://live.hunter.fm/lofi_low
-#EXTINF:-1,Hunter.FM «Tropical»
+#EXTINF:-1,Hunter.FM «Tropical» (Лето)
 https://live.hunter.fm/tropical_low
-#EXTINF:-1,Hunter.FM «Rock»
+#EXTINF:-1,Hunter.FM «Rock» (ROCK)
 https://live.hunter.fm/rock_low
 #EXTINF:-1,Hunter.FM «Pisadinha»
 https://live.hunter.fm/pisadinha_low
@@ -60,35 +60,35 @@ https://live.hunter.fm/pisadinha_low
 https://live.hunter.fm/gospel_low
 #EXTINF:-1,Hunter.FM «Sertanejo»
 https://live.hunter.fm/sertanejo_low
-#EXTINF:-1,Hunter.FM «Pop»
+#EXTINF:-1,Hunter.FM «Pop» (POP)
 https://live.hunter.fm/pop_low
-#EXTINF:-1,POP FM Биробиджан
+#EXTINF:-1,POP FM Биробиджан (POP)
 https://stream.popfm-bir.ru:1045/stream
-#EXTINF:-1,Радио 7
+#EXTINF:-1,Радио 7 (POP)
 https://radio7.hostingradio.ru:8040/radio7128.mp3
-#EXTINF:-1,Радио «Europa Plus»
+#EXTINF:-1,Радио «Europa Plus» (Радиошоу, POP, DANCE)
 https://europaplus.hostingradio.ru:8030/ep128
-#EXTINF:-1,Радио «Europa Plus - СВЕЖЕЕ»
+#EXTINF:-1,Радио «Europa Plus - СВЕЖЕЕ» (Радиошоу, POP, DANCE)
 https://epdop.hostingradio.ru:8033/fresh64.aac
-#EXTINF:-1,Радио «Europa Plus - Light»
+#EXTINF:-1,Радио «Europa Plus - Light» (Радиошоу, POP, DANCE)
 https://europaplus.hostingradio.ru:8014/ep-light128.mp3
-#EXTINF:-1,Радио «Europa Plus - URBAN»
+#EXTINF:-1,Радио «Europa Plus - URBAN» (RAP/URBAN, Радиошоу)
 https://epdop.hostingradio.ru:8033/ep-urban128.mp3
-#EXTINF:-1,Радио «Europa Plus - NEW»
+#EXTINF:-1,Радио «Europa Plus - NEW» (Радиошоу, POP, DANCE)
 https://europaplus.hostingradio.ru:8014/ep-new128.mp3
-#EXTINF:-1,Радио «Europa Plus - PARTY»
+#EXTINF:-1,Радио «Europa Plus - PARTY» (Радиошоу, POP, DANCE)
 https://epdop.hostingradio.ru:8033/epparty128.mp3
-#EXTINF:-1,Радио «Europa Plus - TOP 40»
+#EXTINF:-1,Радио «Europa Plus - TOP 40» (Радиошоу, POP, DANCE)
 https://europaplus.hostingradio.ru:8014/ep-top256.mp3
-#EXTINF:-1,Радио Родных Дорог
+#EXTINF:-1,Радио Родных Дорог (Дорожное)
 https://stream1.radiord.ru:8000/live128.mp3
-#EXTINF:-1,Русское радио
+#EXTINF:-1,Русское радио (RUSSIAN, POP, DANCE)
 https://rusradio.hostingradio.ru/rusradio96.aacp
-#EXTINF:-1,Радио Шансон
+#EXTINF:-1,Радио Шансон (Шансон)
 https://chanson.hostingradio.ru:8041/chanson256.mp3
-#EXTINF:-1,Радио Монте-Карло
+#EXTINF:-1,Радио Монте-Карло (Радиошоу, POP)
 https://montecarlo.hostingradio.ru/montecarlo96.aacp
-#EXTINF:-1,Дальнобой FM
+#EXTINF:-1,Дальнобой FM (Дорожное)
 https://srv02.gpmradio.ru:8443/stream/personal/aacp/64/1690790
 #EXTINF:-1,Radio Record «Record»
 https://radiorecord.hostingradio.ru/rr_main96.aacp

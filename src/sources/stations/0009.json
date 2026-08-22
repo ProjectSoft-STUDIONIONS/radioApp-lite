@@ -1,12 +1,12 @@
 {
 	"1642532833163": {
-		"name": "Радио DFM «DANCE HALL»",
-		"stream": "https://dfm-dancehall.hostingradio.ru/dancehall96.aacp",
-		"id": null,
 		"favicon": false,
-		"image": false,
 		"genre": [
 			"DANCE"
-		]
+		],
+		"id": 1642532833163,
+		"image": false,
+		"name": "Радио DFM «DANCE HALL»",
+		"stream": "https://dfm-dancehall.hostingradio.ru/dancehall96.aacp"
 	}
 }

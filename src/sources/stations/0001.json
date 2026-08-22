@@ -1,13 +1,13 @@
 {
 	"1638619207354": {
-		"name": "Наше Радио",
-		"stream": "https://nashe1.hostingradio.ru:80/nashe-128.mp3",
-		"id": null,
 		"favicon": false,
-		"image": false,
 		"genre": [
 			"RUSSIAN",
 			"ROCK"
-		]
+		],
+		"id": 1638619207354,
+		"image": false,
+		"name": "Наше Радио",
+		"stream": "https://nashe1.hostingradio.ru:80/nashe-128.mp3"
 	}
 }

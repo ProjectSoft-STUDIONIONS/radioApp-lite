@@ -12,3 +12,13 @@
 		text-align: justify;
 	}
 }
+span.writ {
+	color: #ffffff;
+	opacity: 0;
+	transition: opacity .3s ease;
+	user-select: none;
+	pointer-events: none;
+	&.visible {
+		opacity: 1;
+	}
+}

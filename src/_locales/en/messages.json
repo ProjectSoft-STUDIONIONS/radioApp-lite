@@ -23,41 +23,44 @@
 	"default": {
 		"message": "Expand"
 	},
-	"goToDev": {
-		"message": "Go to site "
-	},
-	"notToDev": {
-		"message": "Well, okay..."
-	},
 	"copyTitle": {
-		"message": "Copy station radio stream"
+		"message": "Copy station radio stream \"$1\""
 	},
 	"copyOk": {
-		"message": "Stream link of radio station %name% copied"
+		"message": "Stream link of radio station \"$1\" copied"
 	},
 	"insertTitle": {
 		"message": "Add radio station"
 	},
 	"editTitle": {
-		"message": "Edit radio station"
+		"message": "Edit radio station \"$1\""
+	},
+	"editNameAlert": {
+		"message": "The name of the radio station is not specified."
+	},
+	"editStreamAlert": {
+		"message": "The URL of the radio station stream is not set."
+	},
+	"errorSaveMessageAlert": {
+		"message": "When saving the station, something went wrong. Try again."
 	},
 	"deleteStation": {
-		"message": "Delete radio station"
+		"message": "Delete radio station \"$1\""
 	},
 	"deleteText": {
-		"message": "Delete radio station %name%?"
+		"message": "Delete radio station \"$1\"?"
 	},
 	"exportTitle": {
-		"message": "Export radio stations"
+		"message": "Exporting radio stations and settings"
 	},
-	"exportMessage": {
-		"message": "Would you like to save the list of radio stations?"
+	"exportError": {
+		"message": "An error occurred during the export.<br><br>Please try again."
 	},
 	"importTitle": {
-		"message": "Import radio stations"
+		"message": "Importing radio stations and settings"
 	},
-	"importMessage": {
-		"message": "Would you like to upload a new list of radio stations?"
+	"importError": {
+		"message": "An error occurred during import.<br><br>Try again or load the default sheet from the settings."
 	},
 	"insertName": {
 		"message": "Radio station name"
@@ -83,17 +86,23 @@
 	"settingsEmpty": {
 		"message": "Clear the list of radio stations"
 	},
+	"fullscreenOn": {
+		"message": "Turn on fullscreen mode"
+	},
+	"fullscreenOff": {
+		"message": "Turn off fullscreen mode"
+	},
 	"settingsDefault": {
 		"message": "Load default playlist.\nWill delete the previously created playlist. "
 	},
 	"settingsNotify": {
 		"message": "Display a message about playback"
 	},
+	"settingsCustomBg": {
+		"message": "Set your own app background"
+	},
 	"appVizualuzer": {
 		"message": "Vizualizer"
-	},
-	"goToWebsite": {
-		"message": "Go to website:"
 	},
 	"Forbidden": {
 		"message": "Forbidden"
@@ -106,5 +115,11 @@
 	},
 	"NotFoundText": {
 		"message": "The requested resource is missing"
+	},
+	"ErrorServer": {
+		"message": "The server is not running due to an error:\n$1"
+	},
+	"ErrorServerPort": {
+		"message": "All ports from 4000 to $1 are occupied. Contact your computer administrator to resolve the issue."
 	}
 }

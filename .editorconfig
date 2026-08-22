@@ -1,0 +1,45 @@
+root = true
+
+[*, .env]
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = tab
+tab_width = 4
+
+[**.html, **.pug]
+end_of_line = lf
+insert_final_newline = false
+trim_trailing_whitespace = true
+indent_style = tab
+tab_width = 4
+
+[**.yml]
+indent_style = space
+tab_width = 2
+
+[**.js, **.less, **.css, **.json, **rc]
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = tab
+tab_width = 4
+
+[**.svg]
+end_of_line = lf
+insert_final_newline = false
+trim_trailing_whitespace = true
+indent_style = tab
+tab_width = 4
+
+[**.template-css]
+end_of_line = lf
+insert_final_newline = false
+trim_trailing_whitespace = true
+indent_style = tab
+tab_width = 4
+
+[**.m3u8]
+end_of_line = crlf
+insert_final_newline = true
+trim_trailing_whitespace = true

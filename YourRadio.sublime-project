@@ -1,0 +1,32 @@
+{
+	"folders":
+	[
+		{
+			"path": ".",
+			"name": "YourRadio",
+			"file_exclude_patterns": [
+				
+			],
+			"folder_exclude_patterns": []
+		}
+	],
+	"settings": {
+		"default_line_ending": "unix",
+		"show_line_endings": true,
+		"font_face": "JetBrains Mono",
+		"font_size": 12,
+		"tab_size": 4,
+		"show_encoding": true,
+		"ensure_newline_at_eof_on_save": true
+	},
+	"build_systems":
+	[
+
+		{
+			"name": "Запуск сборки проекта",
+			"working_dir": "${project_path}",
+			"cmd": ["start", "/wait", "npm", "run", "build"],
+			"shell": true
+		}
+	]
+}

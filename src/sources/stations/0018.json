@@ -2,7 +2,7 @@
 	"1642515985861": {
 		"name": "Ретро FM",
 		"stream": "http://retroserver.streamr.ru:8043/retro64",
-		"id": null,
+		"id": 1642515985861,
 		"favicon": false,
 		"image": false,
 		"genre": [

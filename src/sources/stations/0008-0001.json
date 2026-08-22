@@ -1,12 +1,13 @@
 {
 	"1752961060502": {
-		"name": "Радио DFM «POP DANCE»",
-		"stream": "https://dfm-popdance.hostingradio.ru/popdance96.aacp",
+		"favicon": false,
 		"genre": [
 			"POP",
 			"DANCE"
 		],
-		"favicon": false,
-		"image": false
+		"id": 1752961060502,
+		"image": false,
+		"name": "Радио DFM «POP DANCE»",
+		"stream": "https://dfm-popdance.hostingradio.ru/popdance96.aacp"
 	}
 }

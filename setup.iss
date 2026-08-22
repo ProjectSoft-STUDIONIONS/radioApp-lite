@@ -44,8 +44,6 @@ Name: "russian"; MessagesFile: "compiler:Languages\Russian.isl"
 [CustomMessages]
 english.AppName=Your Radio Light
 russian.AppName=Ваше Радио Light
-english.RunProgramm=Launch application «Your Radio Light» v{#RadioAppVersion}  
-russian.RunProgramm=Запустить приложение «Ваше Радио Light» v{#RadioAppVersion}  
 english.ProgramName=Your Radio Light
 russian.ProgramName=Ваше Радио Light
 english.StopProgramm=Stop «Your Radio Light»...
@@ -53,9 +51,6 @@ russian.StopProgramm=Остановить «Ваше Радио Light»...
 
 [Files]
 Source: "build\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
-
-[Run]
-Filename: "{app}\{#RadioAppExeName}"; Flags: postinstall nowait skipifsilent; Description: "{cm:RunProgramm}";
 
 [UninstallDelete]
 Type: filesandordirs; Name: {autopf}\{cm:ProgramName}

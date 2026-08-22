@@ -1,13 +1,13 @@
 {
 	"1718785305872": {
-		"name": "Король и Шут",
-		"stream": "https://stream04.pcradio.ru/Korol_i_Shut-med",
-		"id": null,
 		"favicon": false,
-		"image": false,
 		"genre": [
 			"RUSSIAN",
 			"ROCK"
-		]
+		],
+		"id": 1718785305872,
+		"image": false,
+		"name": "Король и Шут",
+		"stream": "https://stream04.pcradio.ru/Korol_i_Shut-med"
 	}
 }

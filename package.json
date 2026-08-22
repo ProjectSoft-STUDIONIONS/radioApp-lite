@@ -1,55 +1,35 @@
 {
-	"name": "webkit-app-radio",
-	"appName": "YourRadio",
-	"version": "3.1.7",
+	"name": "yourradio",
+	"version": "4.0.0",
 	"description": "Ваше Радио. Облегчённая версия. Самостоятельное добавление радио потока. Импорт/Экспорт плейлиста радиостанций.",
-	"comments": "Ваше Радио. Облегчённая версия.",
-	"main": "Gruntfile.js",
+	"license": "GPL-3.0",
+	"author": "ProjectSoft <projectsoft2009@yandex.ru>",
+	"type": "commonjs",
+	"main": "index.js",
+	"exeName": "YourRadio",
 	"scripts": {
-		"inst": "npm install",
-		"page": "grunt --gruntfile page.js",
-		"test": "grunt -v",
-		"build": "grunt"
-	},
-	"author": {
-		"name": "ProjectSoft",
-		"email": "projectsoft2009@yandex.ru"
-	},
-	"license": "MIT",
-	"dependencies": {
-		"ansi-colors": "latest",
-		"async": "latest",
-		"cli-progress": "latest",
-		"dotenv": "latest",
-		"grunt": "latest",
-		"grunt-contrib-clean": "latest",
-		"grunt-contrib-concat": "latest",
-		"grunt-contrib-copy": "latest",
-		"grunt-contrib-cssmin": "latest",
-		"grunt-contrib-imagemin": "latest",
-		"grunt-contrib-less": "latest",
-		"grunt-contrib-pug": "latest",
-		"grunt-contrib-requirejs": "latest",
-		"grunt-contrib-uglify-es": "latest",
-		"grunt-contrib-watch": "latest",
-		"grunt-exec": "latest",
-		"grunt-replace": "latest",
-		"grunt-webfont": "latest",
-		"grunt-zip": "latest",
-		"innosetup-compiler": "github:ProjectSoft-STUDIONIONS/node-innosetup-compiler",
-		"less-plugin-clean-css": "latest",
-		"load-grunt-tasks": "latest",
-		"node-downloader-helper": "latest",
-		"node-fetch": "1.6.3",
-		"rcedit": "latest",
-		"time-grunt": "github:ProjectSoft-STUDIONIONS/time-grunt",
-		"ttf2woff2": "^5.0.0"
+		"inst": "npm install && bower install",
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"build": "@echo off && title Ваше Радио. Облегчённая версия. && cls && node index"
 	},
 	"devDependencies": {
-		"grunt-ttf2woff2": "^1.0.1",
-		"readable-stream": "4.7.0"
-	},
-	"allowScripts": {
-		"ttf2woff2@8.0.1": true
+		"acorn": "^8.18.0",
+		"ansi-colors": "^4.1.3",
+		"archiver": "^8.0.0",
+		"cli-progress": "^3.12.0",
+		"dotenv": "^17.4.2",
+		"escodegen": "^2.1.0",
+		"eslint": "^10.8.0",
+		"eslint-config-eslint": "^14.0.0",
+		"innosetup-compiler": "git+https://github.com/ProjectSoft-STUDIONIONS/node-innosetup-compiler.git",
+		"less": "^4.8.1",
+		"node-downloader-helper": "^2.1.11",
+		"prettier": "^3.9.6",
+		"pug": "^3.0.4",
+		"rcedit": "^5.0.2",
+		"terser": "^5.50.0",
+		"ttf2woff2": "^5.0.0",
+		"unzipper": "latest",
+		"webfont": "^12.7.0"
 	}
 }

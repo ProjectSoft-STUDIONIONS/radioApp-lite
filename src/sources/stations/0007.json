@@ -1,12 +1,12 @@
 {
 	"1642505871300": {
-		"name": "Радио DFM «Дискач 90-х»",
-		"stream": "https://dfm-disc90.hostingradio.ru/disc9096.aacp",
-		"id": null,
 		"favicon": false,
-		"image": false,
 		"genre": [
 			"Эпохи"
-		]
+		],
+		"id": 1642505871300,
+		"image": false,
+		"name": "Радио DFM «Дискач 90-х»",
+		"stream": "https://dfm-disc90.hostingradio.ru/disc9096.aacp"
 	}
 }

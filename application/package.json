@@ -1,12 +1,12 @@
 {
 	"name": "YourRadio",
-	"version": "3.1.7",
-	"comments": "Ваше Радио. Облегчённая версия.",
-	"description": "Ваше Радио. Облегчённая версия. Самостоятельное добавление радио потока. Импорт/Экспорт плейлиста радиостанций.",
-	"buildDate": "31 July 2026 13:07:37",
+	"version": "4.0.0.0.115.0",
+	"comments": "Ваше Радио. Облегчённая версия. Самостоятельное добавление радио потока. Импорт/Экспорт плейлиста радиостанций.",
+	"description": "Ваше Радио. Облегчённая версия.",
+	"buildDate": "22 August 2026 16:15:47",
 	"author": "ProjectSoft",
 	"homepage": "https://github.com/ProjectSoft-STUDIONIONS/radioApp-lite",
-	"license": "MIT",
+	"license": "GPL-3.0",
 	"main": "index.html",
 	"nodejs": true,
 	"chromium-args": "--child-clean-exit --ignore-certificate-errors --disk-cache-size=1 --media-cache-size=1 --disable-web-security --use-strict=true --allow-running-insecure-content",
@@ -31,15 +31,13 @@
 		"visible": true,
 		"visible_on_all_workspaces": true,
 		"min_width": 730,
-		"min_height": 700,
-		"width": 730,
-		"height": 700
+		"min_height": 700
 	},
-	"devDependencies": {},
 	"dependencies": {
-		"fs-extra": "latest",
 		"icy": "latest",
+		"mime": "latest",
+		"node-notifier": "^10.0.1",
 		"string_decoder": "latest",
-		"mime": "latest"
+		"transliteration": "^2.6.1"
 	}
 }

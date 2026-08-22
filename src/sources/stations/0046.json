@@ -2,7 +2,7 @@
 	"1752774131026": {
 		"name": "Дальнобой FM",
 		"stream": "https://srv02.gpmradio.ru:8443/stream/personal/aacp/64/1690790",
-		"id": null,
+		"id": 1752774131026,
 		"favicon": false,
 		"image": false,
 		"genre": [

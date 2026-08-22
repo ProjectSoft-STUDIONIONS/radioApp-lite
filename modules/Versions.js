@@ -1,9 +1,10 @@
-module.exports = function(grunt) {
+module.exports = (options) => {
 	const fs = require("fs");
 	const path = require("path");
-	
-	
-
+	return new Promise((resolve, reject) => {
+		resolve();
+	});
+	/*
 	grunt.registerMultiTask('version_edit', 'Version Update YourRadio Lite', async function() {
 		var done = this.async();
 		const pkg = this.options().pkg;
@@ -18,4 +19,5 @@ module.exports = function(grunt) {
 		grunt.file.write("application/package.json", `${str}`);
 		done();
 	});
+	*/
 };

@@ -1,0 +1,23 @@
+@font-face {
+	font-family: "{{fontFamily}}";
+	src: url("{{ fontPath }}{{fontName}}.woff2?{{ cacheString }}") format("woff2");
+	font-weight: normal;
+	font-style: normal;
+	font-display: block;
+}
+[class^="{{templateClassName}}-"]:before,
+[class*=" {{templateClassName}}-"]:before {
+	font-family: "{{fontFamily}}" !important;
+	font-style: normal;
+	font-weight: 400;
+	line-height: 1;
+	text-transform: none;
+	speak: none;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+.{{ className }} {
+	{% for glyph in glyphs %}&-{{ glyph.name }}::before {
+		content: "\{{ glyph.unicode[0].charCodeAt(0).toString(16) }}";
+	}{% endfor %}
+}

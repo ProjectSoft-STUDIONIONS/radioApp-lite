@@ -1,8 +1,12 @@
 * text=auto
 
 **/*.json text eol=lf
-**/*.md text eol=crlf
+**/*.md text eol=lf
 **/*.m3u8 text eol=crlf
+**/*.js text eol=lf
+**/*.less text eol=lf
+**/*.pug text eol=lf
+/.editorconfig text eol=lf
 
 /.github export-ignore
 /.gitattributes export-ignore

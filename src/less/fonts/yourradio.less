@@ -1,0 +1,41 @@
+@font-face {
+	font-family: "Your Radio";
+	src: url("/fonts/yourradio.woff2?1787401039529") format("woff2");
+	font-weight: normal;
+	font-style: normal;
+	font-display: block;
+}
+[class^="icon-"]:before,
+[class*=" icon-"]:before {
+	font-family: "Your Radio" !important;
+	font-style: normal;
+	font-weight: 400;
+	line-height: 1;
+	text-transform: none;
+	speak: none;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+.icon {
+	&-add-photo::before {
+		content: "\ea01";
+	}&-close::before {
+		content: "\ea02";
+	}&-deezer::before {
+		content: "\ea03";
+	}&-github::before {
+		content: "\ea04";
+	}&-hack::before {
+		content: "\ea05";
+	}&-pause::before {
+		content: "\ea06";
+	}&-play::before {
+		content: "\ea07";
+	}&-radio::before {
+		content: "\ea08";
+	}&-settings::before {
+		content: "\ea09";
+	}&-volume::before {
+		content: "\ea0a";
+	}
+}

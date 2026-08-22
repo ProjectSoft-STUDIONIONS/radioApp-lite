@@ -8,6 +8,7 @@ package-lock.json
 *_big.png
 test.js
 radio.md
+record.json
 /*.png
 /*.jpg
 /*.jpeg
@@ -24,6 +25,7 @@ radio.md
 /build
 /bild
 /bin
+/temp
 /test
 /tests
 /application/butterchurn
@@ -32,7 +34,11 @@ radio.md
 /application/fonts
 /application/images
 /application/node_modules
-/application/js
 /application/modules
+/application/js
 /application/LICENSE
 /application/*.html
+!/application/*.png
+/src/sources/stations/*
+!/src/sources/stations/*.png
+!/src/sources/stations/*.json

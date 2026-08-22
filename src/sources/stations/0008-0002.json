@@ -1,12 +1,13 @@
 {
 	"1752962243541": {
-		"name": "Радио DFM «RUSSIAN GOLD»",
-		"stream": "https://dfm-russiangold.hostingradio.ru/russiangold96.aacp",
+		"favicon": false,
 		"genre": [
 			"RUSSIAN",
 			"DANCE"
 		],
-		"favicon": false,
-		"image": false
+		"stream": "https://dfm-russiangold.hostingradio.ru/russiangold96.aacp",
+		"image": false,
+		"id": 1752962243541,
+		"name": "Радио DFM «RUSSIAN GOLD»"
 	}
 }

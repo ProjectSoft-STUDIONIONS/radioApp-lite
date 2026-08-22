@@ -5,8 +5,11 @@
 	--tags-editor-btn-hover-bgcolor: @tags-editor-btn-hover-bgcolor;
 	--tags-editor-tag-color: @tags-editor-tag-color;
 	--tags-editor-gap: @tags-editor-gap;
+	--bg-img: data-uri('inc/data-uri/lazy_bg.svg');
 }
-
+html {
+	scroll-behavior: smooth;
+}
 * {
 	&,
 	&:after,
@@ -14,10 +17,93 @@
 		box-sizing: border-box;
 	}
 }
+:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
 body {
 	margin: 0px;
 	font-family: 'Bender', 'sans-serif';
-	background-image: radial-gradient(circle,#fdc9a0,#ff7000);
+	background-color: @bgcolor;
+	background-image: var(--bg-img), radial-gradient(
+		circle at 87% 19%,
+		#ffffff 4.4%,     // чистый центр — максимальная яркость
+		#ffdb4d 4.9%,     // тёплый ореол вокруг солнца
+		#ffa500 9.4%,     // переход в насыщенный оранжевый
+		#ff8c00  50%,     // середина градиента
+		#d95300  70%,     // затемнение к краям
+		#ff7000  100%     // глубокий тёплый край
+	);
+	// Снизу отступаем футер
+	background-position: center calc(100% - 39px);
+	&,
+	&::before {
+		background-size: cover;
+		background-repeat: no-repeat;
+		background-position: bottom center;
+	}
+	&::before {
+		content: "";
+		display: block;
+		position: absolute;
+		z-index: 0;
+		bottom: 40px;
+		top: 28px;
+		left: 0;
+		right: 0;
+		visibility: hidden;
+		opacity: 0;
+		transition: opacity .9s ease, visibility .9s ease;
+	}
+	&[style^=--background-config] {
+		&,
+		&::before {
+			background-color: #dddddd;
+		}
+		&::before {
+			background-image: var(--background-config);
+			opacity: 1;
+			visibility: visible;
+		}
+	}
+	&.closing {
+		&::before {
+			opacity: 0;
+			visibility: hidden;
+		}
+	}
+	.preview {
+		background-size: cover;
+		background-repeat: no-repeat;
+		background-position: bottom center;
+		border: 1px dashed;
+		position: relative;
+		label {
+			position: relative;
+			display: block !important;
+			background-repeat: no-repeat;
+			background-position: center center;
+			background-image: data-uri('inc/data-uri/image-select.svg');
+			cursor: pointer;
+			aspect-ratio: ~'16/9';
+			margin-bottom: unset !important;
+			opacity: .4;
+		    background-color: transparent;
+			transition: background-color .3s ease, opacity .3s ease;
+			input {
+				opacity: 0;
+				display: block;
+				width: 100%;
+			}
+			&:hover {
+				opacity: 1;
+				background-color: rgba(255, 255, 255, .4)
+			}
+		}
+		&[style^=--background-config] {
+			background-image: var(--background-config);
+		}
+	}
 }
 html,
 body {
@@ -102,6 +188,9 @@ input[type=checkbox] {
 	visibility: hidden;
 	z-index: -100;
 	opacity: 0;
+}
+.hidden-block {
+	display: none;
 }
 .row {
 	margin-left: -15px;

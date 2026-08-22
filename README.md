@@ -1,10 +1,8 @@
-# Your Radio (light version) | Ваше Радио (облегчённая версия)
+# Приложение «Ваше Радио» (облегчённая версия)
 
 <p><a href="https://github.com/ProjectSoft-STUDIONIONS/radioApp-lite/releases/latest" target="_blank"><img src="https://img.shields.io/github/v/release/ProjectSoft-STUDIONIONS/radioApp-lite?style=for-the-badge&color=%230098FF" alt="Github Latest radioApp-lite"></a> &nbsp;<a href="https://github.com/ProjectSoft-STUDIONIONS/radioApp-lite/blob/master/LICENSE" target="_blank"><img src="https://img.shields.io/github/license/ProjectSoft-STUDIONIONS/radioApp-lite?style=for-the-badge&color=%230098FF" alt="Github LICENSE radioApp-lite"></a> &nbsp;<a href="https://github.com/ProjectSoft-STUDIONIONS/radioApp-lite/" target="_blank"><img src="https://img.shields.io/github/repo-size/ProjectSoft-STUDIONIONS/radioApp-lite?style=for-the-badge&color=%230098FF" alt="Github Repo"></a> &nbsp;<a href="https://github.com/ProjectSoft-STUDIONIONS/radioApp-lite/releases/latest/download/YourRadioLightSetup.exe" target="_blank"><img src="https://img.shields.io/github/downloads/ProjectSoft-STUDIONIONS/radioApp-lite/total?style=for-the-badge&color=%230098FF" alt="Github Download radioApp-lite"></a></p>
-<p>&nbsp;</p>
 
-![Your Radio (light version) | Ваше Радио (облегчённая версия)](/src/screen.png?raw=true "Your Radio (light version) | Ваше Радио (облегчённая версия)")
-
+## О приложении
 
 Когда-то давно мною было разработано расширение для браузеров - «Онлайн радио в твоём браузере»
 
@@ -12,182 +10,251 @@
 
 Так как расширение было основано на моём хобби слушать интернет радио, то я решил перенести всё это дело на платформу Node Webkit JavaScript. Node Webkit JavaScript (nwjs) основан на известном всем браузерном движке chromenium, который лежит в основе самых современных браузеров, как Chrome, Yandex, Opera и т. д..
 
-В этом приложении пользователь будет сам управлять списком радиостанций, добавление, редактирование, удаление, экспорт списка со всеми надстройками и, соответственно, импорт.
+Приложение для прослушивания интернет‑радио с гибким управлением списком радиостанций и персонализацией интерфейса. Позволяет собирать собственный плейлист из радиостанций, детально их настраивать, а также сохранять и переносить настройки между устройствами.
 
-В приложении реализовано чтение метатегов воспроизводимого потока. Так, если радиостанция передаёт в потоке называние песни и исполнителя, то оно отобразится в заголовке окна и во всплывающем окне.
+![Скриншот №1](src/screen/screen0001.jpg)
 
---------------------------------------------
+![Скриншот №2](src/screen/screen0002.jpg)
+
+![Скриншот №3](src/screen/screen0003.jpg)
+
+![Скриншот №4](src/screen/screen0004.jpg)
+
+---
+
+## Основные возможности
+
+- **Создание и управление персональной коллекцией радиостанций.** Добавляйте, редактируйте и удаляйте радиостанции в любое время.
+- **Перенос настроек и списка станций.** Поддерживаются экспорт и импорт радиостанций вместе со всеми настройками — удобно для резервного копирования или переноса на другой компьютер.
+- **Гибкая настройка внешнего вида.** Пользователь может установить собственный фон в приложении, подстраивая интерфейс под личные предпочтения.
+- **Контроль уведомлений.** Можно включать или отключать отображение информации о воспроизведении в «Центре уведомлений» Windows — чтобы не отвлекаться или, наоборот, всегда видеть, какая станция сейчас играет.
+- **Детальная настройка каждой радиостанции.** Для каждой станции можно задать имя, поток вещания, загрузить индивидуальное изображение и указать жанры — в том числе добавить свой собственный жанр, который затем станет доступен в общем списке.
+- **Сортировка радиостанций** — вы можете сами задать порядок радиостанций путём перетаскивания станции по списку.
+
+---
+
+## Управление радиостанциями через контекстное меню
+
+### В списке радиостанций
+
+Контекстное меню на радиостанциях даёт полный контроль над каждой записью:
+
+- добавить новую радиостанцию;
+- скопировать ссылку на поток вещания текущей радиостанции;
+- отредактировать данные радиостанции (имя, поток, изображение, жанры);
+- удалить радиостанцию из списка;
+- экспортировать все радиостанции и настройки в файл;
+- импортировать радиостанции и настройки из файла.
+
+### Вне списка радиостанций (на пустом месте или в других зонах интерфейса)
+
+Контекстное меню вне конкретных радиостанций позволяет:
+
+- добавить новую радиостанцию;
+- экспортировать весь список радиостанций и настройки;
+- импортировать радиостанции и настройки из файла.
+
+---
+
+## Настройки приложения
+
+В разделе настроек доступны следующие опции:
+
+- **Очистить список радиостанций** — быстро удалить все добавленные станции, чтобы начать с чистого листа.
+- **Загрузить дефолтный список радиостанций** — восстановить предустановленный набор станций, если хотите вернуться к исходному состоянию.
+- **Управление уведомлениями в Windows** — включить или отключить показ информации о текущем воспроизведении в «Центре уведомлений».
+- **Установка фона приложения** — загрузить своё изображение, чтобы персонализировать внешний вид программы.
+
+---
+
+## Редактирование и добавление радиостанций
+
+При добавлении или редактировании радиостанции пользователь может:
+
+1. **Задать имя радиостанции** — чтобы легко находить станцию в списке.
+2. **Указать поток вещания** — URL‑адрес аудиопотока, по которому будет идти трансляция.
+3. **Загрузить собственное изображение** — индивидуальную картинку для станции (логотип, обложку и т. п.).
+4. **Выбрать или добавить жанры** — использовать уже имеющиеся жанры из списка либо ввести свой новый жанр. После сохранения он автоматически добавится в общий список жанров и станет доступен для выбора у других радиостанций.
+
+---
+
+## Как начать работу
+
+1. Запустите приложение.
+2. При необходимости восстановите дефолтный список станций.
+3. При необходимости добавьте радиостанции через контекстное меню.
+4. При необходимости настройте нужную станцию: укажите имя, поток, загрузите изображение и выберите жанры.
+5. При желании измените фон приложения и настройте уведомления.
+6. Для резервного копирования используйте экспорт; для переноса на другое устройство — импорт.
 
 ## Список радиостанций
 
 <!--BeginStations-->
 
-| Station Name | Strem link | Genre |
-| ------------------- | ------------------- | ------------------- |
-| Наше Радио | https://nashe1.hostingradio.ru:80/nashe-128.mp3 | `RUSSIAN`, `ROCK` |
-| Наше Радио 2.0 | https://nashe1.hostingradio.ru:18000/nashe20-128.mp3 | `RUSSIAN`, `ROCK` |
-| НАШЕ Радио «Классик Рок» | http://nashe1.hostingradio.ru/nasheclassic.mp3 | `RUSSIAN`, `ROCK` |
-| НАШЕ Радио «Панки хой!» | http://nashe1.hostingradio.ru/nashepunks.mp3 | `RUSSIAN`, `ROCK` |
-| НАШЕ Радио «Щас спою!» | https://nashe1.hostingradio.ru/nashesongs.mp3 | `RUSSIAN`, `ROCK` |
-| Король и Шут | https://stream04.pcradio.ru/Korol_i_Shut-med | `RUSSIAN`, `ROCK` |
-| Радио DFM «Дискач 90-х» | https://dfm-disc90.hostingradio.ru/disc9096.aacp | `Эпохи` |
-| Радио DFM «DANCE» | https://dfm.hostingradio.ru/dfm96.aacp | `DANCE` |
-| Радио DFM «POP DANCE» | https://dfm-popdance.hostingradio.ru/popdance96.aacp | `POP`, `DANCE` |
-| Радио DFM «RUSSIAN GOLD» | https://dfm-russiangold.hostingradio.ru/russiangold96.aacp | `RUSSIAN`, `DANCE` |
-| Радио DFM «DANCE HALL» | https://dfm-dancehall.hostingradio.ru/dancehall96.aacp | `DANCE` |
-| Радио DFM «INSOMNIA» | https://dfm-insomnia.hostingradio.ru/insomnia96.aacp |  |
-| Радио DFM «DEEP» | https://dfm-dfmdeep.hostingradio.ru/dfmdeep96.aacp | `HOUSE` |
-| Радио DFM RUSSIAN «DANCE» | https://dfm-dfmrusdance.hostingradio.ru/dfmrusdance96.aacp | `RUSSIAN`, `DANCE` |
-| Радио DFM «GANGSTA DEEP» | https://dfm-gangstadeep.hostingradio.ru/gangstadeep96.aacp | `HOUSE` |
-| Радио DFM «РУССКИЙ РЕЙВ» | https://dfm-russianrave.hostingradio.ru/russianrave96.aacp | `RUSSIAN` |
-| Радио DFM «PRTY» | https://dfm-party.hostingradio.ru/dfmparty96.aacp |  |
-| Радио DFM «SLAP BASS» | https://dfm-slapbass.hostingradio.ru/slapbass96.aacp | `BASS` |
-| Ваше Радио (vashe-radio.ru) | https://listen10.myradio24.com/paradox | `RUSSIAN`, `Дорожное`, `Эпохи` |
-| Дорожное радио | http://stream1.hostingradio.ru:8010/15_aac_96 | `Дорожное` |
-| Ретро FM | http://retroserver.streamr.ru:8043/retro64 | `Эпохи` |
-| Hunter.FM «80's» | https://live.hunter.fm/80s_high | `Эпохи` |
-| Hunter.FM «SMASH» | https://live.hunter.fm/smash_low |  |
-| Hunter.FM «Pop2K» | https://live.hunter.fm/pop2k_low |  |
-| Hunter.FM «Lofi» | https://live.hunter.fm/lofi_low |  |
-| Hunter.FM «Tropical» | https://live.hunter.fm/tropical_low | `Лето` |
-| Hunter.FM «Rock» | https://live.hunter.fm/rock_low | `ROCK` |
-| Hunter.FM «Pisadinha» | https://live.hunter.fm/pisadinha_low |  |
-| Hunter.FM «Gospel» | https://live.hunter.fm/gospel_low |  |
-| Hunter.FM «Sertanejo» | https://live.hunter.fm/sertanejo_low |  |
-| Hunter.FM «Pop» | https://live.hunter.fm/pop_low | `POP` |
-| POP FM Биробиджан | https://stream.popfm-bir.ru:1045/stream | `POP` |
-| Радио 7 | https://radio7.hostingradio.ru:8040/radio7128.mp3 | `POP` |
-| Радио «Europa Plus» | https://europaplus.hostingradio.ru:8030/ep128 | `Радиошоу`, `POP`, `DANCE` |
-| Радио «Europa Plus - СВЕЖЕЕ» | https://epdop.hostingradio.ru:8033/fresh64.aac | `Радиошоу`, `POP`, `DANCE` |
-| Радио «Europa Plus - Light» | https://europaplus.hostingradio.ru:8014/ep-light128.mp3 | `Радиошоу`, `POP`, `DANCE` |
-| Радио «Europa Plus - URBAN» | https://epdop.hostingradio.ru:8033/ep-urban128.mp3 | `RAP/URBAN`, `Радиошоу` |
-| Радио «Europa Plus - NEW» | https://europaplus.hostingradio.ru:8014/ep-new128.mp3 | `Радиошоу`, `POP`, `DANCE` |
-| Радио «Europa Plus - PARTY» | https://epdop.hostingradio.ru:8033/epparty128.mp3 | `Радиошоу`, `POP`, `DANCE` |
-| Радио «Europa Plus - TOP 40» | https://europaplus.hostingradio.ru:8014/ep-top256.mp3 | `Радиошоу`, `POP`, `DANCE` |
-| Радио Родных Дорог | https://stream1.radiord.ru:8000/live128.mp3 | `Дорожное` |
-| Русское радио | https://rusradio.hostingradio.ru/rusradio96.aacp | `RUSSIAN`, `POP`, `DANCE` |
-| Радио Шансон | https://chanson.hostingradio.ru:8041/chanson256.mp3 | `Шансон` |
-| Радио Монте-Карло | https://montecarlo.hostingradio.ru/montecarlo96.aacp | `Радиошоу`, `POP` |
-| Дальнобой FM | https://srv02.gpmradio.ru:8443/stream/personal/aacp/64/1690790 | `Дорожное` |
-| Radio Record «Record» | https://radiorecord.hostingradio.ru/rr_main96.aacp | `HOUSE`, `POP` |
-| Radio Record «Russian Mix» | https://radiorecord.hostingradio.ru/rus96.aacp | `POP`, `RUSSIAN` |
-| Radio Record «Хиты всех времен» | https://radiorecord.hostingradio.ru/alltimers96.aacp | `HOUSE`, `OLDSCHOOL`, `POP`, `Эпохи` |
-| Radio Record «Супердискотека 90-х» | https://radiorecord.hostingradio.ru/sd9096.aacp | `OLDSCHOOL`, `POP`, `RUSSIAN`, `Эпохи` |
-| Radio Record «Russian Hits» | https://radiorecord.hostingradio.ru/russianhits96.aacp | `POP`, `RUSSIAN` |
-| Radio Record «Колбасный Цех» | https://radiorecord.hostingradio.ru/pump96.aacp | `OLDSCHOOL` |
-| Radio Record «Festivals» | https://radiorecord.hostingradio.ru/livedjsets96.aacp | `HOUSE`, `TECHNO`, `TRANCE` |
-| Radio Record «Deep» | https://radiorecord.hostingradio.ru/deep96.aacp | `HOUSE` |
-| Radio Record «Chill-Out» | https://radiorecord.hostingradio.ru/chil96.aacp | `CHILL`, `Сон` |
-| Radio Record «Сказки MC V» | https://radiorecord.hostingradio.ru/skazki96.aacp | `CHILL`, `Сон`, `Радиошоу` |
-| Radio Record «На шашлыки!» | https://radiorecord.hostingradio.ru/nashashlyki96.aacp | `POP`, `RUSSIAN`, `Лето` |
-| Radio Record «Megamix» | https://radiorecord.hostingradio.ru/mix96.aacp | `HOUSE`, `POP`, `Спорт` |
-| Radio Record «Rock» | https://radiorecord.hostingradio.ru/rock96.aacp | `Прикол` |
-| Radio Record «Remix» | https://radiorecord.hostingradio.ru/rmx96.aacp | `HOUSE` |
-| Radio Record «Гоп FM» | https://radiorecord.hostingradio.ru/gop96.aacp | `POP`, `RUSSIAN`, `Прикол` |
-| Radio Record «Big Hits» | https://radiorecord.hostingradio.ru/bighits96.aacp | `POP` |
-| Radio Record «Chill House» | https://radiorecord.hostingradio.ru/chillhouse96.aacp | `CHILL`, `HOUSE`, `Лето` |
-| Radio Record «Рекорд 00-х» | https://radiorecord.hostingradio.ru/200096.aacp | `OLDSCHOOL`, `Эпохи` |
-| Radio Record «Melodic Techno» | https://radiorecord.hostingradio.ru/melodic96.aacp | `TECHNO` |
-| Radio Record «Record 80-х» | https://radiorecord.hostingradio.ru/198096.aacp | `OLDSCHOOL`, `POP`, `Эпохи` |
-| Radio Record «Нафталин FM» | https://radiorecord.hostingradio.ru/naft96.aacp | `POP`, `RUSSIAN`, `Прикол` |
-| Radio Record «Маятник Фуко» | https://radiorecord.hostingradio.ru/mf96.aacp | `RAP/URBAN`, `RUSSIAN` |
-| Radio Record «Trancemission» | https://radiorecord.hostingradio.ru/tm96.aacp | `TRANCE` |
-| Radio Record «Summer Dance» | https://radiorecord.hostingradio.ru/summerparty96.aacp | `HOUSE`, `POP`, `Лето` |
-| Radio Record «Russian Gold» | https://radiorecord.hostingradio.ru/russiangold96.aacp | `POP`, `RUSSIAN` |
-| Radio Record «Beach Party» | https://radiorecord.hostingradio.ru/beach96.aacp | `HOUSE`, `Лето` |
-| Radio Record «Pirate Station» | https://radiorecord.hostingradio.ru/ps96.aacp | `DRUM` |
-| Radio Record «Mashup» | https://radiorecord.hostingradio.ru/mashup96.aacp | `Лето` |
-| Radio Record «Innocence» | https://radiorecord.hostingradio.ru/ibiza96.aacp | `HOUSE`, `TECHNO` |
-| Radio Record «Медляк FM» | https://radiorecord.hostingradio.ru/mdl96.aacp | `CHILL`, `POP`, `Прикол` |
-| Radio Record «Party 24/7» | https://radiorecord.hostingradio.ru/party96.aacp | `HOUSE` |
-| Radio Record «Phonk» | https://radiorecord.hostingradio.ru/phonk96.aacp | `RAP/URBAN`, `Спорт` |
-| Radio Record «Record Gold» | https://radiorecord.hostingradio.ru/gold96.aacp | `OLDSCHOOL` |
-| Radio Record «Руки Вверх!» | https://radiorecord.hostingradio.ru/rv96.aacp | `OLDSCHOOL`, `POP`, `RUSSIAN`, `Прикол` |
-| Radio Record «На Хайпе» | https://radiorecord.hostingradio.ru/hype96.aacp | `POP`, `RAP/URBAN` |
-| Radio Record «Rap Hits» | https://radiorecord.hostingradio.ru/rap96.aacp | `RAP/URBAN` |
-| Radio Record «Rap Classics» | https://radiorecord.hostingradio.ru/rapclassics96.aacp | `RAP/URBAN` |
-| Radio Record «Trance Classics» | https://radiorecord.hostingradio.ru/trancehits96.aacp | `TRANCE` |
-| Radio Record «D'n'B Classics» | https://radiorecord.hostingradio.ru/drumhits96.aacp | `DRUM` |
-| Radio Record «Armin van Buuren» | https://radiorecord.hostingradio.ru/armin96.aacp | `TRANCE` |
-| Radio Record «Summer Lounge» | https://radiorecord.hostingradio.ru/summerlounge96.aacp | `CHILL`, `Лето`, `Сон` |
-| Radio Record «Organic» | https://radiorecord.hostingradio.ru/organic96.aacp | `CHILL`, `HOUSE` |
-| Radio Record «Ultra Music Festival» | https://radiorecord.hostingradio.ru/ultra96.aacp | `HOUSE` |
-| Radio Record «VIP House» | https://radiorecord.hostingradio.ru/vip96.aacp | `HOUSE` |
-| Radio Record «Breaks» | https://radiorecord.hostingradio.ru/brks96.aacp | `BASS`, `BREAKS` |
-| Radio Record «Liquid Funk» | https://radiorecord.hostingradio.ru/liquidfunk96.aacp | `DRUM` |
-| Radio Record «Workout» | https://radiorecord.hostingradio.ru/workout96.aacp | `HOUSE`, `HARD`, `Спорт` |
-| Radio Record «EDM» | https://radiorecord.hostingradio.ru/club96.aacp | `HOUSE`, `Спорт` |
-| Radio Record «Bass House» | https://radiorecord.hostingradio.ru/jackin96.aacp | `BASS`, `HOUSE` |
-| Radio Record «GOA/PSY» | https://radiorecord.hostingradio.ru/goa96.aacp | `HARD`, `TRANCE` |
-| Radio Record «10's Dance» | https://radiorecord.hostingradio.ru/201096.aacp | `HOUSE`, `POP`, `Эпохи` |
-| Radio Record «Trancehouse» | https://radiorecord.hostingradio.ru/trancehouse96.aacp | `CHILL`, `HOUSE`, `TRANCE` |
-| Radio Record «Black Rap» | https://radiorecord.hostingradio.ru/yo96.aacp | `RAP/URBAN` |
-| Radio Record «Techno» | https://radiorecord.hostingradio.ru/techno96.aacp | `HARD`, `TECHNO` |
-| Radio Record «Tropical» | https://radiorecord.hostingradio.ru/trop96.aacp | `CHILL`, `HOUSE`, `Лето` |
-| Radio Record «Lo-Fi» | https://radiorecord.hostingradio.ru/lofi96.aacp | `CHILL`, `Сон` |
-| Radio Record «Tech House» | https://radiorecord.hostingradio.ru/techouse96.aacp | `HOUSE` |
-| Radio Record «Trap» | https://radiorecord.hostingradio.ru/trap96.aacp | `BASS`, `RAP/URBAN`, `Спорт` |
-| Radio Record «Technopop» | https://radiorecord.hostingradio.ru/technopop96.aacp | `OLDSCHOOL` |
-| Radio Record «70's Dance» | https://radiorecord.hostingradio.ru/197096.aacp | `POP`, `Эпохи` |
-| Radio Record «Dream Dance» | https://radiorecord.hostingradio.ru/dream96.aacp | `OLDSCHOOL`, `TRANCE` |
-| Radio Record «Neurofunk» | https://radiorecord.hostingradio.ru/neurofunk96.aacp | `DRUM` |
-| Radio Record «Ambient» | https://radiorecord.hostingradio.ru/ambient96.aacp | `CHILL`, `Сон` |
-| Radio Record «Record Classix» | https://radiorecord.hostingradio.ru/classix96.aacp | `HOUSE`, `OLDSCHOOL`, `Радиошоу` |
-| Radio Record «Record Club Show» | https://radiorecord.hostingradio.ru/clubshow96.aacp | `HOUSE`, `Радиошоу` |
-| Radio Record «Eurodance» | https://radiorecord.hostingradio.ru/eurodance96.aacp | `OLDSCHOOL`, `POP` |
-| Radio Record «Lo-Fi House» | https://radiorecord.hostingradio.ru/lofihouse96.aacp | `CHILL`, `HOUSE`, `Сон` |
-| Radio Record «House Hits» | https://radiorecord.hostingradio.ru/househits96.aacp | `HOUSE` |
-| Radio Record «Uplifting» | https://radiorecord.hostingradio.ru/uplift96.aacp | `HARD`, `TRANCE` |
-| Radio Record «Feel» | https://radiorecord.hostingradio.ru/feel96.aacp | `TRANCE`, `Радиошоу` |
-| Radio Record «Tiesto» | https://radiorecord.hostingradio.ru/tiesto96.aacp | `HOUSE`, `POP` |
-| Radio Record «A State of Trance» | https://radiorecord.hostingradio.ru/asot96.aacp | `TRANCE`, `Радиошоу` |
-| Radio Record «Веснушка FM» | https://radiorecord.hostingradio.ru/deti96.aacp | `RUSSIAN`, `Прикол` |
-| Radio Record «Симфония FM» | https://radiorecord.hostingradio.ru/symph96.aacp | `Прикол`, `Сон` |
-| Radio Record «Minimal/Tech» | https://radiorecord.hostingradio.ru/mini96.aacp | `HOUSE` |
-| Radio Record «TOP 100 EDM» | https://radiorecord.hostingradio.ru/top100edm96.aacp | `HOUSE`, `TECHNO` |
-| Radio Record «Dream Pop» | https://radiorecord.hostingradio.ru/dreampop96.aacp | `CHILL`, `Лето` |
-| Radio Record «House Classics» | https://radiorecord.hostingradio.ru/houseclss96.aacp | `HOUSE`, `OLDSCHOOL` |
-| Radio Record «David Guetta» | https://radiorecord.hostingradio.ru/guetta96.aacp | `HOUSE`, `POP` |
-| Radio Record «DJ Цветкоff» | https://radiorecord.hostingradio.ru/tsvetkov96.aacp | `Радиошоу` |
-| Radio Record «Disco/Funk» | https://radiorecord.hostingradio.ru/discofunk96.aacp | `HOUSE` |
-| Radio Record «Hard Bass» | https://radiorecord.hostingradio.ru/hbass96.aacp | `BASS`, `HARD`, `OLDSCHOOL` |
-| Radio Record «Afro House» | https://radiorecord.hostingradio.ru/afro96.aacp | `HOUSE`, `Лето` |
-| Radio Record «Rave FM» | https://radiorecord.hostingradio.ru/rave96.aacp | `HARD`, `OLDSCHOOL`, `Прикол` |
-| Radio Record «Nu Dance» | https://radiorecord.hostingradio.ru/nudance96.aacp | `TECHNO`, `Спорт` |
-| Radio Record «60's Dance» | https://radiorecord.hostingradio.ru/cadillac96.aacp | `POP`, `Эпохи` |
-| Radio Record «Lady Waks» | https://radiorecord.hostingradio.ru/ladywaks96.aacp | `BREAKS`, `Радиошоу` |
-| Radio Record «Dancecore» | https://radiorecord.hostingradio.ru/dc96.aacp | `OLDSCHOOL` |
-| Radio Record «Future House» | https://radiorecord.hostingradio.ru/fut96.aacp | `HOUSE` |
-| Radio Record «Darkside» | https://radiorecord.hostingradio.ru/darkside96.aacp | `DRUM` |
-| Radio Record «Future Rave» | https://radiorecord.hostingradio.ru/futurerave96.aacp | `HOUSE`, `HARD`, `TECHNO`, `TRANCE` |
-| Radio Record «Reggae» | https://radiorecord.hostingradio.ru/reggae96.aacp | `OLDSCHOOL`, `Лето` |
-| Radio Record «Electro» | https://radiorecord.hostingradio.ru/elect96.aacp | `HOUSE` |
-| Radio Record «Hardstyle» | https://radiorecord.hostingradio.ru/teo96.aacp | `HARD` |
-| Radio Record «Dubstep» | https://radiorecord.hostingradio.ru/dub96.aacp | `BASS`, `Спорт` |
-| Radio Record «Progressive» | https://radiorecord.hostingradio.ru/progr96.aacp | `HOUSE` |
-| Radio Record «Nejtrino & Baur» | https://radiorecord.hostingradio.ru/nejtrinobaur96.aacp | `Радиошоу` |
-| Radio Record «Synthwave» | https://radiorecord.hostingradio.ru/synth96.aacp | `OLDSCHOOL`, `POP` |
-| Radio Record «Latina Dance» | https://radiorecord.hostingradio.ru/latina96.aacp | `POP`, `Лето` |
-| Radio Record «DJ Gvozd» | https://radiorecord.hostingradio.ru/djgvozd96.aacp | `DRUM`, `Радиошоу` |
-| Radio Record «EDM Classics» | https://radiorecord.hostingradio.ru/edmhits96.aacp | `HOUSE` |
-| Radio Record «Tecktonik» | https://radiorecord.hostingradio.ru/tecktonik96.aacp | `HOUSE`, `OLDSCHOOL` |
-| Radio Record «Jungle» | https://radiorecord.hostingradio.ru/jungle96.aacp | `DRUM` |
-| Radio Record «Hypnotic» | https://radiorecord.hostingradio.ru/hypno96.aacp | `HOUSE`, `OLDSCHOOL` |
-| Radio Record «UK Garage» | https://radiorecord.hostingradio.ru/ukgarage96.aacp | `BREAKS`, `HOUSE` |
-| Radio Record «Гастарбайтер FM» | https://radiorecord.hostingradio.ru/gast96.aacp | `POP`, `Прикол` |
-| Radio Record «Midtempo» | https://radiorecord.hostingradio.ru/mt96.aacp | `BASS` |
-| Radio Record «Future Bass» | https://radiorecord.hostingradio.ru/fbass96.aacp | `BASS` |
-| Radio Record «Martin Garrix» | https://radiorecord.hostingradio.ru/martingarrix96.aacp | `Радиошоу` |
-| Radio Record «Oliver Heldens» | https://radiorecord.hostingradio.ru/oliverheldens96.aacp | `Радиошоу` |
-| Radio Record «Moombahton» | https://radiorecord.hostingradio.ru/mmbt96.aacp | `POP` |
-| Radio Record «2-step» | https://radiorecord.hostingradio.ru/2step96.aacp | `BASS`, `BREAKS`, `OLDSCHOOL` |
-| Radio Record «Complextro» | https://radiorecord.hostingradio.ru/complextro96.aacp | `BASS`, `HOUSE`, `HARD` |
-| Radio Record «Groove/Tribal» | https://radiorecord.hostingradio.ru/groovetribal96.aacp | `HOUSE` |
-| Radio Record «Christmas Chill» | https://radiorecord.hostingradio.ru/christmaschill96.aacp | `CHILL`, `Сон`, `Новый год` |
-| Radio Record «Christmas» | https://radiorecord.hostingradio.ru/christmas96.aacp | `OLDSCHOOL`, `POP`, `RUSSIAN`, `Новый год` |
-| Radio Record «Русская Зима» | https://radiorecord.hostingradio.ru/ruszima96.aacp | `RUSSIAN`, `Новый год` |
-
-[Playlist](radio.m3u8?raw=true)
-
-
+|      | Station Name | Strem link | Genre |
+| ---- | ------------ | ---------- | ----- |
+| 🌐‍🎧 | **Наше Радио** | `https://nashe1.hostingradio.ru:80/nashe-128.mp3` | `RUSSIAN`, `ROCK` |
+| 🌐‍🎧 | **Наше Радио 2.0** | `https://nashe1.hostingradio.ru:18000/nashe20-128.mp3` | `RUSSIAN`, `ROCK` |
+| 🌐‍🎧 | **НАШЕ Радио «Классик Рок»** | `http://nashe1.hostingradio.ru/nasheclassic.mp3` | `RUSSIAN`, `ROCK` |
+| 🌐‍🎧 | **НАШЕ Радио «Панки хой!»** | `http://nashe1.hostingradio.ru/nashepunks.mp3` | `RUSSIAN`, `ROCK` |
+| 🌐‍🎧 | **НАШЕ Радио «Щас спою!»** | `https://nashe1.hostingradio.ru/nashesongs.mp3` | `RUSSIAN`, `ROCK` |
+| 🌐‍🎧 | **Король и Шут** | `https://stream04.pcradio.ru/Korol_i_Shut-med` | `RUSSIAN`, `ROCK` |
+| 🌐‍🎧 | **Радио DFM «Дискач 90-х»** | `https://dfm-disc90.hostingradio.ru/disc9096.aacp` | `Эпохи` |
+| 🌐‍🎧 | **Радио DFM «DANCE»** | `https://dfm.hostingradio.ru/dfm96.aacp` | `DANCE` |
+| 🌐‍🎧 | **Радио DFM «POP DANCE»** | `https://dfm-popdance.hostingradio.ru/popdance96.aacp` | `POP`, `DANCE` |
+| 🌐‍🎧 | **Радио DFM «RUSSIAN GOLD»** | `https://dfm-russiangold.hostingradio.ru/russiangold96.aacp` | `RUSSIAN`, `DANCE` |
+| 🌐‍🎧 | **Радио DFM «DANCE HALL»** | `https://dfm-dancehall.hostingradio.ru/dancehall96.aacp` | `DANCE` |
+| 🌐‍🎧 | **Радио DFM «INSOMNIA»** | `https://dfm-insomnia.hostingradio.ru/insomnia96.aacp` | --- |
+| 🌐‍🎧 | **Радио DFM «DEEP»** | `https://dfm-dfmdeep.hostingradio.ru/dfmdeep96.aacp` | `HOUSE` |
+| 🌐‍🎧 | **Радио DFM RUSSIAN «DANCE»** | `https://dfm-dfmrusdance.hostingradio.ru/dfmrusdance96.aacp` | `RUSSIAN`, `DANCE` |
+| 🌐‍🎧 | **Радио DFM «GANGSTA DEEP»** | `https://dfm-gangstadeep.hostingradio.ru/gangstadeep96.aacp` | `HOUSE` |
+| 🌐‍🎧 | **Радио DFM «РУССКИЙ РЕЙВ»** | `https://dfm-russianrave.hostingradio.ru/russianrave96.aacp` | `RUSSIAN` |
+| 🌐‍🎧 | **Радио DFM «PRTY»** | `https://dfm-party.hostingradio.ru/dfmparty96.aacp` | --- |
+| 🌐‍🎧 | **Радио DFM «SLAP BASS»** | `https://dfm-slapbass.hostingradio.ru/slapbass96.aacp` | `BASS` |
+| 🌐‍🎧 | **Ваше Радио (vashe-radio.ru)** | `https://listen10.myradio24.com/paradox` | `RUSSIAN`, `Дорожное`, `Эпохи` |
+| 🌐‍🎧 | **Дорожное радио** | `http://stream1.hostingradio.ru:8010/15_aac_96` | `Дорожное` |
+| 🌐‍🎧 | **Ретро FM** | `http://retroserver.streamr.ru:8043/retro64` | `Эпохи` |
+| 🌐‍🎧 | **Hunter.FM «80's»** | `https://live.hunter.fm/80s_high` | `Эпохи` |
+| 🌐‍🎧 | **Hunter.FM «SMASH»** | `https://live.hunter.fm/smash_low` | --- |
+| 🌐‍🎧 | **Hunter.FM «Pop2K»** | `https://live.hunter.fm/pop2k_low` | --- |
+| 🌐‍🎧 | **Hunter.FM «Lofi»** | `https://live.hunter.fm/lofi_low` | --- |
+| 🌐‍🎧 | **Hunter.FM «Tropical»** | `https://live.hunter.fm/tropical_low` | `Лето` |
+| 🌐‍🎧 | **Hunter.FM «Rock»** | `https://live.hunter.fm/rock_low` | `ROCK` |
+| 🌐‍🎧 | **Hunter.FM «Pisadinha»** | `https://live.hunter.fm/pisadinha_low` | --- |
+| 🌐‍🎧 | **Hunter.FM «Gospel»** | `https://live.hunter.fm/gospel_low` | --- |
+| 🌐‍🎧 | **Hunter.FM «Sertanejo»** | `https://live.hunter.fm/sertanejo_low` | --- |
+| 🌐‍🎧 | **Hunter.FM «Pop»** | `https://live.hunter.fm/pop_low` | `POP` |
+| 🌐‍🎧 | **POP FM Биробиджан** | `https://stream.popfm-bir.ru:1045/stream` | `POP` |
+| 🌐‍🎧 | **Радио 7** | `https://radio7.hostingradio.ru:8040/radio7128.mp3` | `POP` |
+| 🌐‍🎧 | **Радио «Europa Plus»** | `https://europaplus.hostingradio.ru:8030/ep128` | `Радиошоу`, `POP`, `DANCE` |
+| 🌐‍🎧 | **Радио «Europa Plus - СВЕЖЕЕ»** | `https://epdop.hostingradio.ru:8033/fresh64.aac` | `Радиошоу`, `POP`, `DANCE` |
+| 🌐‍🎧 | **Радио «Europa Plus - Light»** | `https://europaplus.hostingradio.ru:8014/ep-light128.mp3` | `Радиошоу`, `POP`, `DANCE` |
+| 🌐‍🎧 | **Радио «Europa Plus - URBAN»** | `https://epdop.hostingradio.ru:8033/ep-urban128.mp3` | `RAP/URBAN`, `Радиошоу` |
+| 🌐‍🎧 | **Радио «Europa Plus - NEW»** | `https://europaplus.hostingradio.ru:8014/ep-new128.mp3` | `Радиошоу`, `POP`, `DANCE` |
+| 🌐‍🎧 | **Радио «Europa Plus - PARTY»** | `https://epdop.hostingradio.ru:8033/epparty128.mp3` | `Радиошоу`, `POP`, `DANCE` |
+| 🌐‍🎧 | **Радио «Europa Plus - TOP 40»** | `https://europaplus.hostingradio.ru:8014/ep-top256.mp3` | `Радиошоу`, `POP`, `DANCE` |
+| 🌐‍🎧 | **Радио Родных Дорог** | `https://stream1.radiord.ru:8000/live128.mp3` | `Дорожное` |
+| 🌐‍🎧 | **Русское радио** | `https://rusradio.hostingradio.ru/rusradio96.aacp` | `RUSSIAN`, `POP`, `DANCE` |
+| 🌐‍🎧 | **Радио Шансон** | `https://chanson.hostingradio.ru:8041/chanson256.mp3` | `Шансон` |
+| 🌐‍🎧 | **Радио Монте-Карло** | `https://montecarlo.hostingradio.ru/montecarlo96.aacp` | `Радиошоу`, `POP` |
+| 🌐‍🎧 | **Дальнобой FM** | `https://srv02.gpmradio.ru:8443/stream/personal/aacp/64/1690790` | `Дорожное` |
+| 🌐‍🎧 | **Radio Record «Record»** | `https://radiorecord.hostingradio.ru/rr_main96.aacp` | `HOUSE`, `POP` |
+| 🌐‍🎧 | **Radio Record «Russian Mix»** | `https://radiorecord.hostingradio.ru/rus96.aacp` | `POP`, `RUSSIAN` |
+| 🌐‍🎧 | **Radio Record «Хиты всех времен»** | `https://radiorecord.hostingradio.ru/alltimers96.aacp` | `HOUSE`, `OLDSCHOOL`, `POP`, `Эпохи` |
+| 🌐‍🎧 | **Radio Record «Супердискотека 90-х»** | `https://radiorecord.hostingradio.ru/sd9096.aacp` | `OLDSCHOOL`, `POP`, `RUSSIAN`, `Эпохи` |
+| 🌐‍🎧 | **Radio Record «Russian Hits»** | `https://radiorecord.hostingradio.ru/russianhits96.aacp` | `POP`, `RUSSIAN` |
+| 🌐‍🎧 | **Radio Record «Колбасный Цех»** | `https://radiorecord.hostingradio.ru/pump96.aacp` | `OLDSCHOOL` |
+| 🌐‍🎧 | **Radio Record «Festivals»** | `https://radiorecord.hostingradio.ru/livedjsets96.aacp` | `HOUSE`, `TECHNO`, `TRANCE` |
+| 🌐‍🎧 | **Radio Record «Deep»** | `https://radiorecord.hostingradio.ru/deep96.aacp` | `HOUSE` |
+| 🌐‍🎧 | **Radio Record «Chill-Out»** | `https://radiorecord.hostingradio.ru/chil96.aacp` | `CHILL`, `Сон` |
+| 🌐‍🎧 | **Radio Record «Сказки MC V»** | `https://radiorecord.hostingradio.ru/skazki96.aacp` | `CHILL`, `Сон`, `Радиошоу` |
+| 🌐‍🎧 | **Radio Record «На шашлыки!»** | `https://radiorecord.hostingradio.ru/nashashlyki96.aacp` | `POP`, `RUSSIAN`, `Лето` |
+| 🌐‍🎧 | **Radio Record «Megamix»** | `https://radiorecord.hostingradio.ru/mix96.aacp` | `HOUSE`, `POP`, `Спорт` |
+| 🌐‍🎧 | **Radio Record «Rock»** | `https://radiorecord.hostingradio.ru/rock96.aacp` | `Прикол` |
+| 🌐‍🎧 | **Radio Record «Remix»** | `https://radiorecord.hostingradio.ru/rmx96.aacp` | `HOUSE` |
+| 🌐‍🎧 | **Radio Record «Гоп FM»** | `https://radiorecord.hostingradio.ru/gop96.aacp` | `POP`, `RUSSIAN`, `Прикол` |
+| 🌐‍🎧 | **Radio Record «Big Hits»** | `https://radiorecord.hostingradio.ru/bighits96.aacp` | `POP` |
+| 🌐‍🎧 | **Radio Record «Chill House»** | `https://radiorecord.hostingradio.ru/chillhouse96.aacp` | `CHILL`, `HOUSE`, `Лето` |
+| 🌐‍🎧 | **Radio Record «Рекорд 00-х»** | `https://radiorecord.hostingradio.ru/200096.aacp` | `OLDSCHOOL`, `Эпохи` |
+| 🌐‍🎧 | **Radio Record «Melodic Techno»** | `https://radiorecord.hostingradio.ru/melodic96.aacp` | `TECHNO` |
+| 🌐‍🎧 | **Radio Record «Record 80-х»** | `https://radiorecord.hostingradio.ru/198096.aacp` | `OLDSCHOOL`, `POP`, `Эпохи` |
+| 🌐‍🎧 | **Radio Record «Нафталин FM»** | `https://radiorecord.hostingradio.ru/naft96.aacp` | `POP`, `RUSSIAN`, `Прикол` |
+| 🌐‍🎧 | **Radio Record «Маятник Фуко»** | `https://radiorecord.hostingradio.ru/mf96.aacp` | `RAP/URBAN`, `RUSSIAN` |
+| 🌐‍🎧 | **Radio Record «Trancemission»** | `https://radiorecord.hostingradio.ru/tm96.aacp` | `TRANCE` |
+| 🌐‍🎧 | **Radio Record «Summer Dance»** | `https://radiorecord.hostingradio.ru/summerparty96.aacp` | `HOUSE`, `POP`, `Лето` |
+| 🌐‍🎧 | **Radio Record «Russian Gold»** | `https://radiorecord.hostingradio.ru/russiangold96.aacp` | `POP`, `RUSSIAN` |
+| 🌐‍🎧 | **Radio Record «Beach Party»** | `https://radiorecord.hostingradio.ru/beach96.aacp` | `HOUSE`, `Лето` |
+| 🌐‍🎧 | **Radio Record «Pirate Station»** | `https://radiorecord.hostingradio.ru/ps96.aacp` | `DRUM` |
+| 🌐‍🎧 | **Radio Record «Mashup»** | `https://radiorecord.hostingradio.ru/mashup96.aacp` | `Лето` |
+| 🌐‍🎧 | **Radio Record «Innocence»** | `https://radiorecord.hostingradio.ru/ibiza96.aacp` | `HOUSE`, `TECHNO` |
+| 🌐‍🎧 | **Radio Record «Медляк FM»** | `https://radiorecord.hostingradio.ru/mdl96.aacp` | `CHILL`, `POP`, `Прикол` |
+| 🌐‍🎧 | **Radio Record «Party 24/7»** | `https://radiorecord.hostingradio.ru/party96.aacp` | `HOUSE` |
+| 🌐‍🎧 | **Radio Record «Phonk»** | `https://radiorecord.hostingradio.ru/phonk96.aacp` | `RAP/URBAN`, `Спорт` |
+| 🌐‍🎧 | **Radio Record «Record Gold»** | `https://radiorecord.hostingradio.ru/gold96.aacp` | `OLDSCHOOL` |
+| 🌐‍🎧 | **Radio Record «Руки Вверх!»** | `https://radiorecord.hostingradio.ru/rv96.aacp` | `OLDSCHOOL`, `POP`, `RUSSIAN`, `Прикол` |
+| 🌐‍🎧 | **Radio Record «На Хайпе»** | `https://radiorecord.hostingradio.ru/hype96.aacp` | `POP`, `RAP/URBAN` |
+| 🌐‍🎧 | **Radio Record «Rap Hits»** | `https://radiorecord.hostingradio.ru/rap96.aacp` | `RAP/URBAN` |
+| 🌐‍🎧 | **Radio Record «Rap Classics»** | `https://radiorecord.hostingradio.ru/rapclassics96.aacp` | `RAP/URBAN` |
+| 🌐‍🎧 | **Radio Record «Trance Classics»** | `https://radiorecord.hostingradio.ru/trancehits96.aacp` | `TRANCE` |
+| 🌐‍🎧 | **Radio Record «D'n'B Classics»** | `https://radiorecord.hostingradio.ru/drumhits96.aacp` | `DRUM` |
+| 🌐‍🎧 | **Radio Record «Armin van Buuren»** | `https://radiorecord.hostingradio.ru/armin96.aacp` | `TRANCE` |
+| 🌐‍🎧 | **Radio Record «Summer Lounge»** | `https://radiorecord.hostingradio.ru/summerlounge96.aacp` | `CHILL`, `Лето`, `Сон` |
+| 🌐‍🎧 | **Radio Record «Organic»** | `https://radiorecord.hostingradio.ru/organic96.aacp` | `CHILL`, `HOUSE` |
+| 🌐‍🎧 | **Radio Record «Ultra Music Festival»** | `https://radiorecord.hostingradio.ru/ultra96.aacp` | `HOUSE` |
+| 🌐‍🎧 | **Radio Record «VIP House»** | `https://radiorecord.hostingradio.ru/vip96.aacp` | `HOUSE` |
+| 🌐‍🎧 | **Radio Record «Breaks»** | `https://radiorecord.hostingradio.ru/brks96.aacp` | `BASS`, `BREAKS` |
+| 🌐‍🎧 | **Radio Record «Liquid Funk»** | `https://radiorecord.hostingradio.ru/liquidfunk96.aacp` | `DRUM` |
+| 🌐‍🎧 | **Radio Record «Workout»** | `https://radiorecord.hostingradio.ru/workout96.aacp` | `HOUSE`, `HARD`, `Спорт` |
+| 🌐‍🎧 | **Radio Record «EDM»** | `https://radiorecord.hostingradio.ru/club96.aacp` | `HOUSE`, `Спорт` |
+| 🌐‍🎧 | **Radio Record «Bass House»** | `https://radiorecord.hostingradio.ru/jackin96.aacp` | `BASS`, `HOUSE` |
+| 🌐‍🎧 | **Radio Record «GOA/PSY»** | `https://radiorecord.hostingradio.ru/goa96.aacp` | `HARD`, `TRANCE` |
+| 🌐‍🎧 | **Radio Record «10's Dance»** | `https://radiorecord.hostingradio.ru/201096.aacp` | `HOUSE`, `POP`, `Эпохи` |
+| 🌐‍🎧 | **Radio Record «Trancehouse»** | `https://radiorecord.hostingradio.ru/trancehouse96.aacp` | `CHILL`, `HOUSE`, `TRANCE` |
+| 🌐‍🎧 | **Radio Record «Black Rap»** | `https://radiorecord.hostingradio.ru/yo96.aacp` | `RAP/URBAN` |
+| 🌐‍🎧 | **Radio Record «Techno»** | `https://radiorecord.hostingradio.ru/techno96.aacp` | `HARD`, `TECHNO` |
+| 🌐‍🎧 | **Radio Record «Tropical»** | `https://radiorecord.hostingradio.ru/trop96.aacp` | `CHILL`, `HOUSE`, `Лето` |
+| 🌐‍🎧 | **Radio Record «Lo-Fi»** | `https://radiorecord.hostingradio.ru/lofi96.aacp` | `CHILL`, `Сон` |
+| 🌐‍🎧 | **Radio Record «Tech House»** | `https://radiorecord.hostingradio.ru/techouse96.aacp` | `HOUSE` |
+| 🌐‍🎧 | **Radio Record «Trap»** | `https://radiorecord.hostingradio.ru/trap96.aacp` | `BASS`, `RAP/URBAN`, `Спорт` |
+| 🌐‍🎧 | **Radio Record «Technopop»** | `https://radiorecord.hostingradio.ru/technopop96.aacp` | `OLDSCHOOL` |
+| 🌐‍🎧 | **Radio Record «70's Dance»** | `https://radiorecord.hostingradio.ru/197096.aacp` | `POP`, `Эпохи` |
+| 🌐‍🎧 | **Radio Record «Dream Dance»** | `https://radiorecord.hostingradio.ru/dream96.aacp` | `OLDSCHOOL`, `TRANCE` |
+| 🌐‍🎧 | **Radio Record «Neurofunk»** | `https://radiorecord.hostingradio.ru/neurofunk96.aacp` | `DRUM` |
+| 🌐‍🎧 | **Radio Record «Ambient»** | `https://radiorecord.hostingradio.ru/ambient96.aacp` | `CHILL`, `Сон` |
+| 🌐‍🎧 | **Radio Record «Record Classix»** | `https://radiorecord.hostingradio.ru/classix96.aacp` | `HOUSE`, `OLDSCHOOL`, `Радиошоу` |
+| 🌐‍🎧 | **Radio Record «Record Club Show»** | `https://radiorecord.hostingradio.ru/clubshow96.aacp` | `HOUSE`, `Радиошоу` |
+| 🌐‍🎧 | **Radio Record «Eurodance»** | `https://radiorecord.hostingradio.ru/eurodance96.aacp` | `OLDSCHOOL`, `POP` |
+| 🌐‍🎧 | **Radio Record «Lo-Fi House»** | `https://radiorecord.hostingradio.ru/lofihouse96.aacp` | `CHILL`, `HOUSE`, `Сон` |
+| 🌐‍🎧 | **Radio Record «House Hits»** | `https://radiorecord.hostingradio.ru/househits96.aacp` | `HOUSE` |
+| 🌐‍🎧 | **Radio Record «Uplifting»** | `https://radiorecord.hostingradio.ru/uplift96.aacp` | `HARD`, `TRANCE` |
+| 🌐‍🎧 | **Radio Record «Feel»** | `https://radiorecord.hostingradio.ru/feel96.aacp` | `TRANCE`, `Радиошоу` |
+| 🌐‍🎧 | **Radio Record «Tiesto»** | `https://radiorecord.hostingradio.ru/tiesto96.aacp` | `HOUSE`, `POP` |
+| 🌐‍🎧 | **Radio Record «A State of Trance»** | `https://radiorecord.hostingradio.ru/asot96.aacp` | `TRANCE`, `Радиошоу` |
+| 🌐‍🎧 | **Radio Record «Веснушка FM»** | `https://radiorecord.hostingradio.ru/deti96.aacp` | `RUSSIAN`, `Прикол` |
+| 🌐‍🎧 | **Radio Record «Симфония FM»** | `https://radiorecord.hostingradio.ru/symph96.aacp` | `Прикол`, `Сон` |
+| 🌐‍🎧 | **Radio Record «Minimal/Tech»** | `https://radiorecord.hostingradio.ru/mini96.aacp` | `HOUSE` |
+| 🌐‍🎧 | **Radio Record «TOP 100 EDM»** | `https://radiorecord.hostingradio.ru/top100edm96.aacp` | `HOUSE`, `TECHNO` |
+| 🌐‍🎧 | **Radio Record «Dream Pop»** | `https://radiorecord.hostingradio.ru/dreampop96.aacp` | `CHILL`, `Лето` |
+| 🌐‍🎧 | **Radio Record «House Classics»** | `https://radiorecord.hostingradio.ru/houseclss96.aacp` | `HOUSE`, `OLDSCHOOL` |
+| 🌐‍🎧 | **Radio Record «David Guetta»** | `https://radiorecord.hostingradio.ru/guetta96.aacp` | `HOUSE`, `POP` |
+| 🌐‍🎧 | **Radio Record «DJ Цветкоff»** | `https://radiorecord.hostingradio.ru/tsvetkov96.aacp` | `Радиошоу` |
+| 🌐‍🎧 | **Radio Record «Disco/Funk»** | `https://radiorecord.hostingradio.ru/discofunk96.aacp` | `HOUSE` |
+| 🌐‍🎧 | **Radio Record «Hard Bass»** | `https://radiorecord.hostingradio.ru/hbass96.aacp` | `BASS`, `HARD`, `OLDSCHOOL` |
+| 🌐‍🎧 | **Radio Record «Afro House»** | `https://radiorecord.hostingradio.ru/afro96.aacp` | `HOUSE`, `Лето` |
+| 🌐‍🎧 | **Radio Record «Rave FM»** | `https://radiorecord.hostingradio.ru/rave96.aacp` | `HARD`, `OLDSCHOOL`, `Прикол` |
+| 🌐‍🎧 | **Radio Record «Nu Dance»** | `https://radiorecord.hostingradio.ru/nudance96.aacp` | `TECHNO`, `Спорт` |
+| 🌐‍🎧 | **Radio Record «60's Dance»** | `https://radiorecord.hostingradio.ru/cadillac96.aacp` | `POP`, `Эпохи` |
+| 🌐‍🎧 | **Radio Record «Lady Waks»** | `https://radiorecord.hostingradio.ru/ladywaks96.aacp` | `BREAKS`, `Радиошоу` |
+| 🌐‍🎧 | **Radio Record «Dancecore»** | `https://radiorecord.hostingradio.ru/dc96.aacp` | `OLDSCHOOL` |
+| 🌐‍🎧 | **Radio Record «Future House»** | `https://radiorecord.hostingradio.ru/fut96.aacp` | `HOUSE` |
+| 🌐‍🎧 | **Radio Record «Darkside»** | `https://radiorecord.hostingradio.ru/darkside96.aacp` | `DRUM` |
+| 🌐‍🎧 | **Radio Record «Future Rave»** | `https://radiorecord.hostingradio.ru/futurerave96.aacp` | `HOUSE`, `HARD`, `TECHNO`, `TRANCE` |
+| 🌐‍🎧 | **Radio Record «Reggae»** | `https://radiorecord.hostingradio.ru/reggae96.aacp` | `OLDSCHOOL`, `Лето` |
+| 🌐‍🎧 | **Radio Record «Electro»** | `https://radiorecord.hostingradio.ru/elect96.aacp` | `HOUSE` |
+| 🌐‍🎧 | **Radio Record «Hardstyle»** | `https://radiorecord.hostingradio.ru/teo96.aacp` | `HARD` |
+| 🌐‍🎧 | **Radio Record «Dubstep»** | `https://radiorecord.hostingradio.ru/dub96.aacp` | `BASS`, `Спорт` |
+| 🌐‍🎧 | **Radio Record «Progressive»** | `https://radiorecord.hostingradio.ru/progr96.aacp` | `HOUSE` |
+| 🌐‍🎧 | **Radio Record «Nejtrino & Baur»** | `https://radiorecord.hostingradio.ru/nejtrinobaur96.aacp` | `Радиошоу` |
+| 🌐‍🎧 | **Radio Record «Synthwave»** | `https://radiorecord.hostingradio.ru/synth96.aacp` | `OLDSCHOOL`, `POP` |
+| 🌐‍🎧 | **Radio Record «Latina Dance»** | `https://radiorecord.hostingradio.ru/latina96.aacp` | `POP`, `Лето` |
+| 🌐‍🎧 | **Radio Record «DJ Gvozd»** | `https://radiorecord.hostingradio.ru/djgvozd96.aacp` | `DRUM`, `Радиошоу` |
+| 🌐‍🎧 | **Radio Record «EDM Classics»** | `https://radiorecord.hostingradio.ru/edmhits96.aacp` | `HOUSE` |
+| 🌐‍🎧 | **Radio Record «Tecktonik»** | `https://radiorecord.hostingradio.ru/tecktonik96.aacp` | `HOUSE`, `OLDSCHOOL` |
+| 🌐‍🎧 | **Radio Record «Jungle»** | `https://radiorecord.hostingradio.ru/jungle96.aacp` | `DRUM` |
+| 🌐‍🎧 | **Radio Record «Hypnotic»** | `https://radiorecord.hostingradio.ru/hypno96.aacp` | `HOUSE`, `OLDSCHOOL` |
+| 🌐‍🎧 | **Radio Record «UK Garage»** | `https://radiorecord.hostingradio.ru/ukgarage96.aacp` | `BREAKS`, `HOUSE` |
+| 🌐‍🎧 | **Radio Record «Гастарбайтер FM»** | `https://radiorecord.hostingradio.ru/gast96.aacp` | `POP`, `Прикол` |
+| 🌐‍🎧 | **Radio Record «Midtempo»** | `https://radiorecord.hostingradio.ru/mt96.aacp` | `BASS` |
+| 🌐‍🎧 | **Radio Record «Future Bass»** | `https://radiorecord.hostingradio.ru/fbass96.aacp` | `BASS` |
+| 🌐‍🎧 | **Radio Record «Martin Garrix»** | `https://radiorecord.hostingradio.ru/martingarrix96.aacp` | `Радиошоу` |
+| 🌐‍🎧 | **Radio Record «Oliver Heldens»** | `https://radiorecord.hostingradio.ru/oliverheldens96.aacp` | `Радиошоу` |
+| 🌐‍🎧 | **Radio Record «Moombahton»** | `https://radiorecord.hostingradio.ru/mmbt96.aacp` | `POP` |
+| 🌐‍🎧 | **Radio Record «2-step»** | `https://radiorecord.hostingradio.ru/2step96.aacp` | `BASS`, `BREAKS`, `OLDSCHOOL` |
+| 🌐‍🎧 | **Radio Record «Complextro»** | `https://radiorecord.hostingradio.ru/complextro96.aacp` | `BASS`, `HOUSE`, `HARD` |
+| 🌐‍🎧 | **Radio Record «Groove/Tribal»** | `https://radiorecord.hostingradio.ru/groovetribal96.aacp` | `HOUSE` |
+| 🌐‍🎧 | **Radio Record «Christmas Chill»** | `https://radiorecord.hostingradio.ru/christmaschill96.aacp` | `CHILL`, `Сон`, `Новый год` |
+| 🌐‍🎧 | **Radio Record «Christmas»** | `https://radiorecord.hostingradio.ru/christmas96.aacp` | `OLDSCHOOL`, `POP`, `RUSSIAN`, `Новый год` |
+| 🌐‍🎧 | **Radio Record «Русская Зима»** | `https://radiorecord.hostingradio.ru/ruszima96.aacp` | `RUSSIAN`, `Новый год` |
 <!--EndStations-->
+
+[**Скачать плейлист M3U8**](/../../raw/refs/heads/main/radio.m3u8)

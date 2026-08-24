@@ -1205,14 +1205,14 @@ class App extends EventDispatcher {
 				fs.existsSync(iconFav) && fs.unlinkSync(iconFav);
 				fs.existsSync(iconBig) && fs.unlinkSync(iconBig);
 				// заменить новыми,
-				const baseFav = await favCropie.result({
+				let baseFav = await favCropie.result({
 					type: "base64",
 					size: "viewport",
 					format: "png",
 					quality: 1,
 					circle: true
 				});
-				const baseBig = await bigCropie.result({
+				let baseBig = await bigCropie.result({
 					type: "base64",
 					size: "viewport",
 					format: "png",
@@ -1223,8 +1223,6 @@ class App extends EventDispatcher {
 				baseBig = baseBig.split(';base64,').pop();
 				// id изменить при сохранении
 				data.id = data.type == "insert" ? new Date().getTime() : data.id;
-				iconFav = path.normalize(path.join(this.DATA_DIR, `${data.id}.png`));
-				iconBig = path.normalize(path.join(this.DATA_DIR, `${data.id}_big.png`));
 				// Пишем
 				fs.writeFileSync(iconFav, baseFav, { encoding: 'base64' });
 				fs.writeFileSync(iconBig, baseBig, { encoding: 'base64' });

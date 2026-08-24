@@ -113,7 +113,7 @@
 | 🌐‍🎧 | **Радио DFM «РУССКИЙ РЕЙВ»** | `https://dfm-russianrave.hostingradio.ru/russianrave96.aacp` | `RUSSIAN` |
 | 🌐‍🎧 | **Радио DFM «PRTY»** | `https://dfm-party.hostingradio.ru/dfmparty96.aacp` | --- |
 | 🌐‍🎧 | **Радио DFM «SLAP BASS»** | `https://dfm-slapbass.hostingradio.ru/slapbass96.aacp` | `BASS` |
-| 🌐‍🎧 | **Ваше Радио (vashe-radio.ru)** | `https://listen10.myradio24.com/paradox` | `RUSSIAN`, `Дорожное`, `Эпохи` |
+| 🌐‍🎧 | **Ваше Радио (vashe-radio.ru)** | `https://listen10.myradio24.com/paradox` | `RUSSIAN`, `Дорожное`, `Эпохи`, `Шансон` |
 | 🌐‍🎧 | **Дорожное радио** | `http://stream1.hostingradio.ru:8010/15_aac_96` | `Дорожное` |
 | 🌐‍🎧 | **Ретро FM** | `http://retroserver.streamr.ru:8043/retro64` | `Эпохи` |
 | 🌐‍🎧 | **Hunter.FM «80's»** | `https://live.hunter.fm/80s_high` | `Эпохи` |

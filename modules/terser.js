@@ -8,6 +8,7 @@ const fs = require("fs"),
 
 const start = (options) => {
 	options = Object.assign({
+		sdk: false,
 		src: "",
 		dest: "",
 	}, options);
@@ -39,13 +40,16 @@ const start = (options) => {
 							comments: false
 						}
 					});
+
+				const writeCode = options.sdk ? items[key].src : result.code;
+
 				fs.writeFileSync(items[key].dest, `/**!
  * Module ${path.basename(items[key].dest)} for "Your Radio"
  * 
  * @author	ProjectSoft <projectsoft2009@yandex.ru>
  * @license GPL-3.0
  */
-` + result.code + "\n", {encode: 'utf8'});
+` + writeCode + "\n", {encode: 'utf8'});
 			} catch(e) {
 				reject(e);
 			}

@@ -261,6 +261,7 @@ const fs = require('fs'),
 		});
 		// Минимизация modules
 		await terser({
+			sdk: options.sdk,
 			src: getPath('.', 'src', 'modules'),
 			dest: getPath('.', 'application', 'modules')
 		}).then(() => {}).catch(e => {

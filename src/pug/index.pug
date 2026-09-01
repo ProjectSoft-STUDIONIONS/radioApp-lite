@@ -6,7 +6,7 @@ html
 		meta(name="viewport" content="width=device-width, initial-scale=1")
 		link(rel="stylesheet" type="text/css" href="css/main.css?" + hash)
 		link(rel="shortcut icon" href="favicon.ico")
-		// style="--background-custom: url(http://localhost:4000/background);"
+		//- style="--background-custom: url(http://localhost:4000/background);"
 	body(class="custom "+target)
 		header#TitleBar
 			#TitleBar-icon
@@ -32,6 +32,8 @@ html
 					ul#radio-list
 				.volume-block
 					input#volume(min="0" max="100" value="50" step="1" type="range")
+			.vizualizer
+				canvas
 		footer.clearfix
 			.footer_wrap
 				p.right
@@ -67,6 +69,12 @@ html
 					label
 						input#notify(type="checkbox")
 						span.settingsNotify(data-i18n="settingsNotify")
+					label
+						input#presetsRandom(type="checkbox")
+						span.settingsNotify(data-i18n="presetsRandom")
+					label.select
+						span.settingsNotify(data-i18n="selectPreset")
+						select#selectPreset
 					div
 						label
 							input#custombg(type="checkbox")
@@ -79,6 +87,5 @@ html
 					button#okSettings(type="button" data-i18n="ok")
 					button#noSettings(type="button" data-i18n="cancel")
 		#cropTmp
-		//- script(type="text/javascript" src="js/tags-editor.js?" + hash)
-		//- script(type="text/javascript" src="js/plugins.js?" + hash)
+		script(type="text/javascript" src="js/butterchurn.js?" + hash)
 		script(type="text/javascript" src="js/main.js?" + hash)

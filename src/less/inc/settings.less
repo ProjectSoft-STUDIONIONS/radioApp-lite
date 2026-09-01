@@ -22,6 +22,18 @@
 			&:last-child {
 				//display: none;
 			}
+			&.select {
+				flex-direction: column;
+				align-items: flex-start;
+				span {
+					margin-left: 35px;
+					margin-bottom: 8px;
+				}
+				select {
+					max-width: calc(100% - 35px);
+					align-self: flex-end;
+				}
+			}
 		}
 	}
 	.buttons-options {

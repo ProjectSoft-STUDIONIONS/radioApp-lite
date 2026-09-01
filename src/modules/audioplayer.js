@@ -138,10 +138,10 @@ AudioPlayer.prototype = {
 	get volume(){
 		return _volume;
 	},
-	set audioElement(value){
+	set audio(value){
 		throw new Error('not set audio');
 	},
-	get audioElement(){
+	get audio(){
 		return audio;
 	},
 	play: function(){

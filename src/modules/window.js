@@ -12,6 +12,7 @@ const nwdialog = require('./nwdialog.js');
 const DATA_DIR = path.normalize(path.join(nw.App.dataPath, 'radio'));
 const SOURCE_FILE = path.normalize(path.join(nw.__dirname, 'radio', 'data.json'));
 const { translit, tagTranslit } = require('./translit.js');
+const butterchurn = require('butterchurn').default;
 
 // Шаблон ошибки сервера
 const errorTpl = (obj) => {
@@ -42,15 +43,15 @@ var isMaximized = false,
 	init_server = false,
 	volume = 0,
 	settime,
-	player,
+	player = false,
 	isPlaying = false,
 	isOnline = false,
-	metainterval = 0;
+	metainterval = 0,
 	active = 0,
 	stations = {},
 	dataStations = {},
-	genres = [];
-
+	genres = [],
+	presetsSelectIndex = 0;
 /**
  * Context Menu Constants 
  **/
@@ -108,18 +109,34 @@ menuLi.append(importStations);
 // буфер обмена
 const clipboard = nw.Clipboard.get();
 
+
+
 class App extends EventDispatcher {
 	#server = null;
   	#ready = null;
+ 	audio = null;
+ 	audioCtx = null;
+ 	genreList = null;
+	presets = {};
+	presetsIndex = 0;
+	presetsSelectIndex = -1;
+	presetsNames = [];
+
+	presetTime = 0;
+ 	radioList = null;
   	resolve = null;
  	reject = null;
- 	radioList = null;
- 	genreList = null;
+	sourceNode = null;
  	tray = null;
+	vizualizer = null;
+	vizualizerCanvas = null;
+	visualTime = 0;
  	// Конструктор
 	constructor(win, window, document) {
 		super();
 		this.tray = null;
+		this.audioCtx = null;
+		this.sourceNode = null;
 		this.win = win;
 		this.window = window;
 		this.document = document;
@@ -136,6 +153,8 @@ class App extends EventDispatcher {
 		});
 		// Плеер
 		player = require('./audioplayer.js')(this.window, this.document);
+		// Для визуализатора
+		this.audio = player.audio;
 		// Диалоги
 		this.dialogSettings = this.document.querySelector('dialog.settings-block');
 		this.dialogBox = this.document.querySelector('dialog.dialogBox');
@@ -143,6 +162,24 @@ class App extends EventDispatcher {
 		// Листы
 		this.radioList = this.document.querySelector("ul#radio-list");
 		this.genreList = this.document.querySelector("ul#genre");
+		// Визуализер блок
+		this.vizualizerCanvas = this.document.querySelector(".vizualizer canvas");
+		// Объединение объектов пресетов и сортировка по названиям 
+		this.presets = Object.fromEntries(
+			Object.entries(
+				Object.assign(
+					{},
+					this.window.butterchurnPresets.getPresets(),
+					this.window.butterchurnPresetsExtra.getPresets(),
+					this.window.butterchurnPresetsExtra2.getPresets(),
+				)
+			).sort((a, b) =>  a[0].localeCompare(b[0]))
+		);
+		this.presetsNames = Object.keys(this.presets);
+		this.presetsIndex = this.presetsNames.length ? 0 : false;
+		this.presetsSelectIndex = -1;
+		this.visualTime = 0;
+		this.vizualizer = null;
 		// Инициализируем документ
 		this.initDocument();
 		// Запускаем сервер
@@ -156,6 +193,7 @@ class App extends EventDispatcher {
 		isOnline = this.window.navigator.onLine;
 		this.window.addEventListener('online',  this.updateOnlineStatus.bind(this));
 		this.window.addEventListener('offline', this.updateOnlineStatus.bind(this));
+		// Пресеты
 		// Контехт диалога
 		nwdialog.context = this.document;
 	}
@@ -184,11 +222,15 @@ class App extends EventDispatcher {
 	}
 	// Простой лог
 	log(...args) {
-		this.window.console.dir(...args);
+		this.console.dir(...args);
 	}
 	// Лог ошибок
 	error(...args) {
-		this.window.console.error(...args);
+		this.console.error(...args);
+	}
+	// console
+	get console() {
+		return this.window.console;
 	}
 	// Инициализация приложения
 	initDocument() {
@@ -269,7 +311,8 @@ class App extends EventDispatcher {
 				var loadDefault = this.dialogSettings.querySelector("#loadDefault");
 				var notify = this.dialogSettings.querySelector("#notify");
 				var customBg = this.dialogSettings.querySelector("#custombg");
-				var controls = this.dialogSettings.querySelectorAll('input, button');
+				var presetsRandom = this.dialogSettings.querySelector("#presetsRandom");
+				var selectPreset = this.dialogSettings.querySelector("#selectPreset");
 				// Выбор файла
 				var inputFile = this.dialogSettings.querySelector("#background");
 				switch(eId) {
@@ -287,6 +330,19 @@ class App extends EventDispatcher {
 						tempInput.type = "file";
 						tempInput.accept = "image/*";
 						tempInput.id = "background";
+						// selectPreset
+						selectPreset.innerHTML = "";
+						var optionNull = this.document.createElement('option');
+						optionNull.value = "-1";
+						optionNull.textContent = locale.get('selectPresetNo');
+						selectPreset.append(optionNull);
+						for(var index in this.presetsNames) {
+							const option = this.document.createElement('option');
+							option.value = index;
+							option.textContent = this.presetsNames[index];
+							selectPreset.append(option);
+						}
+						selectPreset.value = dataStations.presetindex;
 						// Замена
 						this.dialogSettings.querySelector("#background").parentNode.replaceChild(tempInput, this.dialogSettings.querySelector("#background"));
 						// Выбор файла
@@ -307,9 +363,27 @@ class App extends EventDispatcher {
 						}
 						// Генерируем событие
 						customBg.dispatchEvent(new Event("input"));
+						// Загрузка пресетов в рандомно или по порядку
+						presetsRandom.checked = dataStations.presetsRandom ? true : false;
+						dataStations.presetsRandom = presetsRandom.checked;
+						// Генерируем событие
+						presetsRandom.dispatchEvent(new Event("input"));
 						break;
 					case "fullscreen":
-						this.win.toggleFullscreen();
+						//this.win.toggleFullscreen();
+						// Добавить блок, установить canvas, подключить breadcrumb
+						clearTimeout(timeMouse);
+						if(this.document.fullscreenElement){
+							this.offVizualizer();
+							this.document.exitFullscreen();
+							this.document.body.classList.contains('fullscreen') && this.document.body.classList.remove('fullscreen');
+							// Отключение визуализатора
+						} else {
+							!this.document.body.classList.contains('fullscreen') && this.document.body.classList.add('fullscreen');
+							this.document.querySelector(".vizualizer").requestFullscreen();
+							// Подключение визуализатора
+							this.onVizualizer();
+						}
 						break;
 					case "noSettings":
 						this.dialogSettings.close();
@@ -319,6 +393,9 @@ class App extends EventDispatcher {
 						this.document.body.removeAttribute("style");
 						this.document.querySelector('main').classList.remove('saving');
 						dataStations.notify = notify.checked;
+						dataStations.presetsRandom = presetsRandom.checked;
+						this.presetsSelectIndex = Number(selectPreset.value);
+						dataStations.presetindex = this.presetsSelectIndex;
 						if(clear_stations.checked) {
 							this.clearStattions();
 							// Эти две операции обязательны.
@@ -582,18 +659,22 @@ class App extends EventDispatcher {
 			fullRes.setAttribute("d", fullscreenOff);
 			this.scrollActive();
 		}).on('close', () => {
-			dataStations.notify && chrome.notifications.clear(String(nw.App.manifest.name));
-			var main = this.document.querySelector('main');
-			main.classList.remove('saving');
-			main.classList.remove('loading');
-			this.document.body.classList.add('closing');
-			this.dialogSettings.open && this.dialogSettings.close();
-			this.dialogBox.open && this.dialogBox.close();
-			this.document.querySelector('main').classList.add('saving');
-			try { this.tray.remove(); this.stop(); } catch (e) {}
-			this.saveStations();
-			// Просто специально ставим паузу для красивого закрытия
-			setTimeout(() => this.win.close(true), 1100);
+			try {
+				dataStations.notify && chrome.notifications.clear(String(nw.App.manifest.name));
+				var main = this.document.querySelector('main');
+				main.classList.remove('saving');
+				main.classList.remove('loading');
+				this.document.body.classList.add('closing');
+				this.dialogSettings.open && this.dialogSettings.close();
+				this.dialogBox.open && this.dialogBox.close();
+				this.document.querySelector('main').classList.add('saving');
+				try { this.tray.remove(); this.stop(); } catch (e) {}
+				this.saveStations();
+				// Просто специально ставим паузу для красивого закрытия
+				setTimeout(() => this.win.close(true), 1100);
+			} catch(e) {
+				this.console.log(e)
+			}
 		});
 		// Вырубаем перетаскивание на окно. Перенесено сюда.
 		'dragover dragenter dragleave dragend'.split(' ').forEach((ev) => {
@@ -631,86 +712,235 @@ class App extends EventDispatcher {
 				this.document.body.addEventListener("drop", this.disableDragDrop);
 			}
 		});
+		// Визуализация начинается здесь
 		// Контекстное меню
 		this.document.addEventListener('contextmenu', (e) => {
-			addStationItem.click = () => {this.addStation();addStationItem.click = null};
-			exportStations.click = () => {this.exportStations();exportStations.click = null};
-			importStations.click = () => {this.importStations();importStations.click = null};
-			if(e.target.classList.contains('radio-item') || e.target.closest('li.radio-item')) {
-				e.preventDefault();
-				const li = e.target.classList.contains('radio-item') ? e.target : e.target.closest('li.radio-item');
-				// Формируем меню
-				const {id, name, genre, stream, title} = li.dataset;
-				copyStationItem.label = locale.get("copyTitle", [name]);
-				editStationItem.label = locale.get("editTitle", [name]);
-				removeStationItem.label = locale.get("deleteTitle", [name]);
-				// Событие для пункта Копирование
-				copyStationItem.click = () => {
-					copyStationItem.click = null;
-					// Копируем
-					clipboard.set(stream, 'text');
-					// Диалог
-					this.dialogBox.setAttribute("type", "alert");
-					const wrap = this.dialogBox.querySelector(".wrap");
-					const ok = this.dialogBox.querySelector("#ok");
-					const no = this.dialogBox.querySelector("#cancel");
-					wrap.innerHTML = `${locale.get("copyOk", [name])}<br><br>${stream}`;
-					ok.onclick = (e) => {
-						ok.onclick = null;
-						this.dialogBox.open && this.dialogBox.close();
+			// Если не находимся в fullscreen
+			if(!this.document.fullscreenElement){
+				addStationItem.click = () => {this.addStation();addStationItem.click = null};
+				exportStations.click = () => {this.exportStations();exportStations.click = null};
+				importStations.click = () => {this.importStations();importStations.click = null};
+				if(e.target.classList.contains('radio-item') || e.target.closest('li.radio-item')) {
+					e.preventDefault();
+					const li = e.target.classList.contains('radio-item') ? e.target : e.target.closest('li.radio-item');
+					// Формируем меню
+					const {id, name, genre, stream, title} = li.dataset;
+					copyStationItem.label = locale.get("copyTitle", [name]);
+					editStationItem.label = locale.get("editTitle", [name]);
+					removeStationItem.label = locale.get("deleteTitle", [name]);
+					// Событие для пункта Копирование
+					copyStationItem.click = () => {
+						copyStationItem.click = null;
+						// Копируем
+						clipboard.set(stream, 'text');
+						// Диалог
+						this.dialogBox.setAttribute("type", "alert");
+						const wrap = this.dialogBox.querySelector(".wrap");
+						const ok = this.dialogBox.querySelector("#ok");
+						const no = this.dialogBox.querySelector("#cancel");
+						wrap.innerHTML = `${locale.get("copyOk", [name])}<br><br>${stream}`;
+						ok.onclick = (e) => {
+							ok.onclick = null;
+							this.dialogBox.open && this.dialogBox.close();
+						};
+						//ok.addEventListener('click', this.noStation.bind(this, []));
+						this.dialogBox.showModal();
 					};
-					//ok.addEventListener('click', this.noStation.bind(this, []));
-					this.dialogBox.showModal();
-				};
-				// Событие для пункта Удаление
-				removeStationItem.click = () => {
-					// Диалог
-					removeStationItem.click = null;
-					this.dialogBox.setAttribute("type", "confirm");
-					const wrap = this.dialogBox.querySelector(".wrap");
-					const ok = this.dialogBox.querySelector("#ok");
-					const no = this.dialogBox.querySelector("#cancel");
-					ok.onclick = (e) => {
-						ok.onclick = null;
-						this.removeStation({
-							id: id,
-							name: name,
+					// Событие для пункта Удаление
+					removeStationItem.click = () => {
+						// Диалог
+						removeStationItem.click = null;
+						this.dialogBox.setAttribute("type", "confirm");
+						const wrap = this.dialogBox.querySelector(".wrap");
+						const ok = this.dialogBox.querySelector("#ok");
+						const no = this.dialogBox.querySelector("#cancel");
+						ok.onclick = (e) => {
+							ok.onclick = null;
+							this.removeStation({
+								id: id,
+								name: name,
+								genre: genre,
+								stream: stream,
+								title: title
+							});
+						};
+						no.onclick = (e) => {
+							no.onclick = null;
+							this.dialogBox.open && this.dialogBox.close();
+						};
+						wrap.innerHTML = `${locale.get("deleteStation", [name])}`
+						this.dialogBox.showModal();
+					};
+					// Событие для пункта Редактирование
+					editStationItem.click = () => {
+						editStationItem.click = null;
+						this.editStation({
+							favicon: this.GLOB_SERVER.URL + `/${id}.png?${new Date().getTime()}`,
 							genre: genre,
+							genres: dataStations.genre,
+							id: id,
+							image: this.GLOB_SERVER.URL + `/${id}_big.png?${new Date().getTime()}`,
+							name: name,
 							stream: stream,
 							title: title
 						});
 					};
-					no.onclick = (e) => {
-						no.onclick = null;
-						this.dialogBox.open && this.dialogBox.close();
-					};
-					wrap.innerHTML = `${locale.get("deleteStation", [name])}`
-					this.dialogBox.showModal();
-				};
-				// Событие для пункта Редактирование
-				editStationItem.click = () => {
-					editStationItem.click = null;
-					this.editStation({
-						favicon: this.GLOB_SERVER.URL + `/${id}.png?${new Date().getTime()}`,
-						genre: genre,
-						genres: dataStations.genre,
-						id: id,
-						image: this.GLOB_SERVER.URL + `/${id}_big.png?${new Date().getTime()}`,
-						name: name,
-						stream: stream,
-						title: title
-					});
-				};
-				menuLi.popup(parseInt(e.screenX), parseInt(e.screenY));
-				return !1;
-			} else {
-				if(e.target.classList.contains('notcontext') || e.target.closest('.notcontext')) {
-					e.preventDefault();
-					menu.popup(parseInt(e.screenX), parseInt(e.screenY));
+					menuLi.popup(parseInt(e.screenX), parseInt(e.screenY));
 					return !1;
+				} else {
+					if(e.target.classList.contains('notcontext') || e.target.closest('.notcontext')) {
+						e.preventDefault();
+						menu.popup(parseInt(e.screenX), parseInt(e.screenY));
+						return !1;
+					}
 				}
 			}
-		})
+		});
+		// Nouse show/hide fullscreen
+		let timeMouse;
+		// Регистрируем горячие клавиши на fullscreen
+		// Escape fullscreen
+		nw.App.registerGlobalHotKey(new nw.Shortcut({
+			key : "Escape",
+			active : () => {
+				clearTimeout(timeMouse);
+				if(this.document.fullscreenElement){
+					this.offVizualizer();
+					this.document.exitFullscreen();
+					this.document.body.classList.contains('fullscreen') && this.document.body.classList.remove('fullscreen');
+				}
+			}
+		}));
+		nw.App.registerGlobalHotKey(new nw.Shortcut({
+			key: "F11",
+			active: () => {
+				clearTimeout(timeMouse);
+				if(this.document.fullscreenElement){
+					this.offVizualizer();
+					this.document.exitFullscreen();
+					this.document.body.classList.contains('fullscreen') && this.document.body.classList.remove('fullscreen');
+				} else {
+					!this.document.body.classList.contains('fullscreen') && this.document.body.classList.add('fullscreen');
+					this.document.querySelector("canvas").requestFullscreen();
+					this.onVizualizer();
+				}
+			}
+		}));
+		// Слушаем Ресайз
+		this.window.addEventListener("resize", (e) => {
+			this.document.fullscreenElement ? (!this.document.body.classList.contains('fullscreen') && this.document.body.classList.add("fullscreen")) : (this.document.body.classList.contains('fullscreen') && this.document.body.classList.remove("fullscreen"));
+			if(this.document.fullscreenElement){
+				this.vizualizerCanvas.width  = this.window.screen.width;
+				this.vizualizerCanvas.height = this.window.screen.height;
+				this.vizualizer && this.vizualizer.setRendererSize(this.window.screen.width, this.window.screen.height);
+			}
+		});
+		// Двойной клик на канвасе. Фулскрин. По сути только для выхода
+		this.document.querySelector("main").addEventListener("dblclick", e => {
+			e.preventDefault();
+			if(this.document.fullscreenElement){
+				clearTimeout(timeMouse);
+				this.offVizualizer();
+				this.document.exitFullscreen();
+				this.document.body.classList.contains('fullscreen') && this.document.body.classList.remove('fullscreen');
+				return !1;
+			}
+			return !1;
+		});
+		// Движение мыши для fullscreen
+		this.document.body.addEventListener('mousemove', e => {
+			if(this.document.fullscreenElement){
+				clearTimeout(timeMouse);
+				!this.document.body.classList.contains('mouse') && this.document.body.classList.add('mouse');
+				timeMouse = setTimeout(() => {
+					this.document.body.classList.contains('mouse') && this.document.body.classList.remove('mouse');
+				}, 3000);
+			}else{
+				this.document.body.classList.contains('mouse') && this.document.body.classList.remove('mouse');
+			}
+		});
+	}
+	// Инициализация AudioContext
+	initAudioSystem() {
+		return new Promise((resolve, reject) => {
+			try {
+				if (!this.audioCtx) {
+					this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+					this.sourceNode = this.audioCtx.createMediaElementSource(this.audio);
+					this.sourceNode.connect(this.audioCtx.destination);
+				}
+				if (!this.vizualizer) {
+					this.vizualizer = butterchurn.createVisualizer(
+						this.audioCtx,
+						this.vizualizerCanvas,
+						{
+							width: this.window.screen.width,
+							height: this.window.screen.height
+						}
+					);
+				}
+				resolve();
+			} catch(e) {
+				reject(e);
+			}
+		});
+	}
+	getPreset() {
+		clearTimeout(this.presetTime);
+		if(dataStations.presetindex > -1) {
+			this.presetsIndex = this.presetsSelectIndex;
+		} else {
+			if(dataStations.presetsRandom) {
+				// Рандомный пресет
+				this.presetsIndex = Math.floor(Math.random() * this.presetsNames.length);
+				dataStations.presetsRandom = true;
+			} else {
+				// По порядку пресет
+				this.presetsIndex = (this.presetsIndex + 1) % this.presetsNames.length;
+				dataStations.presetsRandom = false;
+			}
+			this.presetsNames.length && this.vizualizer.loadPreset(this.presets[this.presetsNames[this.presetsIndex]], 1.0);
+		}
+		this.presetTime = setTimeout(this.getPreset.bind(this), 10000);
+	}
+	// Подключение Визуализатора
+	onVizualizer() {
+		this.initAudioSystem().then(() => {
+			this.vizualizer.connectAudio(this.sourceNode);
+			// (Здесь позже можно делать viz.loadPreset(...) — логика)
+			//this.presetsIndex = Math.floor(Math.random() * this.presetsNames.length);
+			if(this.presetsSelectIndex >=0) {
+				this.vizualizer.loadPreset(this.presets[this.presetsNames[this.presetsSelectIndex]], 0.0);
+			} else {
+				this.vizualizer.loadPreset(this.presets[this.presetsNames[this.presetsIndex]], 0.0);
+			}
+			this.visualTime = this.window.requestAnimationFrame(this.renderAnimated.bind(this));
+			setTimeout(() => {
+				// Получить тайтл, разбить по `|` Получить первый;
+				const title = this.radioList.querySelector('li.active').dataset.title;
+				this.vizualizer.launchSongTitleAnim(`${title}`);
+			}, 1000);
+			this.getPreset();
+		}).catch(e => {
+			this.console.error(e);
+		});
+	}
+	// Отключение Визуализатора
+	offVizualizer() {
+		this.initAudioSystem().then(() => {
+			if(this.visualTime) {
+				this.window.cancelAnimationFrame(this.visualTime);
+			}
+			clearTimeout(this.presetTime);
+			this.vizualizer.disconnectAudio(this.sourceNode);
+		}).catch(e => {
+			this.console.error(e);
+		});
+	}
+	// Рендер canvas
+	renderAnimated() {
+		if(this.vizualizer != null) this.vizualizer.render();
+		this.visualTime = this.window.requestAnimationFrame(this.renderAnimated.bind(this));
 	}
 	// Старт сервера
 	startImageServer(attemptPort) {
@@ -920,6 +1150,8 @@ class App extends EventDispatcher {
 			active: 0,
 			genre: [],
 			notify: true,
+			presetindex: dataStations.presetindex,
+			presetsRandom: dataStations.presetsRandom,
 			stations: {},
 			volume: player.volume,
 			custombg: 0,
@@ -934,6 +1166,8 @@ class App extends EventDispatcher {
 			active: 0,
 			genre: [],
 			notify: true,
+			presetindex: -1,
+			presetsRandom: false,
 			stations: {},
 			volume: player.volume,
 			custombg: bg,
@@ -1006,7 +1240,7 @@ class App extends EventDispatcher {
 		this.setStyleBackground();
 	}
 	// Чтение сохранёного листа станций
-	readListStations() {
+	readListStations(scroll = true) {
 		const genre = this.genreList;
 		const list = this.radioList;
 		const setters = new Set();
@@ -1025,6 +1259,8 @@ class App extends EventDispatcher {
 			active: 0,
 			genre: [],
 			notify: true,
+			presetindex: -1,
+			presetsRandom: false,
 			stations: {},
 			volume: 1,
 			custombg: 0,
@@ -1070,7 +1306,7 @@ class App extends EventDispatcher {
 		dataStations.genre = genres;
 		this.volume = dataStations.volume * 100;
 		stations = Object.assign({}, dataStations.stations);
-		this.scrollActive();
+		scroll && this.scrollActive();
 		this.setStyleBackground();
 	}
 	// Показ диалога Редактирования/Добавления this.appBlock и сохранение
@@ -1198,12 +1434,13 @@ class App extends EventDispatcher {
 				this.dialogBox.showModal();
 				return;
 			}
+			// Удалить исходные изображения.
 			try {
-				// Удалить исходные изображения,
-				const iconFav = path.normalize(path.join(this.DATA_DIR, `${data.id}.png`));
-				const iconBig = path.normalize(path.join(this.DATA_DIR, `${data.id}_big.png`));
-				fs.existsSync(iconFav) && fs.unlinkSync(iconFav);
-				fs.existsSync(iconBig) && fs.unlinkSync(iconBig);
+				fs.existsSync(path.normalize(path.join(this.DATA_DIR, `${data.id}.png`))) && fs.unlinkSync(path.normalize(path.join(this.DATA_DIR, `${data.id}.png`)));
+				fs.existsSync(path.normalize(path.join(this.DATA_DIR, `${data.id}_big.png`))) && fs.unlinkSync(path.normalize(path.join(this.DATA_DIR, `${data.id}_big.png`)));
+			}catch(e){}
+			// Получение новых изображений
+			try {
 				// заменить новыми,
 				let baseFav = await favCropie.result({
 					type: "base64",
@@ -1219,13 +1456,14 @@ class App extends EventDispatcher {
 					quality: 1,
 					circle: false
 				});
+				// Получаем base64 изображений для записи
 				baseFav = baseFav.split(';base64,').pop();
 				baseBig = baseBig.split(';base64,').pop();
 				// id изменить при сохранении
 				data.id = data.type == "insert" ? new Date().getTime() : data.id;
-				// Пишем
-				fs.writeFileSync(iconFav, baseFav, { encoding: 'base64' });
-				fs.writeFileSync(iconBig, baseBig, { encoding: 'base64' });
+				// Пишем в файлы
+				fs.writeFileSync(path.normalize(path.join(this.DATA_DIR, `${data.id}.png`)), baseFav, { encoding: 'base64' });
+				fs.writeFileSync(path.normalize(path.join(this.DATA_DIR, `${data.id}_big.png`)), baseBig, { encoding: 'base64' });
 				// обновить станцию,
 				// Используем именно let. Будет переопределение
 				const element = data.type == "insert" ? this.document.createElement("li") : this.radioList.querySelector(`li[data-id="${data.id}"]`);
@@ -1241,13 +1479,13 @@ class App extends EventDispatcher {
 				// сохранить список.
 				this.saveStations();
 				// перезагрузить список
-				this.readListStations();
+				this.readListStations(false);
 				// Прокрутить до редактируемой
 				setTimeout(() => {
 					this.scrollToEl(this.radioList.querySelector(`li[data-id="${data.id}"]`));
 				}, 10);
 			} catch(err) {
-				this.window.console.error(err);
+				this.console.error(err);
 				wrap.innerHTML = locale.get("errorSaveMessageAlert");
 				this.dialogBox.showModal();
 				return;
@@ -1311,7 +1549,7 @@ class App extends EventDispatcher {
 			fs.existsSync(iconBig) && fs.unlinkSync(iconBig);
 			// Пауза и чтение
 			setTimeout(() => {
-				this.readListStations();
+				this.readListStations(false);
 				isPlay && this.play();
 			}, 10);
 		}
@@ -1325,6 +1563,8 @@ class App extends EventDispatcher {
 				custombg: false,
 				genre: [],
 				notify: dataStations.notify,
+				presetindex: dataStations.presetindex,
+				presetsRandom : dataStations.presetsRandom ? true : false,
 				stations: {},
 				volume: dataStations.volume,
 			}
@@ -1395,11 +1635,11 @@ class App extends EventDispatcher {
 	// Импорт станций и настроек
 	importStations() {
 		try {
-			this.window.console.log("ИМПОРТ");
+			this.console.log("ИМПОРТ");
 			nwdialog.openFileDialog(['.json'], false, (file) => {
 				if(file !== false) {
 					player.stop();
-					this.window.console.log(file)
+					this.console.log(file)
 					this.document.querySelector('main').classList.add('saving');
 					setTimeout(() => {
 						const readFile = fs.readFileSync(file).toString();
@@ -1433,15 +1673,17 @@ class App extends EventDispatcher {
 							active: json.active,
 							genre: [],
 							notify: json.notify,
+							presetindex: this.presetsSelectIndex,
+							presetsRandom: json.presetsRandom ? true : false,
 							stations: {},
 							volume: json.volume,
 							custombg: false,
 						};
 						if(json.custombg) {
 							const mt = json.custombg.split(',')[0].split(':')[1].split(';')[0];
-							this.window.console.log(mt);
+							this.console.log(mt);
 							const ext = mime.getExtension(mt);
-							this.window.console.log(ext);
+							this.console.log(ext);
 							if(ext) {
 								const time = new Date().getTime();
 								const custombg = json.custombg.split(';base64,').pop();
@@ -1517,6 +1759,8 @@ class App extends EventDispatcher {
 		}
 		dataStations.active = active;
 		dataStations.genre = [...setters].sort((a, b) => a.localeCompare(b));
+		dataStations.presetindex = this.presetsSelectIndex;
+		dataStations.presetsRandom = dataStations.presetsRandom ? true : false;
 		dataStations.stations = stations;
 		dataStations.volume = player.volume;
 		try{
@@ -1555,6 +1799,8 @@ class App extends EventDispatcher {
 		}
 		dataStations.active = 0;
 		dataStations.genre = [];
+		dataStations.presetindex = this.presetsSelectIndex;
+		dataStations.presetsRandom = dataStations.presetsRandom ? true : false;
 		dataStations.stations = {};
 		// Если каталог не существует
 		if(!fs.existsSync(DATA_DIR)) {
@@ -1608,7 +1854,7 @@ class App extends EventDispatcher {
 					this.title = locale.get("appName");
 				}
 			}).on("error", (err) => {
-				this.window.console.log('err', err);
+				this.console.log('err', err);
 				player.isPlaying() ? (
 					this.title = name + ' | ' + locale.get("appName"),
 					metainterval = setTimeout(() => this.getMetaData(), 5000)
@@ -1635,18 +1881,22 @@ class App extends EventDispatcher {
 				}
 			]
 		});
+		this.vizualizer && this.vizualizer.launchSongTitleAnim(`${title}`);
 		const iconPath = path.join(DATA_DIR, `${id}.png`);
-		dataStations.notify && notifier.notify({
-			title: name,
-			message: title,
-			icon: iconPath,
-			type: 'info',
-			sound: false,
-			//wait: false,
-			//silent: false,
-			id: 'yourradio',
-			appID: locale.get('appName'),
-		});
+		try {
+			dataStations.notify && notifier.notify({
+				title: name,
+				message: title,
+				icon: iconPath,
+				type: 'info',
+				sound: false,
+				id: 'yourradio',
+				appID: locale.get('appName'),
+				application: nw.process.execPath
+			});
+		} catch(e){
+			this.console.error(e);
+		}
 	}
 	// Прокрутка к элементу
 	scrollToEl(el) {
@@ -1818,6 +2068,18 @@ class App extends EventDispatcher {
 		nextEl.classList.add('active');
 		this.play();
 		this.scrollActive();
+	}
+	isNumber(value) {
+		return typeof value === 'number' && Number.isFinite(value) && value !== true && value !== false;
+	}
+	get presetsSelectIndex() {
+		return dataStations.presetindex;
+	}
+	set presetsSelectIndex(value) {
+		const num = Number(value);
+		this.console.log(this.presetsNames.length);
+		const max = this.presetsNames.length - 1;
+		dataStations.presetindex = !Number.isFinite(num) ? -1 : Math.max(-1, Math.min(Math.floor(num), max));
 	}
 	// Сервер
 	get server() {

@@ -1,9 +1,9 @@
 {
 	"name": "YourRadio",
-	"version": "4.0.0.0.115.0",
+	"version": "4.0.1.0.115.0",
 	"comments": "Ваше Радио. Облегчённая версия. Самостоятельное добавление радио потока. Импорт/Экспорт плейлиста радиостанций.",
 	"description": "Ваше Радио. Облегчённая версия.",
-	"buildDate": "24 August 2026 11:15:06",
+	"buildDate": "31 August 2026 22:51:02",
 	"author": "ProjectSoft",
 	"homepage": "https://github.com/ProjectSoft-STUDIONIONS/radioApp-lite",
 	"license": "GPL-3.0",
@@ -27,6 +27,7 @@
 		"position": "center",
 		"resizable": true,
 		"show_in_taskbar": true,
+		"node-integration": true,
 		"toolbar": true,
 		"visible": true,
 		"visible_on_all_workspaces": true,
@@ -34,6 +35,7 @@
 		"min_height": 700
 	},
 	"dependencies": {
+		"butterchurn": "^2.6.7",
 		"icy": "latest",
 		"mime": "latest",
 		"node-notifier": "^10.0.1",

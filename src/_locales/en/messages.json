@@ -121,5 +121,14 @@
 	},
 	"ErrorServerPort": {
 		"message": "All ports from 4000 to $1 are occupied. Contact your computer administrator to resolve the issue."
+	},
+	"presetsRandom": {
+		"message": "Random loading of visualization presets"
+	},
+	"selectPreset": {
+		"message": "Select a specific visualization preset.\n* The selection ignores the previous setting item!"
+	},
+	"selectPresetNo": {
+		"message": "Do not use"
 	}
 }

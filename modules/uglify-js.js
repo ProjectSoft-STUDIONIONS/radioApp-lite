@@ -42,6 +42,23 @@ const start = (options) => {
  * @license GPL-3.0
  */
 ` + writeCode + "\n", {encode: 'utf8'});
+			const bcode = [
+				'./node_modules/butterchurn-presets/lib/butterchurnPresets.min.js',
+				'./node_modules/butterchurn-presets/lib/butterchurnPresetsExtra.min.js',
+				'./node_modules/butterchurn-presets/lib/butterchurnPresetsExtra2.min.js',
+				//'./node_modules/butterchurn/lib/butterchurn.js'
+			].map(f => {
+				return fs.readFileSync(f).toString();
+			}).join('\n\n');
+			const resultBc = await minify(bcode, {
+					compress: true,
+					mangle: false,
+					sourceMap: false,
+					output: {
+						comments: false
+					}
+				});
+			fs.writeFileSync(path.join(outputPath, 'butterchurn.js'), resultBc.code);
 			log(colors.yellowBright(`Минимизация JS завершена`), true);
 			breakLn();
 			resolve();

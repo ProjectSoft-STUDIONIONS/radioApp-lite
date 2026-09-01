@@ -1,6 +1,6 @@
 {
 	"name": "yourradio",
-	"version": "4.0.0",
+	"version": "4.0.1",
 	"description": "Ваше Радио. Облегчённая версия. Самостоятельное добавление радио потока. Импорт/Экспорт плейлиста радиостанций.",
 	"license": "GPL-3.0",
 	"author": "ProjectSoft <projectsoft2009@yandex.ru>",
@@ -21,7 +21,7 @@
 		"escodegen": "^2.1.0",
 		"eslint": "^10.8.0",
 		"eslint-config-eslint": "^14.0.0",
-		"innosetup-compiler": "git+https://github.com/ProjectSoft-STUDIONIONS/node-innosetup-compiler.git",
+		"innosetup-compiler": "^6.3.1",
 		"less": "^4.8.1",
 		"node-downloader-helper": "^2.1.11",
 		"prettier": "^3.9.6",
@@ -31,5 +31,9 @@
 		"ttf2woff2": "^5.0.0",
 		"unzipper": "latest",
 		"webfont": "^12.7.0"
+	},
+	"dependencies": {
+		"butterchurn": "^2.6.7",
+		"butterchurn-presets": "^2.4.7"
 	}
 }

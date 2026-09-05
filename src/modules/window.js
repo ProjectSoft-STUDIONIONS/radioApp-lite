@@ -121,7 +121,6 @@ class App extends EventDispatcher {
 	presetsIndex = 0;
 	presetsSelectIndex = -1;
 	presetsNames = [];
-
 	presetTime = 0;
  	radioList = null;
   	resolve = null;
@@ -130,6 +129,7 @@ class App extends EventDispatcher {
  	tray = null;
 	vizualizer = null;
 	vizualizerCanvas = null;
+	vizualizerStart = 0;
 	visualTime = 0;
  	// Конструктор
 	constructor(win, window, document) {
@@ -180,6 +180,7 @@ class App extends EventDispatcher {
 		this.presetsSelectIndex = -1;
 		this.visualTime = 0;
 		this.vizualizer = null;
+		this.vizualizerStart = 0;
 		// Инициализируем документ
 		this.initDocument();
 		// Запускаем сервер
@@ -379,10 +380,12 @@ class App extends EventDispatcher {
 							this.document.body.classList.contains('fullscreen') && this.document.body.classList.remove('fullscreen');
 							// Отключение визуализатора
 						} else {
-							!this.document.body.classList.contains('fullscreen') && this.document.body.classList.add('fullscreen');
-							this.document.querySelector(".vizualizer").requestFullscreen();
-							// Подключение визуализатора
-							this.onVizualizer();
+							//if(this.player.isPlaying()) {
+								!this.document.body.classList.contains('fullscreen') && this.document.body.classList.add('fullscreen');
+								this.document.querySelector(".vizualizer").requestFullscreen();
+								// Подключение визуализатора
+								this.onVizualizer();
+							//}
 						}
 						break;
 					case "noSettings":
@@ -800,7 +803,7 @@ class App extends EventDispatcher {
 		let timeMouse;
 		// Регистрируем горячие клавиши на fullscreen
 		// Escape fullscreen
-		nw.App.registerGlobalHotKey(new nw.Shortcut({
+		/*nw.App.registerGlobalHotKey(new nw.Shortcut({
 			key : "Escape",
 			active : () => {
 				clearTimeout(timeMouse);
@@ -825,7 +828,7 @@ class App extends EventDispatcher {
 					this.onVizualizer();
 				}
 			}
-		}));
+		}));*/
 		// Слушаем Ресайз
 		this.window.addEventListener("resize", (e) => {
 			this.document.fullscreenElement ? (!this.document.body.classList.contains('fullscreen') && this.document.body.classList.add("fullscreen")) : (this.document.body.classList.contains('fullscreen') && this.document.body.classList.remove("fullscreen"));
@@ -857,6 +860,31 @@ class App extends EventDispatcher {
 				}, 3000);
 			}else{
 				this.document.body.classList.contains('mouse') && this.document.body.classList.remove('mouse');
+			}
+		});
+		this.initAudioSystem().then(e=>{}).catch(e => {});
+		this.document.addEventListener('keydown', (e) => {
+			switch(e.code) {
+				case "Escape":
+					clearTimeout(timeMouse);
+					if(this.document.fullscreenElement){
+						this.offVizualizer();
+						this.document.exitFullscreen();
+						this.document.body.classList.contains('fullscreen') && this.document.body.classList.remove('fullscreen');
+					}
+					break;
+				case "F11":
+					clearTimeout(timeMouse);
+					if(this.document.fullscreenElement){
+						this.offVizualizer();
+						this.document.exitFullscreen();
+						this.document.body.classList.contains('fullscreen') && this.document.body.classList.remove('fullscreen');
+					} else {
+						!this.document.body.classList.contains('fullscreen') && this.document.body.classList.add('fullscreen');
+						this.document.querySelector("canvas").requestFullscreen();
+						this.onVizualizer();
+					}
+					break;
 			}
 		});
 	}
@@ -905,7 +933,7 @@ class App extends EventDispatcher {
 	}
 	// Подключение Визуализатора
 	onVizualizer() {
-		this.initAudioSystem().then(() => {
+		this.initAudioSystem().then((e) => {
 			this.vizualizer.connectAudio(this.sourceNode);
 			// (Здесь позже можно делать viz.loadPreset(...) — логика)
 			//this.presetsIndex = Math.floor(Math.random() * this.presetsNames.length);
@@ -915,11 +943,11 @@ class App extends EventDispatcher {
 				this.vizualizer.loadPreset(this.presets[this.presetsNames[this.presetsIndex]], 0.0);
 			}
 			this.visualTime = this.window.requestAnimationFrame(this.renderAnimated.bind(this));
-			setTimeout(() => {
+			this.vizualizerStart = setTimeout(() => {
 				// Получить тайтл, разбить по `|` Получить первый;
 				const title = this.radioList.querySelector('li.active').dataset.title;
 				this.vizualizer.launchSongTitleAnim(`${title}`);
-			}, 1000);
+			}, 2000);
 			this.getPreset();
 		}).catch(e => {
 			this.console.error(e);
@@ -927,12 +955,15 @@ class App extends EventDispatcher {
 	}
 	// Отключение Визуализатора
 	offVizualizer() {
+		clearTimeout(this.vizualizerStart);
+		clearTimeout(this.presetTime);
 		this.initAudioSystem().then(() => {
-			if(this.visualTime) {
-				this.window.cancelAnimationFrame(this.visualTime);
-			}
-			clearTimeout(this.presetTime);
-			this.vizualizer.disconnectAudio(this.sourceNode);
+			//if(this.visualTime) {
+			//}
+			this.window.cancelAnimationFrame(this.visualTime);
+			try {
+				this.vizualizer.disconnectAudio(this.sourceNode);
+			}catch(e){}
 		}).catch(e => {
 			this.console.error(e);
 		});
@@ -1964,8 +1995,8 @@ class App extends EventDispatcher {
 	play() {
 		const list = this.radioList;
 		const el = list.querySelector("li.active");
+		this.stop();
 		if(!el) {
-			this.stop();
 			return;
 		}
 		el.setAttribute('data-title', el.dataset.name);
@@ -1997,6 +2028,7 @@ class App extends EventDispatcher {
 	stop() {
 		clearTimeout(metainterval);
 		player.stop();
+		this.offVizualizer();
 		this.title = locale.get('appName');
 		const list = this.radioList;
 		const el = list.querySelector("li.active");

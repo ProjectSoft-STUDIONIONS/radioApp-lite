@@ -42,3 +42,4 @@ record.json
 /src/sources/stations/*
 !/src/sources/stations/*.png
 !/src/sources/stations/*.json
+!/src/sources/stations/*.txt

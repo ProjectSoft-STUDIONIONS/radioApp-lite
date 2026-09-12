@@ -35,15 +35,6 @@
  * 
  **/
 
-process.on('unhandledRejection', (reason, promise) => {
-	if (reason instanceof Error) {
-		console.error(colors.redBright(`   ${reason.name}:`), `${reason.message}`);
-	} else {
-		console.error(colors.redBright('   Неожиданная ошибка:'), String(reason));
-	}
-	process.exit(1);
-});
-
 let options = {};
 const fs = require('fs'),
 	path = require('path'),
@@ -66,7 +57,21 @@ const fs = require('fs'),
 	mainPackage = require('./package.json'),
 	appPackage = require('./application/package.json'),
 	maxLength = 9,
-	sleep = (ms) => {
+	months = [
+		'January', 'February', 'March',     'April',   'May',      'June',
+		'July',    'August',   'September', 'October', 'November', 'December'
+	];
+
+process.on('unhandledRejection', (reason, promise) => {
+	if (reason instanceof Error) {
+		console.error(colors.redBright(`   ${reason.name}:`), `${reason.message}`);
+	} else {
+		console.error(colors.redBright('   Неожиданная ошибка:'), String(reason));
+	}
+	process.exit(1);
+});
+
+const sleep = (ms) => {
 		return new Promise(resolve => setTimeout(resolve, ms));
 	},
 	getPath = (...args) => path.join(...args).replace(/[\\]+/g, '/'),
@@ -80,10 +85,6 @@ const fs = require('fs'),
 			}
 		}
 	},
-	months = [
-		'January', 'February', 'March',     'April',   'May',      'June',
-		'July',    'August',   'September', 'October', 'November', 'December'
-	],
 	buildDate = () => {
 		const date = new Date();
 		const d = date.getDate();
@@ -283,6 +284,7 @@ const fs = require('fs'),
 			// Если sdk==false то производим компиляцию установочного файла
 			await innosetup(getPath('.', 'setup.iss'), {
 				verbose: true,
+				colors: true
 			}).then(() => {}).catch(e => {
 				throw [innosetup.name, e];
 			});
@@ -299,7 +301,7 @@ const fs = require('fs'),
 		breakLn();
 	} catch (err) {
 		// Не пускаем через logError!
-		console.error(`Ошибка сборки:`, err);
+		console.log(err[1] ? err[1] : err);
 		process.exit(1);
 	}
 })();

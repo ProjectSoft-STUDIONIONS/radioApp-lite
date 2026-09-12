@@ -100,7 +100,6 @@
 | 🌐‍🎧 | **НАШЕ Радио «Классик Рок»** | `http://nashe1.hostingradio.ru/nasheclassic.mp3` | `RUSSIAN`, `ROCK` |
 | 🌐‍🎧 | **НАШЕ Радио «Панки хой!»** | `http://nashe1.hostingradio.ru/nashepunks.mp3` | `RUSSIAN`, `ROCK` |
 | 🌐‍🎧 | **НАШЕ Радио «Щас спою!»** | `https://nashe1.hostingradio.ru/nashesongs.mp3` | `RUSSIAN`, `ROCK` |
-| 🌐‍🎧 | **Король и Шут** | `https://stream04.pcradio.ru/Korol_i_Shut-med` | `RUSSIAN`, `ROCK` |
 | 🌐‍🎧 | **Радио DFM «Дискач 90-х»** | `https://dfm-disc90.hostingradio.ru/disc9096.aacp` | `Эпохи` |
 | 🌐‍🎧 | **Радио DFM «DANCE»** | `https://dfm.hostingradio.ru/dfm96.aacp` | `DANCE` |
 | 🌐‍🎧 | **Радио DFM «POP DANCE»** | `https://dfm-popdance.hostingradio.ru/popdance96.aacp` | `POP`, `DANCE` |

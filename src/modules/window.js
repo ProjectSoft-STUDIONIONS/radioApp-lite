@@ -13,6 +13,7 @@ const DATA_DIR = path.normalize(path.join(nw.App.dataPath, 'radio'));
 const SOURCE_FILE = path.normalize(path.join(nw.__dirname, 'radio', 'data.json'));
 const { translit, tagTranslit } = require('./translit.js');
 const butterchurn = require('butterchurn').default;
+const EventEmitter = require('node:events');
 
 // Шаблон ошибки сервера
 const errorTpl = (obj) => {
@@ -38,6 +39,7 @@ const errorTpl = (obj) => {
 if(!fs.existsSync(DATA_DIR)) {
 	fs.mkdirSync(DATA_DIR, { recursive: true, force: true });
 }
+
 var isMaximized = false,
 	win_state = true,
 	init_server = false,
@@ -197,6 +199,21 @@ class App extends EventDispatcher {
 		// Пресеты
 		// Контехт диалога
 		nwdialog.context = this.document;
+		// Это прям обязательно нужно для вывода в консоли приложения.
+		// Для необработанных синхронных исключений
+		process.on('uncaughtException', (error) => {
+			this.console.error('Необработанное исключение:');
+			this.console.log(error.message);
+			this.console.error('Стек:');
+			this.console.log(error.stack);
+		});
+		// Для необработанных отклонений промисов
+		process.on('unhandledRejection', (reason, promise) => {
+			this.console.error('Необработанное отклонение промиса:');
+			this.console.log(reason);
+			this.console.error('Промис:');
+			this.console.log(promise);
+		});
 	}
 	// Запрет на перетаскивание
 	disableDragDrop(e) {
@@ -2019,6 +2036,9 @@ class App extends EventDispatcher {
 				]
 			});
 			this.getMetaData(id);
+			if(this.document.fullscreenElement) {
+				this.onVizualizer();
+			}
 		} catch (e) {
 			this.stop();
 		}

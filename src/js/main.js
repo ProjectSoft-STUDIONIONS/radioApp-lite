@@ -11,7 +11,6 @@
 	const fs = require('fs');
 	const path = require('path');
 	const { app } = require('./modules/window.js')(nw.Window.get(), window, document);
-	//const locale = require('./modules/locale.js');
 	const DATA_DIR = path.normalize(path.join(nw.App.dataPath, 'radio'));
 	const GLOB_SERVER = {
 		HOST: 'localhost',
@@ -49,7 +48,7 @@
 			console.error(err);
 			app.tray.remove();
 			setTimeout(() => {
-				// СЕрвер не запущен. Алерт и закрытие программы.
+				// Сервер не запущен. Алерт и закрытие программы.
 				window.alert(err);
 				nw.Window.get().close(true);
 			}, 200);

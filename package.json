@@ -1,6 +1,6 @@
 {
 	"name": "yourradio",
-	"version": "4.0.1",
+	"version": "4.0.2",
 	"description": "Ваше Радио. Облегчённая версия. Самостоятельное добавление радио потока. Импорт/Экспорт плейлиста радиостанций.",
 	"license": "GPL-3.0",
 	"author": "ProjectSoft <projectsoft2009@yandex.ru>",

@@ -15,7 +15,7 @@ const { translit, tagTranslit } = require('./translit.js');
 const butterchurn = require('butterchurn').default;
 const EventEmitter = require('node:events');
 
-// Шаблон ошибки сервера
+// Шаблон ошибки сервера.
 const errorTpl = (obj) => {
 	return `<!DOCTYPE html>
 <html lang="ru">
@@ -55,7 +55,7 @@ var isMaximized = false,
 	genres = [],
 	presetsSelectIndex = 0;
 /**
- * Context Menu Constants 
+ * Context Menu Constants.
  **/
 const copyStationItem = new nw.MenuItem({
 		label: locale.get("copyTitle"),
@@ -93,7 +93,7 @@ const copyStationItem = new nw.MenuItem({
 	menu = new nw.Menu(),
 	menuLi = new nw.Menu();
 /**
- * Collecting the context menu
+ * Collecting the context menu.
  **/
 menu.append(addStationItem);
 menu.append(separator);
@@ -108,7 +108,7 @@ menuLi.append(removeStationItem);
 menuLi.append(separator);
 menuLi.append(exportStations);
 menuLi.append(importStations);
-// буфер обмена
+// буфер обмена.
 const clipboard = nw.Clipboard.get();
 
 
@@ -133,7 +133,7 @@ class App extends EventDispatcher {
 	vizualizerCanvas = null;
 	vizualizerStart = 0;
 	visualTime = 0;
- 	// Конструктор
+ 	// Конструктор.
 	constructor(win, window, document) {
 		super();
 		this.tray = null;
@@ -153,20 +153,20 @@ class App extends EventDispatcher {
 			this.resolve = resolve;
 			this.reject = reject;
 		});
-		// Плеер
+		// Плеер.
 		player = require('./audioplayer.js')(this.window, this.document);
-		// Для визуализатора
+		// Для визуализатора.
 		this.audio = player.audio;
-		// Диалоги
+		// Диалоги.
 		this.dialogSettings = this.document.querySelector('dialog.settings-block');
 		this.dialogBox = this.document.querySelector('dialog.dialogBox');
 		this.appBlock = this.document.querySelector('dialog.appBlock');
-		// Листы
+		// Листы.
 		this.radioList = this.document.querySelector("ul#radio-list");
 		this.genreList = this.document.querySelector("ul#genre");
-		// Визуализер блок
+		// Визуализер блок.
 		this.vizualizerCanvas = this.document.querySelector(".vizualizer canvas");
-		// Объединение объектов пресетов и сортировка по названиям 
+		// Объединение объектов пресетов и сортировка по названиям.
 		this.presets = Object.fromEntries(
 			Object.entries(
 				Object.assign(
@@ -183,31 +183,31 @@ class App extends EventDispatcher {
 		this.visualTime = 0;
 		this.vizualizer = null;
 		this.vizualizerStart = 0;
-		// Инициализируем документ
+		// Инициализируем документ.
 		this.initDocument();
-		// Запускаем сервер
+		// Запускаем сервер.
 		this.startImageServer(4000);
 		// События о play? pause, previoustrack и nexttrack
 		this.window.navigator.mediaSession.setActionHandler('play', this.play.bind(this));
 		this.window.navigator.mediaSession.setActionHandler('pause', this.stop.bind(this));
 		this.window.navigator.mediaSession.setActionHandler('previoustrack', this.prev.bind(this));
 		this.window.navigator.mediaSession.setActionHandler('nexttrack', this.next.bind(this));
-		// online и offline
+		// online и offline.
 		isOnline = this.window.navigator.onLine;
 		this.window.addEventListener('online',  this.updateOnlineStatus.bind(this));
 		this.window.addEventListener('offline', this.updateOnlineStatus.bind(this));
-		// Пресеты
-		// Контехт диалога
+		// Пресеты.
+		// Контекст диалога.
 		nwdialog.context = this.document;
 		// Это прям обязательно нужно для вывода в консоли приложения.
-		// Для необработанных синхронных исключений
+		// Для необработанных синхронных исключений.
 		process.on('uncaughtException', (error) => {
 			this.console.error('Необработанное исключение:');
 			this.console.log(error.message);
 			this.console.error('Стек:');
 			this.console.log(error.stack);
 		});
-		// Для необработанных отклонений промисов
+		// Для необработанных отклонений промисов.
 		process.on('unhandledRejection', (reason, promise) => {
 			this.console.error('Необработанное отклонение промиса:');
 			this.console.log(reason);
@@ -215,12 +215,12 @@ class App extends EventDispatcher {
 			this.console.log(promise);
 		});
 	}
-	// Запрет на перетаскивание
+	// Запрет на перетаскивание.
 	disableDragDrop(e) {
 		e.preventDefault();
 		return !1;
 	}
-	// Слушаем online или offline
+	// Слушаем online или offline.
 	updateOnlineStatus(e) {
 		switch(e.type) {
 			case "online":
@@ -238,19 +238,19 @@ class App extends EventDispatcher {
 				break;
 		}
 	}
-	// Простой лог
+	// Простой лог.
 	log(...args) {
 		this.console.dir(...args);
 	}
-	// Лог ошибок
+	// Лог ошибок.
 	error(...args) {
 		this.console.error(...args);
 	}
-	// console
+	// console.
 	get console() {
 		return this.window.console;
 	}
-	// Инициализация приложения
+	// Инициализация приложения.
 	initDocument() {
 		const _self = this;
 		this.win.icon = 'favicon.png';
@@ -294,7 +294,7 @@ class App extends EventDispatcher {
 				tray_mini_restore.label = "" + locale.get("minimize")
 			);
 		});
-		// Сначала запускаем обработку кнопок в titlebar
+		// Сначала запускаем обработку кнопок в titlebar.
 		const miniBtn = this.document.querySelector('#minimized'),
 			restoreBtn = this.document.querySelector('#restored'),
 			closeBtn = this.document.querySelector('#close'),
@@ -306,13 +306,13 @@ class App extends EventDispatcher {
 			maximizePath = 'M 0,0 0,10 10,10 10,0 Z M 1,1 9,1 9,9 1,9 Z',
 			fullscreenOn = "M5.828 10.172a.5.5 0 0 0-.707 0l-4.096 4.096V11.5a.5.5 0 0 0-1 0v3.975a.5.5 0 0 0 .5.5H4.5a.5.5 0 0 0 0-1H1.732l4.096-4.096a.5.5 0 0 0 0-.707zm4.344 0a.5.5 0 0 1 .707 0l4.096 4.096V11.5a.5.5 0 1 1 1 0v3.975a.5.5 0 0 1-.5.5H11.5a.5.5 0 0 1 0-1h2.768l-4.096-4.096a.5.5 0 0 1 0-.707zm0-4.344a.5.5 0 0 0 .707 0l4.096-4.096V4.5a.5.5 0 1 0 1 0V.525a.5.5 0 0 0-.5-.5H11.5a.5.5 0 0 0 0 1h2.768l-4.096 4.096a.5.5 0 0 0 0 .707zm-4.344 0a.5.5 0 0 1-.707 0L1.025 1.732V4.5a.5.5 0 0 1-1 0V.525a.5.5 0 0 1 .5-.5H4.5a.5.5 0 0 1 0 1H1.732l4.096 4.096a.5.5 0 0 1 0 .707z",
 			fullscreenOff = "M.2 15.8c.2.2.5.2.7 0L5 11.7v2.8c0 .3.2.5.5.5s.5-.2.5-.5v-4c0-.3-.2-.5-.5-.5h-4c-.3 0-.5.2-.5.5s.2.5.5.5h2.8L.2 15.1c-.2.2-.2.5 0 .7zm15.6 0c-.2.2-.5.2-.7 0L11 11.7v2.8c0 .3-.2.5-.5.5s-.5-.2-.5-.5v-4c0-.3.2-.5.5-.5h4c.3 0 .5.2.5.5s-.2.5-.5.5h-2.8l4.1 4.1c.2.2.2.5 0 .7zm0-15.6c-.2-.2-.5-.2-.7 0L11 4.3V1.5c0-.3-.2-.5-.5-.5s-.5.2-.5.5v4c0 .3.2.5.5.5h4c.3 0 .5-.2.5-.5s-.2-.5-.5-.5h-2.8L15.8.9c.2-.2.2-.5 0-.7zM.2.2c.2-.2.5-.2.7 0L5 4.3V1.5c0-.3.2-.5.5-.5s.5.2.5.5v4c0 .3-.2.5-.5.5h-4c-.3 0-.5-.2-.5-.5s.2-.5.5-.5h2.8L.2.9C0 .7 0 .4.2.2z";
-		// Обработка клика по кнопкам minimized, restored, close, settings, fullscreen
+		// Обработка клика по кнопкам minimized, restored, close, settings, fullscreen.
 		this.document.addEventListener('click', async (e) => {
 			const eId = e.target.id;
-			// ids
+			// ids.
 			if(
 				[
-					// Управление
+					// Управление.
 					"minimized",
 					"restored",
 					"close",
@@ -343,12 +343,12 @@ class App extends EventDispatcher {
 						this.document.querySelector('main').classList.add('saving');
 						var bg = this.dialogSettings.querySelector(".preview");
 						var time = new Date().getTime();
-						// Новый элемент
+						// Новый элемент.
 						var tempInput = this.document.createElement('input');
 						tempInput.type = "file";
 						tempInput.accept = "image/*";
 						tempInput.id = "background";
-						// selectPreset
+						// selectPreset.
 						selectPreset.innerHTML = "";
 						var optionNull = this.document.createElement('option');
 						optionNull.value = "-1";
@@ -361,9 +361,9 @@ class App extends EventDispatcher {
 							selectPreset.append(option);
 						}
 						selectPreset.value = dataStations.presetindex;
-						// Замена
+						// Замена.
 						this.dialogSettings.querySelector("#background").parentNode.replaceChild(tempInput, this.dialogSettings.querySelector("#background"));
-						// Выбор файла
+						// Выбор файла.
 						this.dialogSettings.showModal();
 						clear_stations.checked = false;
 						loadDefault.checked = false;
@@ -371,7 +371,7 @@ class App extends EventDispatcher {
 						customBg.checked = Boolean(typeof dataStations.custombg == "string");
 						// Если есть файл - загружаем.
 						if(dataStations.custombg && fs.existsSync(path.join(this.DATA_DIR, 'background', `${dataStations.custombg}`))) {
-							// Загружаем
+							// Загружаем.
 							bg.setAttribute("style", `--background-config: url(${this.GLOB_SERVER.URL}/background/${dataStations.custombg})`)
 						} else {
 							// Иначе customBg.checked = false; dataStations.custombg = false;
@@ -379,28 +379,28 @@ class App extends EventDispatcher {
 							customBg.checked = false;
 							dataStations.custombg = 0;
 						}
-						// Генерируем событие
+						// Генерируем событие.
 						customBg.dispatchEvent(new Event("input"));
-						// Загрузка пресетов в рандомно или по порядку
+						// Загрузка пресетов в рандомно или по порядку.
 						presetsRandom.checked = dataStations.presetsRandom ? true : false;
 						dataStations.presetsRandom = presetsRandom.checked;
-						// Генерируем событие
+						// Генерируем событие.
 						presetsRandom.dispatchEvent(new Event("input"));
 						break;
 					case "fullscreen":
 						//this.win.toggleFullscreen();
-						// Добавить блок, установить canvas, подключить breadcrumb
+						// Добавить блок, установить canvas, подключить breadcrumb.
 						clearTimeout(timeMouse);
 						if(this.document.fullscreenElement){
 							this.offVizualizer();
 							this.document.exitFullscreen();
 							this.document.body.classList.contains('fullscreen') && this.document.body.classList.remove('fullscreen');
-							// Отключение визуализатора
+							// Отключение визуализатора.
 						} else {
 							//if(this.player.isPlaying()) {
 								!this.document.body.classList.contains('fullscreen') && this.document.body.classList.add('fullscreen');
 								this.document.querySelector(".vizualizer").requestFullscreen();
-								// Подключение визуализатора
+								// Подключение визуализатора.
 								this.onVizualizer();
 							//}
 						}
@@ -432,16 +432,16 @@ class App extends EventDispatcher {
 							this.defaultListStations();
 							this.saveStations();
 						};
-						// Если есть выбор
+						// Если есть выбор.
 						if(customBg.checked) {
 							if(inputFile.files.length){
-								// Если не png, Преобразуем в png
+								// Если не png, Преобразуем в png.
 								var canvas = this.document.createElement('canvas');
 								var ctx = canvas.getContext('2d');
 								var file = inputFile.files[0];
 								// Если не изображение
 								if (!file.type.startsWith('image/')) {
-									// Ничего не делаем и возвращаемся
+									// Ничего не делаем и возвращаемся.
 									this.window.alert("Файл не поддерживается");
 									return !1;
 								}
@@ -449,8 +449,8 @@ class App extends EventDispatcher {
 								time = new Date().getTime();
 								const img = new Image();
 								img.onload = (ev) => {
-									// Копируем
-									// Получить расширение
+									// Копируем.
+									// Получить расширение.
 									const ext = path.extname(file);
 									dataStations.custombg = `${time + ext}`;
 									fs.copyFileSync(file, path.normalize(path.join(this.DATA_DIR, 'background', `${dataStations.custombg}`)));
@@ -459,7 +459,7 @@ class App extends EventDispatcher {
 
 								};
 								img.onerror = (ev) => {
-									// Ничего не делаем
+									// Ничего не делаем.
 									dataStations.custombg = 0;
 									this.setStyleBackground();
 									this.dialogSettings.close();
@@ -467,15 +467,15 @@ class App extends EventDispatcher {
 								};
 								img.src = file;
 							} else {
-								// Если нет файлов, то проверяем файл по конфигу
+								// Если нет файлов, то проверяем файл по конфигу.
 								if(!fs.existsSync(path.join(this.DATA_DIR, 'background', `${dataStations.custombg}`))){
-									// Файла нет
+									// Файла нет.
 									this.document.body.removeAttribute("style");
 									dataStations.custombg = 0;
 									this.setStyleBackground();
 									this.dialogSettings.close();
 								} else {
-									// Файл есть. Обновим запись
+									// Файл есть. Обновим запись.
 									this.setStyleBackground();
 									this.dialogSettings.close();
 								}
@@ -489,14 +489,14 @@ class App extends EventDispatcher {
 				}
 				return !1;
 			}
-			// Открываем ссылки в браузере
+			// Открываем ссылки в браузере.
 			if(e.target.tagName.toLowerCase() === 'a' && e.target.getAttribute('target') == "_blank") {
 				e.preventDefault();
 				nw.Shell.openExternal(e.target.href);
 				return !1;
 			}
 		});
-		// Клик на жанрах
+		// Клик на жанрах.
 		this.genreList.addEventListener('click', (e) => {
 			e.preventDefault();
 			const li = e.target;
@@ -514,13 +514,13 @@ class App extends EventDispatcher {
 			this.scrollActive();
 			return !1;
 		});
-		// Установить действие на input["file"], input["chekbox"] фона, input["range"] громкость, кроп
-		// Чекбокс
+		// Установить действие на input["file"], input["chekbox"] фона, input["range"] громкость, кроп.
+		// Чекбокс.
 		this.document.addEventListener('input', (e) => {
 			e.preventDefault();
 			const el = e.target;
 			var vol;
-			// Чекбокс #custombg
+			// Чекбокс #custombg.
 			if(el.id == "custombg") {
 				var prevDiv = this.document.querySelector(".customBg");
 				if(el.checked) {
@@ -529,7 +529,7 @@ class App extends EventDispatcher {
 					prevDiv.classList.add("hidden-block");
 				}
 			}
-			// Выбор файла #background
+			// Выбор файла #background.
 			if(el.id == "background") {
 				if(el.files.length) {
 					var fl = el.files[0].path.replace(/\\/g, "/");
@@ -538,14 +538,14 @@ class App extends EventDispatcher {
 					this.document.querySelector(".preview").removeAttribute('style');
 				}
 			}
-			// Громкость
+			// Громкость.
 			if(el.type == "range") {
 				vol = Math.min(el.max, Math.max(el.min, parseFloat(el.value)));
 				switch(el.id) {
 					case "volume":
 						el.setAttribute('style', `--background-range: ${vol}%;`);
 						player.volume = vol / 100;
-						// set update text
+						// set update text.
 						var txt;
 						if(txt = this.document.querySelector(`.left span.writ`)) {
 							txt.textContent = `${parseInt(vol)}%`;
@@ -556,7 +556,7 @@ class App extends EventDispatcher {
 							}, 2000);
 						}
 						break;
-					// дальше по реализации
+					// дальше по реализации.
 				}
 			}
 			return !1;
@@ -581,7 +581,7 @@ class App extends EventDispatcher {
 				}
 			}
 		});
-		// Старт, Стоп станции
+		// Старт, Стоп станции.
 		this.document.addEventListener('radio:click', (e) => {
 			const li = e.target;
 			if(!isOnline) {
@@ -602,16 +602,16 @@ class App extends EventDispatcher {
 			});
 			dataStations.active = li.dataset.id;
 			if(li.classList.contains('play')) {
-				// Воспроизведение
+				// Воспроизведение.
 				isPlaying = true;
 				this.play();
 			} else if(li.classList.contains('stop')) {
-				// Остановлен
+				// Остановлен.
 				isPlaying = false;
 				this.stop();
 			}
 		});
-		// События состояния плеера
+		// События состояния плеера.
 		player.addEventListener('statechange', (e) => {
 			const list = this.radioList;
 			const el = list.querySelector("li.active");
@@ -631,11 +631,11 @@ class App extends EventDispatcher {
 				}
 			}
 		});
-		// Локализацмя
+		// Локализацмя.
 		this.updateLocale();
-		// События win
+		// События win.
 		/**
-		 * Позиция окна при запуске
+		 * Позиция окна при запуске.
 		 */
 		nw.Screen.Init();
 		var w = nw.App.manifest.window.width,
@@ -690,7 +690,7 @@ class App extends EventDispatcher {
 				this.document.querySelector('main').classList.add('saving');
 				try { this.tray.remove(); this.stop(); } catch (e) {}
 				this.saveStations();
-				// Просто специально ставим паузу для красивого закрытия
+				// Просто специально ставим паузу для красивого закрытия.
 				setTimeout(() => this.win.close(true), 1100);
 			} catch(e) {
 				this.console.log(e)
@@ -722,7 +722,7 @@ class App extends EventDispatcher {
 				this.document.body.removeEventListener("dragstart", this.disableDragDrop);
 				this.document.body.removeEventListener("drop", this.disableDragDrop);
 			},
-			// сохранение
+			// сохранение.
 			onEnd: () => {
 				this.saveStations();
 				'dragover dragenter dragleave dragend'.split(' ').forEach((ev) => {
@@ -732,10 +732,10 @@ class App extends EventDispatcher {
 				this.document.body.addEventListener("drop", this.disableDragDrop);
 			}
 		});
-		// Визуализация начинается здесь
-		// Контекстное меню
+		// Визуализация начинается здесь.
+		// Контекстное меню.
 		this.document.addEventListener('contextmenu', (e) => {
-			// Если не находимся в fullscreen
+			// Если не находимся в fullscreen.
 			if(!this.document.fullscreenElement){
 				addStationItem.click = () => {this.addStation();addStationItem.click = null};
 				exportStations.click = () => {this.exportStations();exportStations.click = null};
@@ -743,17 +743,17 @@ class App extends EventDispatcher {
 				if(e.target.classList.contains('radio-item') || e.target.closest('li.radio-item')) {
 					e.preventDefault();
 					const li = e.target.classList.contains('radio-item') ? e.target : e.target.closest('li.radio-item');
-					// Формируем меню
+					// Формируем меню.
 					const {id, name, genre, stream, title} = li.dataset;
 					copyStationItem.label = locale.get("copyTitle", [name]);
 					editStationItem.label = locale.get("editTitle", [name]);
 					removeStationItem.label = locale.get("deleteTitle", [name]);
-					// Событие для пункта Копирование
+					// Событие для пункта Копирование.
 					copyStationItem.click = () => {
 						copyStationItem.click = null;
-						// Копируем
+						// Копируем.
 						clipboard.set(stream, 'text');
-						// Диалог
+						// Диалог.
 						this.dialogBox.setAttribute("type", "alert");
 						const wrap = this.dialogBox.querySelector(".wrap");
 						const ok = this.dialogBox.querySelector("#ok");
@@ -766,9 +766,9 @@ class App extends EventDispatcher {
 						//ok.addEventListener('click', this.noStation.bind(this, []));
 						this.dialogBox.showModal();
 					};
-					// Событие для пункта Удаление
+					// Событие для пункта Удаление.
 					removeStationItem.click = () => {
-						// Диалог
+						// Диалог.
 						removeStationItem.click = null;
 						this.dialogBox.setAttribute("type", "confirm");
 						const wrap = this.dialogBox.querySelector(".wrap");
@@ -791,7 +791,7 @@ class App extends EventDispatcher {
 						wrap.innerHTML = `${locale.get("deleteStation", [name])}`
 						this.dialogBox.showModal();
 					};
-					// Событие для пункта Редактирование
+					// Событие для пункта Редактирование.
 					editStationItem.click = () => {
 						editStationItem.click = null;
 						this.editStation({
@@ -816,37 +816,9 @@ class App extends EventDispatcher {
 				}
 			}
 		});
-		// Nouse show/hide fullscreen
+		// Nouse show/hide fullscreen.
 		let timeMouse;
-		// Регистрируем горячие клавиши на fullscreen
-		// Escape fullscreen
-		/*nw.App.registerGlobalHotKey(new nw.Shortcut({
-			key : "Escape",
-			active : () => {
-				clearTimeout(timeMouse);
-				if(this.document.fullscreenElement){
-					this.offVizualizer();
-					this.document.exitFullscreen();
-					this.document.body.classList.contains('fullscreen') && this.document.body.classList.remove('fullscreen');
-				}
-			}
-		}));
-		nw.App.registerGlobalHotKey(new nw.Shortcut({
-			key: "F11",
-			active: () => {
-				clearTimeout(timeMouse);
-				if(this.document.fullscreenElement){
-					this.offVizualizer();
-					this.document.exitFullscreen();
-					this.document.body.classList.contains('fullscreen') && this.document.body.classList.remove('fullscreen');
-				} else {
-					!this.document.body.classList.contains('fullscreen') && this.document.body.classList.add('fullscreen');
-					this.document.querySelector("canvas").requestFullscreen();
-					this.onVizualizer();
-				}
-			}
-		}));*/
-		// Слушаем Ресайз
+		// Слушаем Ресайз.
 		this.window.addEventListener("resize", (e) => {
 			this.document.fullscreenElement ? (!this.document.body.classList.contains('fullscreen') && this.document.body.classList.add("fullscreen")) : (this.document.body.classList.contains('fullscreen') && this.document.body.classList.remove("fullscreen"));
 			if(this.document.fullscreenElement){
@@ -855,7 +827,7 @@ class App extends EventDispatcher {
 				this.vizualizer && this.vizualizer.setRendererSize(this.window.screen.width, this.window.screen.height);
 			}
 		});
-		// Двойной клик на канвасе. Фулскрин. По сути только для выхода
+		// Двойной клик на канвасе. Фулскрин. По сути только для выхода.
 		this.document.querySelector("main").addEventListener("dblclick", e => {
 			e.preventDefault();
 			if(this.document.fullscreenElement){
@@ -867,7 +839,7 @@ class App extends EventDispatcher {
 			}
 			return !1;
 		});
-		// Движение мыши для fullscreen
+		// Движение мыши для fullscreen.
 		this.document.body.addEventListener('mousemove', e => {
 			if(this.document.fullscreenElement){
 				clearTimeout(timeMouse);
@@ -905,7 +877,7 @@ class App extends EventDispatcher {
 			}
 		});
 	}
-	// Инициализация AudioContext
+	// Инициализация AudioContext.
 	initAudioSystem() {
 		return new Promise((resolve, reject) => {
 			try {
@@ -936,11 +908,11 @@ class App extends EventDispatcher {
 			this.presetsIndex = this.presetsSelectIndex;
 		} else {
 			if(dataStations.presetsRandom) {
-				// Рандомный пресет
+				// Рандомный пресет.
 				this.presetsIndex = Math.floor(Math.random() * this.presetsNames.length);
 				dataStations.presetsRandom = true;
 			} else {
-				// По порядку пресет
+				// По порядку пресет.
 				this.presetsIndex = (this.presetsIndex + 1) % this.presetsNames.length;
 				dataStations.presetsRandom = false;
 			}
@@ -948,11 +920,11 @@ class App extends EventDispatcher {
 		}
 		this.presetTime = setTimeout(this.getPreset.bind(this), 10000);
 	}
-	// Подключение Визуализатора
+	// Подключение Визуализатора.
 	onVizualizer() {
 		this.initAudioSystem().then((e) => {
 			this.vizualizer.connectAudio(this.sourceNode);
-			// (Здесь позже можно делать viz.loadPreset(...) — логика)
+			// (Здесь позже можно делать viz.loadPreset(...) — логика).
 			//this.presetsIndex = Math.floor(Math.random() * this.presetsNames.length);
 			if(this.presetsSelectIndex >=0) {
 				this.vizualizer.loadPreset(this.presets[this.presetsNames[this.presetsSelectIndex]], 0.0);
@@ -970,7 +942,7 @@ class App extends EventDispatcher {
 			this.console.error(e);
 		});
 	}
-	// Отключение Визуализатора
+	// Отключение Визуализатора.
 	offVizualizer() {
 		clearTimeout(this.vizualizerStart);
 		clearTimeout(this.presetTime);
@@ -985,12 +957,12 @@ class App extends EventDispatcher {
 			this.console.error(e);
 		});
 	}
-	// Рендер canvas
+	// Рендер canvas.
 	renderAnimated() {
 		if(this.vizualizer != null) this.vizualizer.render();
 		this.visualTime = this.window.requestAnimationFrame(this.renderAnimated.bind(this));
 	}
-	// Старт сервера
+	// Старт сервера.
 	startImageServer(attemptPort) {
 		const obj = {
 			title: "",
@@ -1017,8 +989,8 @@ class App extends EventDispatcher {
 			const filePath = path.join(DATA_DIR, fileName);
 			const realDir = path.resolve(DATA_DIR);
 			const realFile = path.resolve(filePath);
-			// Если к контейнеру
-			// Защита от выхода за пределы DATA_DIR
+			// Если к контейнеру.
+			// Защита от выхода за пределы DATA_DIR.
 			if (String(fileName).trim() == "" || !realFile.startsWith(realDir)) {
 				res.writeHead(403, { 'Content-Type': 'text/html; charset=utf8' });
 				obj.title = locale.get("Forbidden");
@@ -1034,7 +1006,7 @@ class App extends EventDispatcher {
 					res.end(errorTpl(obj));
 					return;
 				}
-				// Определяем тип файла
+				// Определяем тип файла.
 				const ext = path.extname(fileName).toLowerCase();
 				let mimeType = mime.getType(path.extname(fileName).toLowerCase());
 				mimeType = mimeType ? mimeType : 'application/octet-stream';
@@ -1056,7 +1028,7 @@ class App extends EventDispatcher {
 		});
 		server.on('error', (err) => {
 			if (err.code === 'EADDRINUSE') {
-				// Рекурсивно пробуем следующий порт
+				// Рекурсивно пробуем следующий порт.
 				if(attemptPort < 4101){
 					this.startImageServer(attemptPort + 1);
 					return;
@@ -1069,7 +1041,7 @@ class App extends EventDispatcher {
 			this.reject('Server error: ' + JSON.stringify(err.code, null, "\t"));
 		});
 	};
-	// Локаль приложения
+	// Локаль приложения.
 	updateLocale() {
 		// Тексты
 		[...this.document.querySelectorAll("[data-i18n]")].forEach((el) => {
@@ -1082,25 +1054,25 @@ class App extends EventDispatcher {
 			el.setAttribute("title", locale.get(key));
 		});
 	}
-	// Установка фона
+	// Установка фона.
 	setStyleBackground() {
 		this.document.querySelector("#background").value = "";
 		if(typeof dataStations.custombg == "string") {
 			if(fs.existsSync(path.join(this.DATA_DIR, 'background', `${dataStations.custombg}`))) {
 				this.document.body.setAttribute('style', `--background-config: url(${this.GLOB_SERVER.URL}/background/${dataStations.custombg})`);
 			this.document.querySelector(".preview").setAttribute('style', `--background-config: url(${this.GLOB_SERVER.URL}/background/${dataStations.custombg})`);
-				// Удалить кроме этой в директории
+				// Удалить кроме этой в директории.
 				[...fs.readdirSync(path.join(this.DATA_DIR, 'background'), { withFileTypes: true })]
-					// Получить только файлы
+					// Получить только файлы.
 					.filter(f => {
 						if(f.isFile()) {
 							return f.name !== `${dataStations.custombg}`;
 						}
 						return false;
 					})
-					// Сформировать полный путь
+					// Сформировать полный путь.
 					.map(f => path.join(path.join(this.DATA_DIR, 'background'), f.name))
-					// Прбежаться и удалить
+					// Прбежаться и удалить.
 					.forEach(f => {
 						try {
 							fs.unlinkSync(f);
@@ -1112,13 +1084,13 @@ class App extends EventDispatcher {
 				dataStations.custombg = 0;
 				this.document.body.removeAttribute('style');
 				this.document.querySelector(".preview").removeAttribute('style');
-				// Удалить всё в директории
+				// Удалить всё в директории.
 				[...fs.readdirSync(path.join(this.DATA_DIR, 'background'), { withFileTypes: true })]
-					// Получить только файлы
+					// Получить только файлы.
 					.filter(f => f.isFile())
-					// Сформировать полный путь
+					// Сформировать полный путь.
 					.map(f => path.join(path.join(this.DATA_DIR, 'background'), f.name))
-					// Прбежаться и удалить
+					// Прбежаться и удалить.
 					.forEach(f => {
 						try {
 							fs.unlinkSync(f);
@@ -1128,13 +1100,13 @@ class App extends EventDispatcher {
 					});
 			}
 		} else {
-			// Удалить всё в директории
+			// Удалить всё в директории.
 			[...fs.readdirSync(path.join(this.DATA_DIR, 'background'), { withFileTypes: true })]
-				// Получить только файлы
+				// Получить только файлы.
 				.filter(f => f.isFile())
-				// Сформировать полный путь
+				// Сформировать полный путь.
 				.map(f => path.join(path.join(this.DATA_DIR, 'background'), f.name))
-				// Прбежаться и удалить
+				// Прбежаться и удалить.
 				.forEach(f => {
 					try {
 						fs.unlinkSync(f);
@@ -1161,23 +1133,23 @@ class App extends EventDispatcher {
 			reader.readAsArrayBuffer(blob);
 		});
 	}
-	// Чтение дефолтного листа станций
+	// Чтение дефолтного листа станций.
 	defaultListStations() {
 		this.stop();
 		const genre = this.genreList;
 		const list = this.radioList;
 		const setters = new Set();
-		// Если каталог не существует
+		// Если каталог не существует.
 		if(!fs.existsSync(DATA_DIR)) {
 			fs.mkdirSync(DATA_DIR, { recursive: true, force: true });
 		}
-		// Очистка каталога
+		// Очистка каталога.
 		[...fs.readdirSync(this.DATA_DIR, { withFileTypes: true })]
-			// Получить только файлы
+			// Получить только файлы.
 			.filter(f => f.isFile())
-			// Сформировать полный путь
+			// Сформировать полный путь.
 			.map(f => path.join(this.DATA_DIR, f.name))
-			// Прбежаться и удалить
+			// Прбежаться и удалить.
 			.forEach(f => {
 				try {
 					fs.unlinkSync(f);
@@ -1185,15 +1157,15 @@ class App extends EventDispatcher {
 					this.log(e);
 				}
 			});
-		// Очищаем список радио
+		// Очищаем список радио.
 		while (list.firstChild) {
 			list.removeChild(list.firstChild);
 		}
-		// Очищаем список станций
+		// Очищаем список станций.
 		while (genre.firstChild) {
 			genre.removeChild(genre.firstChild);
 		}
-		// Временный объект для данных data.json
+		// Временный объект для данных data.json.
 		const temp = {
 			active: 0,
 			genre: [],
@@ -1204,8 +1176,8 @@ class App extends EventDispatcher {
 			volume: player.volume,
 			custombg: 0,
 		};
-		// Чтение дефолтного файла
-		// Кастомный бакграунд
+		// Чтение дефолтного файла.
+		// Кастомный бакграунд.
 		var bg = 0;
 		if(dataStations.custombg) {
 			bg = dataStations.custombg;
@@ -1239,7 +1211,7 @@ class App extends EventDispatcher {
 			try {
 				fs.writeFileSync(path.join(this.DATA_DIR, `${id}.png`), favData, { encoding: 'base64' });
 				fs.writeFileSync(path.join(this.DATA_DIR, `${id}_big.png`), imgData, { encoding: 'base64' });
-				// Ставим станцию в лист
+				// Ставим станцию в лист.
 				const st= new StationEl({
 					genre: genre,
 					id: id,
@@ -1268,10 +1240,10 @@ class App extends EventDispatcher {
 			li.classList.add('genre_item');
 			li.dataset.filter = filter;
 		}
-		// Устанавливаем громкость из файла 
+		// Устанавливаем громкость из файла. 
 		this.volume = temp.volume * 100;
-		// Копируем дефолтную иконку и картинку
-		// Сохраняем JSON
+		// Копируем дефолтную иконку и картинку.
+		// Сохраняем JSON.
 		temp.genre = genres;
 		temp.active = dataStations.active;
 		temp.notify = dataStations.notify;
@@ -1287,17 +1259,17 @@ class App extends EventDispatcher {
 		this.scrollActive();
 		this.setStyleBackground();
 	}
-	// Чтение сохранёного листа станций
+	// Чтение сохранёного листа станций.
 	readListStations(scroll = true) {
 		const genre = this.genreList;
 		const list = this.radioList;
 		const setters = new Set();
 		this.stop();
-		// Очищаем список радио
+		// Очищаем список радио.
 		while (list.firstChild) {
 			list.removeChild(list.firstChild);
 		}
-		// Очищаем список станций
+		// Очищаем список станций.
 		while (genre.firstChild) {
 			genre.removeChild(genre.firstChild);
 		}
@@ -1317,7 +1289,7 @@ class App extends EventDispatcher {
 			const station = dataStations.stations[key];
 			const { genre, id, name, stream } = dataStations.stations[key];
 			try {
-				// Ставим станцию в лист
+				// Ставим станцию в лист.
 				var st= new StationEl({
 					genre: genre,
 					id: id,
@@ -1357,7 +1329,7 @@ class App extends EventDispatcher {
 		scroll && this.scrollActive();
 		this.setStyleBackground();
 	}
-	// Показ диалога Редактирования/Добавления this.appBlock и сохранение
+	// Показ диалога Редактирования/Добавления this.appBlock и сохранение.
 	showAppBlock(type = "insert", obj) {
 		/**
 		{
@@ -1372,7 +1344,7 @@ class App extends EventDispatcher {
 		}
 		*/
 		const data = Object.assign({type: type}, obj);
-		// И вот далее рендер и функционал зависящий от data.type
+		// И вот далее рендер и функционал зависящий от data.type.
 		const title = data.type == "insert" ? locale.get("insertTitle") : locale.get("editTitle", [data.name]);
 		this.appBlock.innerHTML = `<div class="modal clearfix">` +
 			`<div class="modal-dialog">` +
@@ -1487,7 +1459,7 @@ class App extends EventDispatcher {
 				fs.existsSync(path.normalize(path.join(this.DATA_DIR, `${data.id}.png`))) && fs.unlinkSync(path.normalize(path.join(this.DATA_DIR, `${data.id}.png`)));
 				fs.existsSync(path.normalize(path.join(this.DATA_DIR, `${data.id}_big.png`))) && fs.unlinkSync(path.normalize(path.join(this.DATA_DIR, `${data.id}_big.png`)));
 			}catch(e){}
-			// Получение новых изображений
+			// Получение новых изображений.
 			try {
 				// заменить новыми,
 				let baseFav = await favCropie.result({
@@ -1504,16 +1476,16 @@ class App extends EventDispatcher {
 					quality: 1,
 					circle: false
 				});
-				// Получаем base64 изображений для записи
+				// Получаем base64 изображений для записи.
 				baseFav = baseFav.split(';base64,').pop();
 				baseBig = baseBig.split(';base64,').pop();
-				// id изменить при сохранении
+				// id изменить при сохранении.
 				data.id = data.type == "insert" ? new Date().getTime() : data.id;
-				// Пишем в файлы
+				// Пишем в файлы.
 				fs.writeFileSync(path.normalize(path.join(this.DATA_DIR, `${data.id}.png`)), baseFav, { encoding: 'base64' });
 				fs.writeFileSync(path.normalize(path.join(this.DATA_DIR, `${data.id}_big.png`)), baseBig, { encoding: 'base64' });
-				// обновить станцию,
-				// Используем именно let. Будет переопределение
+				// обновить станцию.
+				// Используем именно let. Будет переопределение.
 				const element = data.type == "insert" ? this.document.createElement("li") : this.radioList.querySelector(`li[data-id="${data.id}"]`);
 				name.value = String(name.value).trim();
 				stream.value = String(stream.value).trim();
@@ -1522,13 +1494,13 @@ class App extends EventDispatcher {
 				element.setAttribute("data-title", name.value);
 				element.setAttribute("data-stream", stream.value);
 				element.setAttribute("data-genre", tagsEditor.getAttribute("list").trim());
-				// Вставить в лист
+				// Вставить в лист.
 				data.type == "insert" && this.radioList.append(element);
 				// сохранить список.
 				this.saveStations();
-				// перезагрузить список
+				// перезагрузить список.
 				this.readListStations(false);
-				// Прокрутить до редактируемой
+				// Прокрутить до редактируемой.
 				setTimeout(() => {
 					this.scrollToEl(this.radioList.querySelector(`li[data-id="${data.id}"]`));
 				}, 10);
@@ -1557,9 +1529,9 @@ class App extends EventDispatcher {
 		};
 		this.appBlock.showModal();
 	}
-	// Добавление станции
+	// Добавление станции.
 	addStation() {
-		// Останавливаем воспроизведение
+		// Останавливаем воспроизведение.
 		this.stop();
 		// insert
 		this.showAppBlock("insert", {
@@ -1573,29 +1545,29 @@ class App extends EventDispatcher {
 			title: ""
 		});
 	}
-	// Редактирование станции
+	// Редактирование станции.
 	editStation(obj) {
-		// Останавливаем воспроизведение
+		// Останавливаем воспроизведение.
 		this.stop();
-		// edit
+		// edit.
 		this.showAppBlock("edit", obj);
 	}
-	// Удаление станции
+	// Удаление станции.
 	removeStation(obj) {
-		// Получаем пункт станции
+		// Получаем пункт станции.
 		var li = this.radioList.querySelector(`[data-id="${obj.id}"]`);
 		if(li) {
 			var isPlay = player.isPlaying();
 			this.stop();
 			li.remove();
-			// Сохраняем станции
+			// Сохраняем станции.
 			this.saveStations();
-			// Удалить файлы
+			// Удалить файлы.
 			var icon = path.normalize(path.join(this.DATA_DIR, `${obj.id}.png`));
 			var iconBig = path.normalize(path.join(this.DATA_DIR, `${obj.id}_big.png`));
 			fs.existsSync(icon) && fs.unlinkSync(icon);
 			fs.existsSync(iconBig) && fs.unlinkSync(iconBig);
-			// Пауза и чтение
+			// Пауза и чтение.
 			setTimeout(() => {
 				this.readListStations(false);
 				isPlay && this.play();
@@ -1603,7 +1575,7 @@ class App extends EventDispatcher {
 		}
 		this.dialogBox.open && this.dialogBox.close();
 	}
-	// Экспорт станций и настроек
+	// Экспорт станций и настроек.
 	exportStations() {
 		try {
 			var saveStations = {
@@ -1616,8 +1588,8 @@ class App extends EventDispatcher {
 				stations: {},
 				volume: dataStations.volume,
 			}
-			// Собрать станции, жанры, кастомный фон
-			// заберём кастомный фон
+			// Собрать станции, жанры, кастомный фон.
+			// заберём кастомный фон.
 			if(dataStations.custombg) {
 				var cbPath = path.normalize(path.join(this.DATA_DIR, 'background', dataStations.custombg));
 				if(fs.existsSync(cbPath)) {
@@ -1635,9 +1607,9 @@ class App extends EventDispatcher {
 					}
 				}
 			}
-			// Собираем жанры
+			// Собираем жанры.
 			const setters = new Set();
-			// Пробегаем по станциям
+			// Пробегаем по станциям.
 			for(const key in dataStations.stations) {
 				const favicon = fs.readFileSync( path.normalize(path.join(this.DATA_DIR, `${key}.png`)), { encoding: 'base64' });
 				const image = fs.readFileSync( path.normalize(path.join(this.DATA_DIR, `${key}_big.png`)), { encoding: 'base64' });
@@ -1655,15 +1627,15 @@ class App extends EventDispatcher {
 			}
 			saveStations.genre = [...setters].filter(f => f !== "").sort((a, b) => a.localeCompare(b));
 			const json = JSON.stringify(saveStations);
-			// Отдать json
+			// Отдать json.
 			nwdialog.saveFileDialog('radio-export', '.json', function(sfile){
-				// loading
+				// loading.
 				fs.writeFile(sfile, json, 'utf8', (err) => {
 					//$("main").removeClass('loading');
 					if(!err){
-						// Успешно
+						// Успешно.
 					}else{
-						// Ошибка записи в файл
+						// Ошибка записи в файл.
 						throw "Error write file json";
 					}
 				});
@@ -1680,7 +1652,7 @@ class App extends EventDispatcher {
 			};
 		}
 	}
-	// Импорт станций и настроек
+	// Импорт станций и настроек.
 	importStations() {
 		try {
 			this.console.log("ИМПОРТ");
@@ -1777,7 +1749,7 @@ class App extends EventDispatcher {
 			};
 		}
 	}
-	// Сохранение станций
+	// Сохранение станций.
 	saveStations() {
 		const file = path.join(this.DATA_DIR, 'data.json');
 		const genre = this.genreList;
@@ -1795,7 +1767,7 @@ class App extends EventDispatcher {
 				name: name,
 				stream: stream,
 			}
-			// Собрать жанры
+			// Собрать жанры.
 			for(const gn in tempGenre) {
 				if(String(tempGenre[gn]).trim() !== ""){
 					setters.add(String(tempGenre[gn]).trim());
@@ -1813,7 +1785,7 @@ class App extends EventDispatcher {
 		dataStations.volume = player.volume;
 		try{
 			fs.writeFileSync(file, JSON.stringify(dataStations, null, "\t"));
-			// Проверка на существование дополнительных файлов. Если нет - копируем
+			// Проверка на существование дополнительных файлов. Если нет - копируем.
 			[
 				`image_fav.png`,
 				`image_big.png`,
@@ -1823,7 +1795,7 @@ class App extends EventDispatcher {
 					fs.copyFileSync(path.join(nw.__dirname, `${f}`), path.join(this.DATA_DIR, `${f}`));
 				}
 			});
-			// Проверка на существование background
+			// Проверка на существование background.
 			if(!fs.existsSync(path.join(this.DATA_DIR, `background`))){
 				fs.mkdirSync(path.join(this.DATA_DIR, `background`), { recursive: true, force: true });
 			}
@@ -1831,17 +1803,17 @@ class App extends EventDispatcher {
 			this.error(e);
 		}
 	}
-	// Очистка листа станций
+	// Очистка листа станций.
 	clearStattions() {
 		const genre = this.genreList;
 		const list = this.radioList;
 		const setters = new Set();
 		this.stop();
-		// Очищаем список радио
+		// Очищаем список радио.
 		while (list.firstChild) {
 			list.removeChild(list.firstChild);
 		}
-		// Очищаем список станций
+		// Очищаем список станций.
 		while (genre.firstChild) {
 			genre.removeChild(genre.firstChild);
 		}
@@ -1850,17 +1822,17 @@ class App extends EventDispatcher {
 		dataStations.presetindex = this.presetsSelectIndex;
 		dataStations.presetsRandom = dataStations.presetsRandom ? true : false;
 		dataStations.stations = {};
-		// Если каталог не существует
+		// Если каталог не существует.
 		if(!fs.existsSync(DATA_DIR)) {
 			fs.mkdirSync(DATA_DIR, { recursive: true, force: true });
 		}
-		// Очистка каталога
+		// Очистка каталога.
 		[...fs.readdirSync(this.DATA_DIR, { withFileTypes: true })]
-			// Получить только файлы
+			// Получить только файлы.
 			.filter(f => f.isFile())
-			// Сформировать полный путь
+			// Сформировать полный путь.
 			.map(f => path.join(this.DATA_DIR, f.name))
-			// Прбежаться и удалить
+			// Прбежаться и удалить.
 			.forEach(f => {
 				try {
 					fs.unlinkSync(f);
@@ -1870,7 +1842,7 @@ class App extends EventDispatcher {
 			});
 		this.saveStations();
 	}
-	// Запрос метаданных потока. Работает от id станции
+	// Запрос метаданных потока. Работает от id станции.
 	getMetaData() {
 		metainterval && clearTimeout(metainterval);
 		const el = this.radioList.querySelector(`li.active`);
@@ -1891,7 +1863,7 @@ class App extends EventDispatcher {
 					}
 					if($_title !== _title && $_title.length > 5) {
 						el.setAttribute("data-title", $_title);
-						// Отправить сообщение для отображения
+						// Отправить сообщение для отображения.
 						this.spawnNotification({icon: icon, favicon: favicon, id: id, name: name, title: $_title});
 					} else {
 						el.setAttribute("data-title", _title);
@@ -1914,7 +1886,7 @@ class App extends EventDispatcher {
 		});
 		//
 	}
-	// Отправка сообщения для отображения
+	// Отправка сообщения для отображения.
 	spawnNotification(data) {
 		const {icon, favicon, id, name, title} = data;
 		this.window.navigator.mediaSession.metadata = new this.window.MediaMetadata({
@@ -1946,37 +1918,37 @@ class App extends EventDispatcher {
 			this.console.error(e);
 		}
 	}
-	// Прокрутка к элементу
+	// Прокрутка к элементу.
 	scrollToEl(el) {
 		const wrap = this.document.querySelector('main > .container > .row');
 		if (!wrap) return;
 		const wrapRect = wrap.getBoundingClientRect();
 		const elRect = el.getBoundingClientRect();
-		// Позиция элемента относительно контейнера (в пикселях)
+		// Позиция элемента относительно контейнера (в пикселях).
 		const elTopRelative = elRect.top - wrapRect.top;
 		const elBottomRelative = elTopRelative + elRect.height;
 		const containerHeight = wrapRect.height;
-		// Элемент выше видимой области контейнера
+		// Элемент выше видимой области контейнера.
 		const isAboveTop = elTopRelative < 0;
-		// Элемент ниже видимой области контейнера
+		// Элемент ниже видимой области контейнера.
 		const isBelowBottom = elBottomRelative > containerHeight;
 		if (isAboveTop) {
-			// Сначала сбрасываем скролл контейнера в начало
+			// Сначала сбрасываем скролл контейнера в начало.
 			wrap.scrollTo({ top: 0, left: 0 });
-			// Затем плавно показываем элемент сверху
+			// Затем плавно показываем элемент сверху.
 			el.scrollIntoView({ block: 'start' });
 		} else if (isBelowBottom) {
-			// Показываем элемент снизу
+			// Показываем элемент снизу.
 			el.scrollIntoView({ block: 'end' });
 		}
 	}
-	// Прокрутка к активному элементу
+	// Прокрутка к активному элементу.
 	scrollActive() {
 		const el = this.document.querySelector('#radio-list > li.active');
 		if (!el) return;
 		this.scrollToEl(el);
 	}
-	// Тайтл
+	// Тайтл.
 	get title() {
 		try {
 			return this.document.title;
@@ -1992,7 +1964,7 @@ class App extends EventDispatcher {
 			this.document.querySelector("#TitleBar-text span").textContent = value;
 		} catch (e) {}
 	}
-	// Громкость от 0 до 100
+	// Громкость от 0 до 100.
 	get volume() {
 		return volume;
 	}
@@ -2008,7 +1980,7 @@ class App extends EventDispatcher {
 		}
 		dataStations.volume = player.volume;
 	}
-	// Воспроизведение
+	// Воспроизведение.
 	play() {
 		const list = this.radioList;
 		const el = list.querySelector("li.active");
@@ -2044,7 +2016,7 @@ class App extends EventDispatcher {
 		}
 		dataStations.notify && chrome.notifications.clear(String(nw.App.manifest.name));
 	}
-	// Остановка
+	// Остановка.
 	stop() {
 		clearTimeout(metainterval);
 		player.stop();
@@ -2056,41 +2028,41 @@ class App extends EventDispatcher {
 		dataStations.notify && chrome.notifications.clear(String(nw.App.manifest.name));
 		this.title = locale.get("appName");
 	}
-	// Предыдущий
+	// Предыдущий.
 	prev() {
 		this.stop();
 		const currentEl = this.radioList.querySelector('.active');
 		const items = Array.from(this.radioList.querySelectorAll('li:not(.hidden)'));
 		if (items.length === 0) {
-			// вообще нет видимых — тут уже точно ничего не сделать
+			// вообще нет видимых — тут уже точно ничего не сделать.
 			return;
 		}
 		const currentIndex = items.findIndex(el => el.classList.contains('active'));
 		let targetIndex;
 		if (currentIndex !== -1) {
-			// Есть активный среди видимых — идём к предыдущему с зацикливанием
+			// Есть активный среди видимых — идём к предыдущему с зацикливанием.
 			targetIndex = (currentIndex - 1 + items.length) % items.length;
 		} else {
-			// Активного среди видимых нет — для prev выбираем последний видимый
+			// Активного среди видимых нет — для prev выбираем последний видимый.
 			targetIndex = items.length - 1;
 		}
 		const prevEl = items[targetIndex];
-		// Убираем active со старого (если он был)
+		// Убираем active со старого (если он был).
 		if (currentEl) {
-			// Удаляем классы
+			// Удаляем классы.
 			currentEl.classList.remove('active');
 			currentEl.classList.remove('play');
 			currentEl.classList.remove('preload');
 			currentEl.classList.add("stop");
-			// Устанавливаем data-title
+			// Устанавливаем data-title.
 			currentEl.setAttribute("data-title", currentEl.dataset.name);
 		}
-		// Ставим на новый
+		// Ставим на новый.
 		prevEl.classList.add('active');
 		this.play();
 		this.scrollActive();
 	}
-	// следующий
+	// следующий.
 	next() {
 		this.stop();
 		const currentEl = this.radioList.querySelector('.active');
@@ -2101,20 +2073,20 @@ class App extends EventDispatcher {
 		const currentIndex = items.findIndex(el => el.classList.contains('active'));
 		let targetIndex;
 		if (currentIndex !== -1) {
-			// Есть активный среди видимых — идём к следующему с зацикливанием
+			// Есть активный среди видимых — идём к следующему с зацикливанием.
 			targetIndex = (currentIndex + 1) % items.length;
 		} else {
-			// Активного среди видимых нет — для next выбираем первый видимый
+			// Активного среди видимых нет — для next выбираем первый видимый.
 			targetIndex = 0;
 		}
 		const nextEl = items[targetIndex];
 		if (currentEl) {
-			// Удаляем классы
+			// Удаляем классы.
 			currentEl.classList.remove('active');
 			currentEl.classList.remove('play');
 			currentEl.classList.remove('preload');
 			currentEl.classList.add("stop");
-			// Устанавливаем data-title
+			// Устанавливаем data-title.
 			currentEl.setAttribute("data-title", currentEl.dataset.name);
 		}
 		nextEl.classList.add('active');
@@ -2133,14 +2105,14 @@ class App extends EventDispatcher {
 		const max = this.presetsNames.length - 1;
 		dataStations.presetindex = !Number.isFinite(num) ? -1 : Math.max(-1, Math.min(Math.floor(num), max));
 	}
-	// Сервер
+	// Сервер.
 	get server() {
 		return this.#ready;
 	}
 	set server(value) {
 		this.error("Нельзя задать значение app.server");
 	}
-	// Директория
+	// Директория.
 	get DATA_DIR() {
 		return DATA_DIR;
 	}

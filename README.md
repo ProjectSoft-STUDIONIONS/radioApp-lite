@@ -100,6 +100,7 @@
 | 🌐‍🎧 | **НАШЕ Радио «Классик Рок»** | `http://nashe1.hostingradio.ru/nasheclassic.mp3` | `RUSSIAN`, `ROCK` |
 | 🌐‍🎧 | **НАШЕ Радио «Панки хой!»** | `http://nashe1.hostingradio.ru/nashepunks.mp3` | `RUSSIAN`, `ROCK` |
 | 🌐‍🎧 | **НАШЕ Радио «Щас спою!»** | `https://nashe1.hostingradio.ru/nashesongs.mp3` | `RUSSIAN`, `ROCK` |
+| 🌐‍🎧 | **Радио Enigmatic Station 1** | `https://listen8.myradio24.com/8226` | --- |
 | 🌐‍🎧 | **Радио DFM «Дискач 90-х»** | `https://dfm-disc90.hostingradio.ru/disc9096.aacp` | `Эпохи` |
 | 🌐‍🎧 | **Радио DFM «DANCE»** | `https://dfm.hostingradio.ru/dfm96.aacp` | `DANCE` |
 | 🌐‍🎧 | **Радио DFM «POP DANCE»** | `https://dfm-popdance.hostingradio.ru/popdance96.aacp` | `POP`, `DANCE` |
@@ -138,7 +139,26 @@
 | 🌐‍🎧 | **Русское радио** | `https://rusradio.hostingradio.ru/rusradio96.aacp` | `RUSSIAN`, `POP`, `DANCE` |
 | 🌐‍🎧 | **Радио Шансон** | `https://chanson.hostingradio.ru:8041/chanson256.mp3` | `Шансон` |
 | 🌐‍🎧 | **Радио Монте-Карло** | `https://montecarlo.hostingradio.ru/montecarlo96.aacp` | `Радиошоу`, `POP` |
+| 🌐‍🎧 | **Радио SPUTNIK** | `https://icecast-rian.cdnvideo.ru/voicerus` | --- |
 | 🌐‍🎧 | **Дальнобой FM** | `https://srv02.gpmradio.ru:8443/stream/personal/aacp/64/1690790` | `Дорожное` |
+| 🌐‍🎧 | **Зайцев ФМ POP** | `https://abs.zaycev.fm/pop128k` | `POP`, `DANCE` |
+| 🌐‍🎧 | **Зайцев ФМ RUS-POP** | `https://abs.zaycev.fm/ruspop128k` | `RUSSIAN`, `POP`, `DANCE` |
+| 🌐‍🎧 | **Зайцев ФМ CLUB** | `https://abs.zaycev.fm/club128k` | `CLUB`, `DANCE` |
+| 🌐‍🎧 | **Зайцев ФМ NewRock** | `https://abs.zaycev.fm/rock128k` | `ROCK` |
+| 🌐‍🎧 | **Зайцев ФМ Disco** | `https://abs.zaycev.fm/disco128k` | `DISCO`, `DANCE` |
+| 🌐‍🎧 | **Зайцев ФМ Шансон** | `https://abs.zaycev.fm/shanson128k` | `RUSSIAN`, `Шансон` |
+| 🌐‍🎧 | **Зайцев ФМ Rus** | `https://abs.zaycev.fm/rus128k` | `RUSSIAN`, `POP`, `DANCE` |
+| 🌐‍🎧 | **Зайцев ФМ RnB** | `https://abs.zaycev.fm/rnb128k` | `RnB` |
+| 🌐‍🎧 | **Зайцев ФМ Relax** | `https://abs.zaycev.fm/relax128k` | `RELAX` |
+| 🌐‍🎧 | **Зайцев ФМ Зайчата** | `https://abs.zaycev.fm/zaychata128k` | `CHILL`, `OLDSCHOOL`, `DANCE` |
+| 🌐‍🎧 | **Зайцев ФМ K-Pop** | `https://abs.zaycev.fm/kpop128k` | `POP`, `K-POP` |
+| 🌐‍🎧 | **Зайцев ФМ Rap** | `https://abs.zaycev.fm/rap128k` | `RAP/URBAN` |
+| 🌐‍🎧 | **Зайцев ФМ Metal** | `https://abs.zaycev.fm/metal128k` | `METAL` |
+| 🌐‍🎧 | **Зайцев ФМ Bass** | `https://abs.zaycev.fm/bass128k` | `BASS` |
+| 🌐‍🎧 | **Зайцев ФМ Love** | `https://abs.zaycev.fm/love128k` | `Эпохи`, `LOVE`, `DANCE`, `Дорожное` |
+| 🌐‍🎧 | **Зайцев ФМ РуРок** | `https://abs.zaycev.fm/rurock128k` | `RUSSIAN`, `ROCK` |
+| 🌐‍🎧 | **Зайцев ФМ Folk** | `https://abs.zaycev.fm/folk128k` | `Эпохи` |
+| 🌐‍🎧 | **Зайцев ФМ Classic** | `https://abs.zaycev.fm/classic128k` | `Эпохи`, `Сон`, `RELAX`, `CLASSIC` |
 | 🌐‍🎧 | **Radio Record «Record»** | `https://radiorecord.hostingradio.ru/rr_main96.aacp` | `HOUSE`, `POP` |
 | 🌐‍🎧 | **Radio Record «Russian Mix»** | `https://radiorecord.hostingradio.ru/rus96.aacp` | `POP`, `RUSSIAN` |
 | 🌐‍🎧 | **Radio Record «Хиты всех времен»** | `https://radiorecord.hostingradio.ru/alltimers96.aacp` | `HOUSE`, `OLDSCHOOL`, `POP`, `Эпохи` |

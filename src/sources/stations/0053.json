@@ -1,0 +1,14 @@
+{
+	"1790765820241": {
+		"name": "Зайцев ФМ Rus",
+		"stream": "https://abs.zaycev.fm/rus128k",
+		"id": 1790765820241,
+		"favicon": false,
+		"image": false,
+		"genre": [
+			"RUSSIAN",
+			"POP",
+			"DANCE"
+		]
+	}
+}

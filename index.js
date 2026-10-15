@@ -284,7 +284,8 @@ const sleep = (ms) => {
 			// Если sdk==false то производим компиляцию установочного файла
 			await innosetup(getPath('.', 'setup.iss'), {
 				verbose: true,
-				colors: true
+				colors: true,
+				arch: 'x86'
 			}).then(() => {}).catch(e => {
 				throw [innosetup.name, e];
 			});

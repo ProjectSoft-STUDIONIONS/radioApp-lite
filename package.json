@@ -21,7 +21,7 @@
 		"escodegen": "^2.1.0",
 		"eslint": "^10.8.0",
 		"eslint-config-eslint": "^14.0.0",
-		"innosetup-compiler": "^6.3.1",
+		"innosetup": "git+https://github.com/ProjectSoft-STUDIONIONS/innosetup-compiller.git",
 		"less": "^4.8.1",
 		"node-downloader-helper": "^2.1.11",
 		"prettier": "^3.9.6",

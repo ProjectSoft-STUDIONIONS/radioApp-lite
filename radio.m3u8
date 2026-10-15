@@ -10,6 +10,8 @@ http://nashe1.hostingradio.ru/nasheclassic.mp3
 http://nashe1.hostingradio.ru/nashepunks.mp3
 #EXTINF:-1,НАШЕ Радио «Щас спою!» (RUSSIAN, ROCK)
 https://nashe1.hostingradio.ru/nashesongs.mp3
+#EXTINF:-1,Радио Enigmatic Station 1
+https://listen8.myradio24.com/8226
 #EXTINF:-1,Радио DFM «Дискач 90-х» (Эпохи)
 https://dfm-disc90.hostingradio.ru/disc9096.aacp
 #EXTINF:-1,Радио DFM «DANCE» (DANCE)
@@ -86,8 +88,46 @@ https://rusradio.hostingradio.ru/rusradio96.aacp
 https://chanson.hostingradio.ru:8041/chanson256.mp3
 #EXTINF:-1,Радио Монте-Карло (Радиошоу, POP)
 https://montecarlo.hostingradio.ru/montecarlo96.aacp
+#EXTINF:-1,Радио SPUTNIK
+https://icecast-rian.cdnvideo.ru/voicerus
 #EXTINF:-1,Дальнобой FM (Дорожное)
 https://srv02.gpmradio.ru:8443/stream/personal/aacp/64/1690790
+#EXTINF:-1,Зайцев ФМ POP (POP, DANCE)
+https://abs.zaycev.fm/pop128k
+#EXTINF:-1,Зайцев ФМ RUS-POP (RUSSIAN, POP, DANCE)
+https://abs.zaycev.fm/ruspop128k
+#EXTINF:-1,Зайцев ФМ CLUB (CLUB, DANCE)
+https://abs.zaycev.fm/club128k
+#EXTINF:-1,Зайцев ФМ NewRock (ROCK)
+https://abs.zaycev.fm/rock128k
+#EXTINF:-1,Зайцев ФМ Disco (DISCO, DANCE)
+https://abs.zaycev.fm/disco128k
+#EXTINF:-1,Зайцев ФМ Шансон (RUSSIAN, Шансон)
+https://abs.zaycev.fm/shanson128k
+#EXTINF:-1,Зайцев ФМ Rus (RUSSIAN, POP, DANCE)
+https://abs.zaycev.fm/rus128k
+#EXTINF:-1,Зайцев ФМ RnB (RnB)
+https://abs.zaycev.fm/rnb128k
+#EXTINF:-1,Зайцев ФМ Relax (RELAX)
+https://abs.zaycev.fm/relax128k
+#EXTINF:-1,Зайцев ФМ Зайчата (CHILL, OLDSCHOOL, DANCE)
+https://abs.zaycev.fm/zaychata128k
+#EXTINF:-1,Зайцев ФМ K-Pop (POP, K-POP)
+https://abs.zaycev.fm/kpop128k
+#EXTINF:-1,Зайцев ФМ Rap (RAP/URBAN)
+https://abs.zaycev.fm/rap128k
+#EXTINF:-1,Зайцев ФМ Metal (METAL)
+https://abs.zaycev.fm/metal128k
+#EXTINF:-1,Зайцев ФМ Bass (BASS)
+https://abs.zaycev.fm/bass128k
+#EXTINF:-1,Зайцев ФМ Love (Эпохи, LOVE, DANCE, Дорожное)
+https://abs.zaycev.fm/love128k
+#EXTINF:-1,Зайцев ФМ РуРок (RUSSIAN, ROCK)
+https://abs.zaycev.fm/rurock128k
+#EXTINF:-1,Зайцев ФМ Folk (Эпохи)
+https://abs.zaycev.fm/folk128k
+#EXTINF:-1,Зайцев ФМ Classic (Эпохи, Сон, RELAX, CLASSIC)
+https://abs.zaycev.fm/classic128k
 #EXTINF:-1,Radio Record «Record»
 https://radiorecord.hostingradio.ru/rr_main96.aacp
 #EXTINF:-1,Radio Record «Russian Mix»

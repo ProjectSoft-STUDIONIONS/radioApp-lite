@@ -39,6 +39,8 @@ record.json
 /application/LICENSE
 /application/*.html
 !/application/*.png
+/src/sources/*
+!/src/sources/stations
 /src/sources/stations/*
 !/src/sources/stations/*.png
 !/src/sources/stations/*.json

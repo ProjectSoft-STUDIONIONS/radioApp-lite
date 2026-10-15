@@ -1,6 +1,6 @@
 const fs = require('fs'),
 	path = require('path'),
-	innosetup = require('innosetup-compiler/lib/iscc.js'),
+	innosetup = require('innosetup'),
 	{ log, logTable, logStation, logError, breakLn } = require('./log.js'),
 	colors = require('ansi-colors');
 

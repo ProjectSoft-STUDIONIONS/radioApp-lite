@@ -51,7 +51,6 @@ jobs:
             Write-Host "::set-output name=BUILD_REQUIRED::false"
           }
         shell: pwsh
-        id: check-nw-version
 
       # - name: Skip build if no new version
       #   if: steps.check-nw-version.outputs.BUILD_REQUIRED == 'false'

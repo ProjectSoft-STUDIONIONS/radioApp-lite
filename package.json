@@ -8,6 +8,7 @@
 	"main": "index.js",
 	"exeName": "YourRadio",
 	"scripts": {
+		"preinstall": "npm i -g less pug-cli bower",
 		"inst": "npm install && bower install",
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"build": "node index.js"

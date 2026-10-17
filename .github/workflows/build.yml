@@ -53,10 +53,10 @@ jobs:
         shell: pwsh
         id: check-nw-version
 
-      - name: Skip build if no new version
-        if: steps.check-nw-version.outputs.BUILD_REQUIRED == 'false'
-        run: Write-Host "Build skipped: NW.js version unchanged."
-        shell: pwsh
+      # - name: Skip build if no new version
+      #   if: steps.check-nw-version.outputs.BUILD_REQUIRED == 'false'
+      #   run: Write-Host "Build skipped: NW.js version unchanged."
+      #   shell: pwsh
 
       # Дальше — только если BUILD_REQUIRED=true
       - name: Setup Node.js

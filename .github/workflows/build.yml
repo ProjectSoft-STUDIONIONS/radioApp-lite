@@ -1,19 +1,151 @@
-name: Build and publish
+name: Checking it out NW.js & build "YourRadio" (Light version) + Release
+
 on:
-  push:
-    tags:
-      - "*"
+  schedule:
+    - cron: "0 3 1 * *"   # 03:00 UTC первого числа каждого месяца
+  workflow_dispatch:
+
 jobs:
-  build:
-    name: Build
+  check-and-build:
     runs-on: windows-latest
-    strategy:
-      matrix:
-        node-version: [20.x]
+
     steps:
-      - name: Get NWJS version
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # нужен полный граф для корректного git status и push
+
+      # --- Проверка версии NW.js (по твоему JSON-формату) ---
+      - name: Compare NW.js versions (cache vs remote)
+        id: check-nw-version
         run: |
-          echo "NW=${{ github.event.inputs.version }}" >> $GITHUB_ENV
-          echo "repository variable : ${{ env.NW }}"
-      - uses: actions/checkout@v4
-      
+          $remoteUrl = "https://nwjs.io/versions.json"
+          $remote = (Invoke-WebRequest -Uri $remoteUrl -UseBasicParsing).Content | ConvertFrom-Json
+
+          $cachedPath = ".\.cache\manifest.json"
+
+          if (-not (Test-Path $cachedPath)) {
+            Write-Host "No cached manifest found. Will build."
+            Write-Host "::set-output name=BUILD_REQUIRED::true"
+            Write-Host "::set-output name=NEW_NW_VERSION::$($remote.stable)"
+            exit 0
+          }
+
+          $cached = Get-Content $cachedPath | ConvertFrom-Json
+          $latestStableWithV = $remote.stable
+          $currentCachedWithV = $cached.nwVersion
+
+          Write-Host "Remote stable: $latestStableWithV"
+          Write-Host "Cached version: $currentCachedWithV"
+
+          # Убираем префикс "v" для сравнения
+          $latest = $latestStableWithV -replace '^v', ''
+          $current = $currentCachedWithV -replace '^v', ''
+
+          if ($latest -gt $current) {
+            Write-Host "New version detected. Build required."
+            Write-Host "::set-output name=BUILD_REQUIRED::true"
+            Write-Host "::set-output name=NEW_NW_VERSION::$latestStableWithV"
+          } else {
+            Write-Host "No new stable version. Skip build."
+            Write-Host "::set-output name=BUILD_REQUIRED::false"
+          }
+        shell: pwsh
+        id: check-nw-version
+
+      - name: Skip build if no new version
+        if: steps.check-nw-version.outputs.BUILD_REQUIRED == 'false'
+        run: Write-Host "Build skipped: NW.js version unchanged."
+        shell: pwsh
+
+      # Дальше — только если BUILD_REQUIRED=true
+      - name: Setup Node.js
+        if: steps.check-nw-version.outputs.BUILD_REQUIRED == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        if: steps.check-nw-version.outputs.BUILD_REQUIRED == 'true'
+        run: npm run inst
+        shell: pwsh
+
+      # --- Обязательно: ImageMagick ---
+      - name: Install ImageMagick (Chocolatey)
+        if: steps.check-nw-version.outputs.BUILD_REQUIRED == 'true'
+        run: choco install imagemagick --no-progress --yes
+        shell: pwsh
+
+      - name: Verify ImageMagick
+        if: steps.check-nw-version.outputs.BUILD_REQUIRED == 'true'
+        run: magick --version
+        shell: pwsh
+
+      # Читаем версию проекта из package.json
+      - name: Read app version
+        if: steps.check-nw-version.outputs.BUILD_REQUIRED == 'true'
+        id: read-version
+        run: |
+          $pkg = Get-Content package.json | ConvertFrom-Json
+          echo "APP_VERSION=$($pkg.version)" >> $env:GITHUB_OUTPUT
+        shell: pwsh
+
+      # Формируем итоговую версию: v<app>.<nw>
+      - name: Compute final version
+        if: steps.check-nw-version.outputs.BUILD_REQUIRED == 'true'
+        id: compute-version
+        run: |
+          $app = $env:APP_VERSION
+          $nw = $env:NEW_NW_VERSION -replace '^v', ''
+          $final = "v${app}.${nw}"
+          echo "FINAL_VERSION=$final" >> $env:GITHUB_OUTPUT
+          Write-Host "Final version: $final"
+        shell: pwsh
+
+      # Запускаем сборку (обновляет manifest.json, version.iss, data.json, делает exe)
+      - name: Run build script
+        if: steps.check-nw-version.outputs.BUILD_REQUIRED == 'true'
+        run: node index.js --version "${{ steps.compute-version.outputs.FINAL_VERSION }}"
+        shell: pwsh
+
+      # --- Коммит ВСЕХ изменившихся файлов (кроме exe) ---
+      - name: Commit all changed files (except exe)
+        if: steps.check-nw-version.outputs.BUILD_REQUIRED == 'true'
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+
+          # Добавляем все изменённые файлы, КРОМЕ exe в папке setup
+          # Это гарантирует: всё, что могло измениться — в git, exe — нет
+          git add -u
+          git reset -- "setup/*.exe"
+
+          # Проверяем, есть ли что коммитить
+          $status = git status --porcelain
+          if ($status) {
+            git commit -m "build: radioApp-lite ${{ steps.compute-version.outputs.FINAL_VERSION }} (NW.js ${{ steps.check-nw-version.outputs.NEW_NW_VERSION }})"
+            git push origin main
+          } else {
+            Write-Host "No changes to commit after build."
+          }
+        shell: pwsh
+
+      # --- Создание релиза и загрузка exe ---
+      - name: Create GitHub Release and upload exe
+        if: steps.check-nw-version.outputs.BUILD_REQUIRED == 'true'
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.compute-version.outputs.FINAL_VERSION }}
+          name: "radioApp-lite ${{ steps.compute-version.outputs.FINAL_VERSION }}"
+          body: |
+            Сборка radioApp-lite.
+            Версия проекта + NW.js: ${{ steps.compute-version.outputs.FINAL_VERSION }}
+            Версия NW.js: ${{ steps.check-nw-version.outputs.NEW_NW_VERSION }}
+
+            Изменения:
+            - Обновлён .cache/manifest.json (версия NW.js)
+            - Обновлены файлы конфигурации и данных (version.iss, data.json и др.)
+            - Собран новый exe: YourRadioLightSetup.exe
+          files: setup/YourRadioLightSetup.exe
+          draft: false
+          prerelease: false

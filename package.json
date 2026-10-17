@@ -10,7 +10,7 @@
 	"scripts": {
 		"inst": "npm install && bower install",
 		"test": "echo \"Error: no test specified\" && exit 1",
-		"build": "@echo off && title Ваше Радио. Облегчённая версия. && cls && node index"
+		"build": "node index.js"
 	},
 	"devDependencies": {
 		"acorn": "^8.18.0",

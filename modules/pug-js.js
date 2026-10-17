@@ -31,7 +31,6 @@ const start = (options) => {
 				};
 			});
 		// Создаём директорию application
-		//"innosetup-compiler": "git+https://github.com/ProjectSoft-STUDIONIONS/node-innosetup-compiler.git",
 		try {
 			fs.mkdirSync(outputPath, {recursive: true});
 		} catch(e) {
@@ -61,36 +60,6 @@ const start = (options) => {
 		log(colors.yellowBright(`Компиляция PUG завершена`), true);
 		breakLn();
 		resolve();
-		/*
-		try {
-			log(colors.yellowBright(`Компиляция PUG`), true);
-			var fn = pug.compileFile(input, {
-				debug: false,                // включать отладочную информацию в вывод
-				globals: [],                 // глобальные переменные, доступные в шаблоне
-				locals: {},                  // переменные по умолчанию для всех рендеров через эту функцию
-				self: false,                 // генерировать код с `this` вместо локальных переменных
-				doctype: 'html',             // тип документа
-				compileDebug: true           // включать отладочные данные в скомпилированную функцию
-			});
-			var html = fn({
-				// Переменные для шаблона
-				hash: uniqid(),
-				target: target
-			});
-			// Создаём директорию application
-			try {
-				fs.mkdirSync(outputPath, {recursive: true});
-			} catch(e) {
-				reject(e);
-			}
-			fs.writeFileSync(output, html + "\n");
-			log(colors.yellowBright(`Компиляция PUG завершена`), true);
-			breakLn();
-			resolve();
-		} catch(e) {
-			reject(e);
-		}
-		*/
 	});
 };
 

@@ -53,8 +53,8 @@ jobs:
             $content = Get-Content $path -Raw
             Write-Host "Manifest content (first 200 chars): $($content.Substring(0, [Math]::Min(200, $content.Length)))"
             $m = $content | ConvertFrom-Json
-            Write-Host "Parsed manifest.nwVersion raw: '$($m.nwVersion)'"
-            $local = $m.nwVersion -replace '^v', ''
+            Write-Host "Parsed manifest.stable raw: '$($m.stable)'"
+            $local = $m.stable -replace '^v', ''
             Write-Host "Normalized local NW version (no 'v'): '$local'"
             if ([string]::IsNullOrWhiteSpace($local)) {
               Write-Host "ERROR: Local NW version is empty after normalization!"

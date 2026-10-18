@@ -144,6 +144,8 @@ jobs:
       - name: [DEBUG] Compute final version & check tag existence
         if: steps.compare-versions.outputs.BUILD_REQUIRED == 'true'
         id: compute-and-check-tag
+        env:                                # ✅ Сначала env
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           Write-Host "--- STEP: Compute tag and check existence ---"
           $app = $env:APP_VERSION
@@ -187,8 +189,6 @@ jobs:
           echo "FULL_VERSION=$full" >> $env:GITHUB_OUTPUT
           Write-Host "OUTPUT: TAG_NAME=$tag, FULL_VERSION=$full"
         shell: pwsh
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       # Установка зависимостей
       - name: Install dependencies

@@ -1,8 +1,10 @@
-name: Monthly NW.js check & build radioApp-lite + Release (DEBUG mode)
+name: Monthly NW.js check & Build + Release
 
 on:
   schedule:
-    - cron: "0 3 1 * *"
+    # Крон на каждую неделю. По Самаре сработает в Понедельник 00:00
+    - cron: "0 20 * * MON"
+  # Оставляем ручной запуск
   workflow_dispatch:
 
 jobs:
@@ -51,7 +53,6 @@ jobs:
           } else {
             Write-Host "Found manifest at: $(Resolve-Path $path)"
             $content = Get-Content $path -Raw
-            Write-Host "Manifest content (first 200 chars): $($content.Substring(0, [Math]::Min(200, $content.Length)))"
             $m = $content | ConvertFrom-Json
             Write-Host "Parsed manifest.stable raw: '$($m.stable)'"
             $local = $m.stable -replace '^v', ''
@@ -89,7 +90,7 @@ jobs:
         if: steps.compare-versions.outputs.BUILD_REQUIRED == 'true'
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: 'latest'
 
       - name: "DEBUG Read app version from package.json"
         if: steps.compare-versions.outputs.BUILD_REQUIRED == 'true'

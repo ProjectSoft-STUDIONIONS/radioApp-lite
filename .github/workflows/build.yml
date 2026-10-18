@@ -69,8 +69,8 @@ jobs:
         id: compare-versions
         run: |
           Write-Host "--- STEP: Compare versions ---"
-          $remote = $env:NW_STABLE
-          $local = $env:LOCAL_NW
+          $remote = "${{ steps.fetch-nw-remote.outputs.NW_STABLE }}"
+          $local = "${{ steps.read-local-manifest.outputs.LOCAL_NW }}"
           Write-Host "Comparing: remote='$remote' vs local='$local'"
           if ($remote -eq $local) {
             Write-Host "RESULT: Versions are EQUAL. Stopping workflow."
@@ -123,31 +123,22 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           Write-Host "--- STEP: Compute tag and check existence ---"
-          $app = $env:APP_VERSION
-          $nw = $env:NEW_NW_VERSION
+          $app = "${{ steps.read-app-version.outputs.APP_VERSION }}"
+          $nw = "${{ steps.fetch-nw-remote.outputs.NW_STABLE }}"
           Write-Host "Input: app='$app', nw='$nw'"
           $tag = "${app}.${nw}"
           $full = "v${app}.${nw}"
           Write-Host "Computed tag (for Git): '$tag'"
           Write-Host "Full label (for Release name): '$full'"
           Write-Host "Checking if tag '$tag' exists in repo '${{ github.repository }}'..."
-          try {
-            $exists = (gh api repos/${{ github.repository }}/git/ref/tags/$tag -s 2>$null)
-            if ($exists) {
-              Write-Host "RESULT: Tag '$tag' ALREADY EXISTS. Stopping to avoid duplicate release."
-              echo "BUILD_REQUIRED=false" >> $env:GITHUB_OUTPUT
-              echo "STOP_REASON=tag_exists" >> $env:GITHUB_OUTPUT
-              exit 0
-            } else {
-              Write-Host "RESULT: Tag '$tag' does NOT exist yet. Proceeding."
-            }
-          } catch {
-            if ($_.Exception.Response.StatusCode -eq 404) {
-              Write-Host "RESULT (via 404): Tag '$tag' not found. Proceeding."
-            } else {
-              Write-Host "ERROR: Unexpected error while checking tag existence: $_"
-              exit 1
-            }
+          gh api "repos/${{ github.repository }}/git/ref/tags/$tag" --silent 2>$null
+          if ($LASTEXITCODE -eq 0) {
+            Write-Host "RESULT: Tag '$tag' ALREADY EXISTS. Stopping to avoid duplicate release."
+            echo "BUILD_REQUIRED=false" >> $env:GITHUB_OUTPUT
+            echo "STOP_REASON=tag_exists" >> $env:GITHUB_OUTPUT
+            exit 0
+          } else {
+            Write-Host "RESULT: Tag '$tag' not found (exit code $LASTEXITCODE). Proceeding."
           }
           echo "TAG_NAME=$tag" >> $env:GITHUB_OUTPUT
           echo "FULL_VERSION=$full" >> $env:GITHUB_OUTPUT

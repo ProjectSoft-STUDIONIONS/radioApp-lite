@@ -20,23 +20,23 @@ jobs:
       - name: "DEBUG Fetch remote NW.js stable version"
         id: fetch-nw-remote
         run: |
-          Write-Host "--- STEP: Fetch remote NW.js version ---"
+          # Write-Host "--- STEP: Fetch remote NW.js version ---"
           try {
             $respRaw = (Invoke-WebRequest -Uri "https://nwjs.io/versions.json" -UseBasicParsing).Content
-            Write-Host "Raw response length: $($respRaw.Length) chars"
+            # Write-Host "Raw response length: $($respRaw.Length) chars"
             $resp = $respRaw | ConvertFrom-Json
-            Write-Host "Remote JSON parsed successfully."
-            Write-Host "Remote stable raw: '$($resp.stable)'"
+            # Write-Host "Remote JSON parsed successfully."
+            # Write-Host "Remote stable raw: '$($resp.stable)'"
             $stable = $resp.stable -replace '^v', ''
-            Write-Host "Normalized remote stable (no 'v'): '$stable'"
+            # Write-Host "Normalized remote stable (no 'v'): '$stable'"
             if ([string]::IsNullOrWhiteSpace($stable)) {
-              Write-Host "ERROR: Normalized stable version is empty!"
+              # Write-Host "ERROR: Normalized stable version is empty!"
               exit 1
             }
             echo "NW_STABLE=$stable" >> $env:GITHUB_OUTPUT
-            Write-Host "OUTPUT: NW_STABLE=$stable"
+            # Write-Host "OUTPUT: NW_STABLE=$stable"
           } catch {
-            Write-Host "ERROR: Failed to fetch or parse remote versions: $_"
+            # Write-Host "ERROR: Failed to fetch or parse remote versions: $_"
             exit 1
           }
         shell: pwsh
@@ -44,45 +44,45 @@ jobs:
       - name: "DEBUG Read local manifest.json"
         id: read-local-manifest
         run: |
-          Write-Host "--- STEP: Read local manifest ---"
+          # Write-Host "--- STEP: Read local manifest ---"
           $path = ".\.cache\manifest.json"
           if (-not (Test-Path $path)) {
-            Write-Host "WARNING: .cache\manifest.json not found. Treating as new version."
+            # Write-Host "WARNING: .cache\manifest.json not found. Treating as new version."
             echo "LOCAL_NW=0.0.0" >> $env:GITHUB_OUTPUT
-            Write-Host "OUTPUT: LOCAL_NW=0.0.0"
+            # Write-Host "OUTPUT: LOCAL_NW=0.0.0"
           } else {
-            Write-Host "Found manifest at: $(Resolve-Path $path)"
+            # Write-Host "Found manifest at: $(Resolve-Path $path)"
             $content = Get-Content $path -Raw
             $m = $content | ConvertFrom-Json
-            Write-Host "Parsed manifest.stable raw: '$($m.stable)'"
+            # Write-Host "Parsed manifest.stable raw: '$($m.stable)'"
             $local = $m.stable -replace '^v', ''
-            Write-Host "Normalized local NW version (no 'v'): '$local'"
+            # Write-Host "Normalized local NW version (no 'v'): '$local'"
             if ([string]::IsNullOrWhiteSpace($local)) {
-              Write-Host "ERROR: Local NW version is empty after normalization!"
+              # Write-Host "ERROR: Local NW version is empty after normalization!"
               exit 1
             }
             echo "LOCAL_NW=$local" >> $env:GITHUB_OUTPUT
-            Write-Host "OUTPUT: LOCAL_NW=$local"
+            # Write-Host "OUTPUT: LOCAL_NW=$local"
           }
         shell: pwsh
 
       - name: "DEBUG Compare NW.js versions"
         id: compare-versions
         run: |
-          Write-Host "--- STEP: Compare versions ---"
+          # Write-Host "--- STEP: Compare versions ---"
           $remote = "${{ steps.fetch-nw-remote.outputs.NW_STABLE }}"
           $local = "${{ steps.read-local-manifest.outputs.LOCAL_NW }}"
-          Write-Host "Comparing: remote='$remote' vs local='$local'"
+          # Write-Host "Comparing: remote='$remote' vs local='$local'"
           if ($remote -eq $local) {
-            Write-Host "RESULT: Versions are EQUAL. Stopping workflow."
+            # Write-Host "RESULT: Versions are EQUAL. Stopping workflow."
             echo "BUILD_REQUIRED=false" >> $env:GITHUB_OUTPUT
             echo "STOP_REASON=versions_unchanged" >> $env:GITHUB_OUTPUT
             exit 0
           } else {
-            Write-Host "RESULT: Versions are DIFFERENT. Continuing build."
+            # Write-Host "RESULT: Versions are DIFFERENT. Continuing build."
             echo "BUILD_REQUIRED=true" >> $env:GITHUB_OUTPUT
             echo "NEW_NW_VERSION=$remote" >> $env:GITHUB_OUTPUT
-            Write-Host "OUTPUT: BUILD_REQUIRED=true, NEW_NW_VERSION=$remote"
+            # Write-Host "OUTPUT: BUILD_REQUIRED=true, NEW_NW_VERSION=$remote"
           }
         shell: pwsh
 
@@ -96,25 +96,25 @@ jobs:
         if: steps.compare-versions.outputs.BUILD_REQUIRED == 'true'
         id: read-app-version
         run: |
-          Write-Host "--- STEP: Read package.json ---"
+          # Write-Host "--- STEP: Read package.json ---"
           $path = ".\package.json"
           if (-not (Test-Path $path)) {
-            Write-Host "ERROR: package.json not found at path: $(Resolve-Path .)"
+            # Write-Host "ERROR: package.json not found at path: $(Resolve-Path .)"
             exit 1
           }
-          Write-Host "Found package.json at: $(Resolve-Path $path)"
+          # Write-Host "Found package.json at: $(Resolve-Path $path)"
           $content = Get-Content $path -Raw
-          Write-Host "package.json content (first 300 chars): $($content.Substring(0, [Math]::Min(300, $content.Length)))"
+          # Write-Host "package.json content (first 300 chars): $($content.Substring(0, [Math]::Min(300, $content.Length)))"
           $pkg = $content | ConvertFrom-Json
-          Write-Host "Parsed package.version raw: '$($pkg.version)'"
+          # Write-Host "Parsed package.version raw: '$($pkg.version)'"
           $app = $pkg.version.Trim()
           if ([string]::IsNullOrWhiteSpace($app)) {
-            Write-Host "ERROR: package.json 'version' field is missing or empty!"
+            # Write-Host "ERROR: package.json 'version' field is missing or empty!"
             exit 1
           }
-          Write-Host "App version normalized: '$app'"
+          # Write-Host "App version normalized: '$app'"
           echo "APP_VERSION=$app" >> $env:GITHUB_OUTPUT
-          Write-Host "OUTPUT: APP_VERSION=$app"
+          # Write-Host "OUTPUT: APP_VERSION=$app"
         shell: pwsh
 
       - name: "DEBUG Compute final version & check tag existence"
@@ -123,29 +123,29 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          Write-Host "--- STEP: Compute tag and check existence ---"
+          # Write-Host "--- STEP: Compute tag and check existence ---"
           $app = "${{ steps.read-app-version.outputs.APP_VERSION }}"
           $nw = "${{ steps.fetch-nw-remote.outputs.NW_STABLE }}"
-          Write-Host "Input: app='$app', nw='$nw'"
+          # Write-Host "Input: app='$app', nw='$nw'"
           $tag = "${app}.${nw}"
           $full = "v${app}.${nw}"
-          Write-Host "Computed tag (for Git): '$tag'"
-          Write-Host "Full label (for Release name): '$full'"
-          Write-Host "Checking if tag '$tag' exists in repo '${{ github.repository }}'..."
+          # Write-Host "Computed tag (for Git): '$tag'"
+          # Write-Host "Full label (for Release name): '$full'"
+          # Write-Host "Checking if tag '$tag' exists in repo '${{ github.repository }}'..."
           gh api "repos/${{ github.repository }}/git/ref/tags/$tag" --silent 2>$null
           $tagCheck = $LASTEXITCODE
           if ($tagCheck -eq 0) {
-            Write-Host "RESULT: Tag '$tag' ALREADY EXISTS. Stopping to avoid duplicate release."
+            # Write-Host "RESULT: Tag '$tag' ALREADY EXISTS. Stopping to avoid duplicate release."
             echo "BUILD_REQUIRED=false" >> $env:GITHUB_OUTPUT
             echo "STOP_REASON=tag_exists" >> $env:GITHUB_OUTPUT
             exit 0
           } else {
-            Write-Host "RESULT: Tag '$tag' not found (exit code $tagCheck). Proceeding."
+            # Write-Host "RESULT: Tag '$tag' not found (exit code $tagCheck). Proceeding."
           }
           echo "TAG_NAME=$tag" >> $env:GITHUB_OUTPUT
           echo "FULL_VERSION=$full" >> $env:GITHUB_OUTPUT
           echo "BUILD_REQUIRED=true" >> $env:GITHUB_OUTPUT
-          Write-Host "OUTPUT: TAG_NAME=$tag, FULL_VERSION=$full, BUILD_REQUIRED=true"
+          # Write-Host "OUTPUT: TAG_NAME=$tag, FULL_VERSION=$full, BUILD_REQUIRED=true"
           exit 0
         shell: pwsh
 
@@ -180,7 +180,7 @@ jobs:
             git commit -m "build: radioApp-lite ${{ steps.compute-and-check-tag.outputs.FULL_VERSION }} (NW.js ${{ steps.fetch-nw-remote.outputs.NW_STABLE }})"
             git push origin main
           } else {
-            Write-Host "No changes to commit."
+            # Write-Host "No changes to commit."
           }
         shell: pwsh
 

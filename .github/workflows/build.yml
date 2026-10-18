@@ -1,158 +1,246 @@
-name: Monthly NW.js check & build radioApp-lite + Release
+name: Monthly NW.js check & build radioApp-lite + Release (DEBUG mode)
 
 on:
   schedule:
-    - cron: "0 3 1 * *"   # Запуск 1-го числа каждого месяца в 03:00 UTC
-  workflow_dispatch:     # Ручной запуск для тестов
+    - cron: "0 3 1 * *"
+  workflow_dispatch:
 
 jobs:
   check-and-build:
     runs-on: windows-latest
 
     steps:
-      # Забираем репозиторий целиком (нужен полный граф для git push)
       - name: Checkout repo
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      # Сравниваем версию NW.js из кэша (.cache/manifest.json) с актуальной на nwjs.io
-      # Если новой нет — ставим BUILD_REQUIRED=false, дальше шаги не пойдут
-      - name: Compare NW.js versions (cache vs remote)
-        id: check-nw-version
+      # 1. Запрос version.json (nwjs.io) и получение stable
+      - name: [DEBUG] Fetch remote NW.js stable version
+        id: fetch-nw-remote
         run: |
-          $remote = (Invoke-WebRequest -Uri "https://nwjs.io/versions.json" -UseBasicParsing).Content | ConvertFrom-Json
-          $cachedPath = ".\.cache\manifest.json"
-
-          if (-not (Test-Path $cachedPath)) {
-            echo "BUILD_REQUIRED=true" >> $env:GITHUB_OUTPUT
-            echo "NEW_NW_VERSION=$($remote.stable)" >> $env:GITHUB_OUTPUT
-            exit 0
+          Write-Host "--- STEP: Fetch remote NW.js version ---"
+          try {
+            $respRaw = (Invoke-WebRequest -Uri "https://nwjs.io/versions.json" -UseBasicParsing).Content
+            Write-Host "Raw response length: $($respRaw.Length) chars"
+            $resp = $respRaw | ConvertFrom-Json
+            Write-Host "Remote JSON parsed successfully."
+            Write-Host "Remote stable raw: '$($resp.stable)'"
+            
+            $stable = $resp.stable -replace '^v', ''
+            Write-Host "Normalized remote stable (no 'v'): '$stable'"
+            
+            if ([string]::IsNullOrWhiteSpace($stable)) {
+              Write-Host "ERROR: Normalized stable version is empty!"
+              exit 1
+            }
+            
+            echo "NW_STABLE=$stable" >> $env:GITHUB_OUTPUT
+            Write-Host "OUTPUT: NW_STABLE=$stable"
+          } catch {
+            Write-Host "ERROR: Failed to fetch or parse remote versions: $_"
+            exit 1
           }
+        shell: pwsh
 
-          $cached = Get-Content $cachedPath | ConvertFrom-Json
-          # Убираем префикс "v" для корректного сравнения (0.118.0 vs 0.117.0)
-          $latest = ($remote.stable -replace '^v', '')
-          $current = ($cached.nwVersion -replace '^v', '')
-
-          if ($latest -gt $current) {
-            Write-Host "New version detected."
-            echo "BUILD_REQUIRED=true" >> $env:GITHUB_OUTPUT
-            echo "NEW_NW_VERSION=$($remote.stable)" >> $env:GITHUB_OUTPUT
+      # 2. Чтение нашего manifest.json
+      - name: [DEBUG] Read local manifest.json
+        id: read-local-manifest
+        run: |
+          Write-Host "--- STEP: Read local manifest ---"
+          $path = ".\.cache\manifest.json"
+          
+          if (-not (Test-Path $path)) {
+            Write-Host "WARNING: .cache\manifest.json not found. Treating as new version."
+            echo "LOCAL_NW=0.0.0" >> $env:GITHUB_OUTPUT
+            Write-Host "OUTPUT: LOCAL_NW=0.0.0"
           } else {
-            Write-Host "No new stable version. Skip build."
-            echo "BUILD_REQUIRED=false" >> $env:GITHUB_OUTPUT
+            Write-Host "Found manifest at: $(Resolve-Path $path)"
+            $content = Get-Content $path -Raw
+            Write-Host "Manifest content (first 200 chars): $($content.Substring(0, [Math]::Min(200, $content.Length)))"
+            
+            $m = $content | ConvertFrom-Json
+            Write-Host "Parsed manifest.nwVersion raw: '$($m.nwVersion)'"
+            
+            $local = $m.nwVersion -replace '^v', ''
+            Write-Host "Normalized local NW version (no 'v'): '$local'"
+            
+            if ([string]::IsNullOrWhiteSpace($local)) {
+              Write-Host "ERROR: Local NW version is empty after normalization!"
+              exit 1
+            }
+            
+            echo "LOCAL_NW=$local" >> $env:GITHUB_OUTPUT
+            Write-Host "OUTPUT: LOCAL_NW=$local"
           }
         shell: pwsh
 
-      # Чисто лог: если сборка не нужна — пишем, что пропускаем
-      - name: Skip if no new version
-        if: steps.check-nw-version.outputs.BUILD_REQUIRED == 'false'
+      # 3. Сравнение: если одинаковые — выходим
+      - name: [DEBUG] Compare NW.js versions
+        id: compare-versions
         run: |
-          Write-Host "Build skipped: NW.js version unchanged."
+          Write-Host "--- STEP: Compare versions ---"
+          $remote = $env:NW_STABLE
+          $local = $env:LOCAL_NW
+          
+          Write-Host "Comparing: remote='$remote' vs local='$local'"
+          
+          if ($remote -eq $local) {
+            Write-Host "RESULT: Versions are EQUAL. Stopping workflow."
+            echo "BUILD_REQUIRED=false" >> $env:GITHUB_OUTPUT
+            echo "STOP_REASON=versions_unchanged" >> $env:GITHUB_OUTPUT
+            exit 0
+          } else {
+            Write-Host "RESULT: Versions are DIFFERENT. Continuing build."
+            echo "BUILD_REQUIRED=true" >> $env:GITHUB_OUTPUT
+            echo "NEW_NW_VERSION=$remote" >> $env:GITHUB_OUTPUT
+            Write-Host "OUTPUT: BUILD_REQUIRED=true, NEW_NW_VERSION=$remote"
+          }
         shell: pwsh
 
-      # Ставим Node.js 20 — только если нужна сборка
+      - name: Skip if no new version
+        if: steps.compare-versions.outputs.BUILD_REQUIRED == 'false'
+        run: Write-Host "Build skipped: NW.js version unchanged."
+        shell: pwsh
+
       - name: Setup Node.js
-        if: steps.check-nw-version.outputs.BUILD_REQUIRED == 'true'
+        if: steps.compare-versions.outputs.BUILD_REQUIRED == 'true'
         uses: actions/setup-node@v4
         with:
           node-version: '20'
 
-      # Используем твой скрипт установки зависимостей
+      # 4. Читаем package.json — забираем версию приложения
+      - name: [DEBUG] Read app version from package.json
+        if: steps.compare-versions.outputs.BUILD_REQUIRED == 'true'
+        id: read-app-version
+        run: |
+          Write-Host "--- STEP: Read package.json ---"
+          $path = ".\package.json"
+          
+          if (-not (Test-Path $path)) {
+            Write-Host "ERROR: package.json not found at path: $(Resolve-Path .)"
+            exit 1
+          }
+          
+          Write-Host "Found package.json at: $(Resolve-Path $path)"
+          $content = Get-Content $path -Raw
+          Write-Host "package.json content (first 300 chars): $($content.Substring(0, [Math]::Min(300, $content.Length)))"
+          
+          $pkg = $content | ConvertFrom-Json
+          Write-Host "Parsed package.version raw: '$($pkg.version)'"
+          
+          $app = $pkg.version.Trim()
+          if ([string]::IsNullOrWhiteSpace($app)) {
+            Write-Host "ERROR: package.json 'version' field is missing or empty!"
+            exit 1
+          }
+          
+          Write-Host "App version normalized: '$app'"
+          echo "APP_VERSION=$app" >> $env:GITHUB_OUTPUT
+          Write-Host "OUTPUT: APP_VERSION=$app"
+        shell: pwsh
+
+      # 5. Складываем версии и 6. Проверяем существование тега
+      - name: [DEBUG] Compute final version & check tag existence
+        if: steps.compare-versions.outputs.BUILD_REQUIRED == 'true'
+        id: compute-and-check-tag
+        run: |
+          Write-Host "--- STEP: Compute tag and check existence ---"
+          $app = $env:APP_VERSION
+          $nw = $env:NEW_NW_VERSION
+          
+          Write-Host "Input: app='$app', nw='$nw'"
+          
+          # Тег: только цифры и точки, без v
+          $tag = "${app}.${nw}"
+          # Красивая метка с v для релиза
+          $full = "v${app}.${nw}"
+          
+          Write-Host "Computed tag (for Git): '$tag'"
+          Write-Host "Full label (for Release name): '$full'"
+          
+          # Проверка: есть ли уже такой тег в репозитории
+          Write-Host "Checking if tag '$tag' exists in repo '${{ github.repository }}'..."
+          try {
+            # -s скрывает вывод JSON, нам важно только наличие ответа
+            $exists = (gh api repos/${{ github.repository }}/git/ref/tags/$tag -s 2>$null)
+            if ($exists) {
+              Write-Host "RESULT: Tag '$tag' ALREADY EXISTS. Stopping to avoid duplicate release."
+              echo "BUILD_REQUIRED=false" >> $env:GITHUB_OUTPUT
+              echo "STOP_REASON=tag_exists" >> $env:GITHUB_OUTPUT
+              exit 0
+            } else {
+              Write-Host "RESULT: Tag '$tag' does NOT exist yet. Proceeding."
+            }
+          } catch {
+            # Если gh вернул ошибку, кроме 404 (тег не найден), считаем это проблемой
+            if ($_.Exception.Response.StatusCode -eq 404) {
+              # 404 — это хорошо, значит тега нет
+              Write-Host "RESULT (via 404): Tag '$tag' not found. Proceeding."
+            } else {
+              Write-Host "ERROR: Unexpected error while checking tag existence: $_"
+              exit 1
+            }
+          }
+          
+          echo "TAG_NAME=$tag" >> $env:GITHUB_OUTPUT
+          echo "FULL_VERSION=$full" >> $env:GITHUB_OUTPUT
+          Write-Host "OUTPUT: TAG_NAME=$tag, FULL_VERSION=$full"
+        shell: pwsh
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Установка зависимостей
       - name: Install dependencies
-        if: steps.check-nw-version.outputs.BUILD_REQUIRED == 'true'
+        if: steps.compute-and-check-tag.outputs.BUILD_REQUIRED == 'true'
         run: npm run inst
         shell: pwsh
 
-      # ImageMagick обязателен для твоего скрипта — ставим через Chocolatey
+      # ImageMagick
       - name: Install ImageMagick
-        if: steps.check-nw-version.outputs.BUILD_REQUIRED == 'true'
+        if: steps.compute-and-check-tag.outputs.BUILD_REQUIRED == 'true'
         run: choco install imagemagick --no-progress --yes
         shell: pwsh
 
-      # Проверяем, что magick реально доступен
       - name: Verify ImageMagick
-        if: steps.check-nw-version.outputs.BUILD_REQUIRED == 'true'
+        if: steps.compute-and-check-tag.outputs.BUILD_REQUIRED == 'true'
         run: magick --version
         shell: pwsh
 
-      # Читаем версию из package.json (меняется вручную при правках кода)
-      - name: Read app version from package.json
-        if: steps.check-nw-version.outputs.BUILD_REQUIRED == 'true'
-        id: read-app-version
-        run: |
-          $pkg = Get-Content package.json | ConvertFrom-Json
-          echo "APP_VERSION=$($pkg.version)" >> $env:GITHUB_OUTPUT
-        shell: pwsh
-
-      # Собираем итоговую версию: v<app>.<nw> (например, v4.0.1.0.118.0)
-      - name: Compute final version
-        if: steps.check-nw-version.outputs.BUILD_REQUIRED == 'true'
-        id: compute-final-version
-        run: |
-          # Сначала просто показываем, что пришло — это ключ к отладке
-          Write-Host "DEBUG: APP_VERSION='$env:APP_VERSION'"
-          Write-Host "DEBUG: NEW_NW_VERSION='$env:NEW_NW_VERSION'"
-
-          $app = $env:APP_VERSION
-          $nw = $env:NEW_NW_VERSION -replace '^v', ''
-
-          if ([string]::IsNullOrWhiteSpace($app)) {
-            Write-Host "ERROR: APP_VERSION is empty! Check step 'Read app version from package.json'."
-            exit 1
-          }
-          if ([string]::IsNullOrWhiteSpace($nw)) {
-            Write-Host "ERROR: NEW_NW_VERSION is empty! Check step 'Compare NW.js versions'."
-            exit 1
-          }
-
-          # Тег: только цифры и точки (например, 4.0.2.0.118.0)
-          $tag = "${app}.${nw}"
-          # Для красивого названия: с v (v4.0.2.0.118.0)
-          $full = "v${app}.${nw}"
-
-          Write-Host "Tag for release: $tag"
-          Write-Host "Full version label: $full"
-
-          echo "TAG_NAME=$tag" >> $env:GITHUB_OUTPUT
-          echo "FULL_VERSION=$full" >> $env:GITHUB_OUTPUT
-        shell: pwsh
-
-      # Твой скрипт сборки: обновляет конфиги, data.json, делает exe
+      # Запуск сборки
       - name: Run build script
-        if: steps.check-nw-version.outputs.BUILD_REQUIRED == 'true'
-        run: node index.js --version "${{ steps.compute-final-version.outputs.FINAL_VERSION }}"
+        if: steps.compute-and-check-tag.outputs.BUILD_REQUIRED == 'true'
+        run: node index.js --version "${{ steps.compute-and-check-tag.outputs.FULL_VERSION }}"
         shell: pwsh
 
-      # Коммитим все изменившиеся файлы (exe не попадёт — он в .gitignore)
-      - name: Commit all changed files
-        if: steps.check-nw-version.outputs.BUILD_REQUIRED == 'true'
+      # Коммит изменений
+      - name: Commit changed files
+        if: steps.compute-and-check-tag.outputs.BUILD_REQUIRED == 'true'
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add -u
           $status = git status --porcelain
           if ($status) {
-            git commit -m "build: radioApp-lite ${{ steps.compute-final-version.outputs.FINAL_VERSION }} (NW.js ${{ steps.check-nw-version.outputs.NEW_NW_VERSION }})"
+            git commit -m "build: radioApp-lite ${{ steps.compute-and-check-tag.outputs.FULL_VERSION }} (NW.js ${{ steps.fetch-nw-remote.outputs.NW_STABLE }})"
             git push origin main
           } else {
             Write-Host "No changes to commit."
           }
         shell: pwsh
 
-      # Создаём релиз и прикрепляем exe
+      # Создание релиза
       - name: Create GitHub Release and upload exe
-        if: steps.check-nw-version.outputs.BUILD_REQUIRED == 'true'
+        if: steps.compute-and-check-tag.outputs.BUILD_REQUIRED == 'true'
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ steps.compute-final-version.outputs.TAG_NAME }}
-          name: "radioApp-lite ${{ steps.compute-final-version.outputs.FULL_VERSION }}"
+          tag_name: ${{ steps.compute-and-check-tag.outputs.TAG_NAME }}
+          name: "radioApp-lite ${{ steps.compute-and-check-tag.outputs.FULL_VERSION }}"
           body: |
             Сборка radioApp-lite.
-            Версия релиза: ${{ steps.compute-final-version.outputs.FULL_VERSION }}
-            Тег (для Git): ${{ steps.compute-final-version.outputs.TAG_NAME }}
-            NW.js: ${{ steps.check-nw-version.outputs.NEW_NW_VERSION }}
+            Версия релиза: ${{ steps.compute-and-check-tag.outputs.FULL_VERSION }}
+            Тег (Git): ${{ steps.compute-and-check-tag.outputs.TAG_NAME }}
+            NW.js: ${{ steps.fetch-nw-remote.outputs.NW_STABLE }}
           files: setup/YourRadioLightSetup.exe
           draft: false
           prerelease: false

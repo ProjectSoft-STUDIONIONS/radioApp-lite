@@ -9,7 +9,7 @@
 	"exeName": "YourRadio",
 	"scripts": {
 		"preinstall": "npm i -g less pug-cli bower",
-		"inst": "npm install && bower install",
+		"inst": "npm i && bower install && cd application && npm i",
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"build": "node index.js"
 	},

@@ -28,16 +28,7 @@ record.json
 /temp
 /test
 /tests
-/application/butterchurn
-/application/_locales
-/application/css
-/application/fonts
-/application/images
 /application/node_modules
-/application/modules
-/application/js
-/application/LICENSE
-/application/*.html
 !/application/*.png
 /src/sources/*
 !/src/sources/stations

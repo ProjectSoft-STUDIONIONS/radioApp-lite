@@ -1,0 +1,7 @@
+/**!
+ * Module station.js for "Your Radio"
+ * 
+ * @author	ProjectSoft <projectsoft2009@yandex.ru>
+ * @license GPL-3.0
+ */
+class StationComponent{constructor(s,i,t){this.station=s,this.li=i.createElement("li"),this.li.className="radio-item",this.li.dataset.id=s.id,this.li.dataset.name=s.name,this.li.dataset.genre=s.genre.join(","),this.li.dataset.stream=s.stream,this.li.dataset.title=s.name,this.li.innerHTML=`<div class="radio-item-box"><div class="radio-item-icon"><span class="icons"></span><span class="favicon"><img src="${t}/${s.id}.png?hash=${(new Date).getTime()}" alt="${s.name}"></span></div><div class="radio-item-wrap"><span class="station-name">${s.name}</span></div><div class="radio-item-handler"><span class="icon-handler"><span class="top">▲</span><span class="center">●</span><span class="bottom">▼</span></span></div></div>`;const{tagTranslit:a}=require("./translit.js");var e;for(e in s.genre){const i=a(String(s.genre[e]).trim());""!==i&&this.li.classList.add(i)}this.bindEvents()}bindEvents(){this.li.querySelector(".radio-item-icon").addEventListener("click",s=>{this.li.classList.contains("play")?(this.li.classList.remove("play"),this.li.classList.remove("preload"),this.li.classList.add("stop")):this.li.classList.contains("stop")&&(this.li.classList.add("play"),this.li.classList.add("preload"),this.li.classList.remove("stop")),this.li.dispatchEvent(new CustomEvent("radio:click",{bubbles:!0,cancelable:!1,target:this.li}))})}}module.exports=StationComponent;

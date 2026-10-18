@@ -195,6 +195,12 @@ jobs:
             Версия приложения: ${{ steps.read-app-version.outputs.APP_VERSION }}
             NW.js: ${{ steps.fetch-nw-remote.outputs.NW_STABLE }}
             Версия релиза: ${{ steps.compute-and-check-tag.outputs.FULL_VERSION }}
+
+            ![Скриншот](src/screen/screen0002.jpg)
+            
+            [Cписок радиостанций](?tab=readme-ov-file#список-радиостанций)
+
+            [![Downloads YourRadioLightSetup.exe](https://img.shields.io/github/downloads/ProjectSoft-STUDIONIONS/radioApp-lite/${{ steps.compute-and-check-tag.outputs.TAG_NAME }}/total?style=for-the-badge&label=Downloads%20YourRadioLightSetup.exe&cacheSeconds=10)](../../releases/download/${{ steps.compute-and-check-tag.outputs.TAG_NAME }}/YourRadioLightSetup.exe)
           files: setup/YourRadioLightSetup.exe
           draft: false
           prerelease: false

@@ -192,9 +192,9 @@ jobs:
           name: "radioApp-lite ${{ steps.compute-and-check-tag.outputs.FULL_VERSION }}"
           body: |
             Сборка radioApp-lite.
-            Версия релиза: ${{ steps.compute-and-check-tag.outputs.FULL_VERSION }}
-            Тег (Git): ${{ steps.compute-and-check-tag.outputs.TAG_NAME }}
+            Версия приложения: ${{ steps.read-app-version.outputs.APP_VERSION }}
             NW.js: ${{ steps.fetch-nw-remote.outputs.NW_STABLE }}
+            Версия релиза: ${{ steps.compute-and-check-tag.outputs.FULL_VERSION }}
           files: setup/YourRadioLightSetup.exe
           draft: false
           prerelease: false

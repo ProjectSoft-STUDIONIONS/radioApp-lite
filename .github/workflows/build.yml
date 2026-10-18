@@ -26,15 +26,12 @@ jobs:
             $resp = $respRaw | ConvertFrom-Json
             Write-Host "Remote JSON parsed successfully."
             Write-Host "Remote stable raw: '$($resp.stable)'"
-            
             $stable = $resp.stable -replace '^v', ''
             Write-Host "Normalized remote stable (no 'v'): '$stable'"
-            
             if ([string]::IsNullOrWhiteSpace($stable)) {
               Write-Host "ERROR: Normalized stable version is empty!"
               exit 1
             }
-            
             echo "NW_STABLE=$stable" >> $env:GITHUB_OUTPUT
             Write-Host "OUTPUT: NW_STABLE=$stable"
           } catch {
@@ -49,7 +46,6 @@ jobs:
         run: |
           Write-Host "--- STEP: Read local manifest ---"
           $path = ".\.cache\manifest.json"
-          
           if (-not (Test-Path $path)) {
             Write-Host "WARNING: .cache\manifest.json not found. Treating as new version."
             echo "LOCAL_NW=0.0.0" >> $env:GITHUB_OUTPUT
@@ -58,18 +54,14 @@ jobs:
             Write-Host "Found manifest at: $(Resolve-Path $path)"
             $content = Get-Content $path -Raw
             Write-Host "Manifest content (first 200 chars): $($content.Substring(0, [Math]::Min(200, $content.Length)))"
-            
             $m = $content | ConvertFrom-Json
             Write-Host "Parsed manifest.nwVersion raw: '$($m.nwVersion)'"
-            
             $local = $m.nwVersion -replace '^v', ''
             Write-Host "Normalized local NW version (no 'v'): '$local'"
-            
             if ([string]::IsNullOrWhiteSpace($local)) {
               Write-Host "ERROR: Local NW version is empty after normalization!"
               exit 1
             }
-            
             echo "LOCAL_NW=$local" >> $env:GITHUB_OUTPUT
             Write-Host "OUTPUT: LOCAL_NW=$local"
           }
@@ -82,9 +74,7 @@ jobs:
           Write-Host "--- STEP: Compare versions ---"
           $remote = $env:NW_STABLE
           $local = $env:LOCAL_NW
-          
           Write-Host "Comparing: remote='$remote' vs local='$local'"
-          
           if ($remote -eq $local) {
             Write-Host "RESULT: Versions are EQUAL. Stopping workflow."
             echo "BUILD_REQUIRED=false" >> $env:GITHUB_OUTPUT
@@ -116,25 +106,20 @@ jobs:
         run: |
           Write-Host "--- STEP: Read package.json ---"
           $path = ".\package.json"
-          
           if (-not (Test-Path $path)) {
             Write-Host "ERROR: package.json not found at path: $(Resolve-Path .)"
             exit 1
           }
-          
           Write-Host "Found package.json at: $(Resolve-Path $path)"
           $content = Get-Content $path -Raw
           Write-Host "package.json content (first 300 chars): $($content.Substring(0, [Math]::Min(300, $content.Length)))"
-          
           $pkg = $content | ConvertFrom-Json
           Write-Host "Parsed package.version raw: '$($pkg.version)'"
-          
           $app = $pkg.version.Trim()
           if ([string]::IsNullOrWhiteSpace($app)) {
             Write-Host "ERROR: package.json 'version' field is missing or empty!"
             exit 1
           }
-          
           Write-Host "App version normalized: '$app'"
           echo "APP_VERSION=$app" >> $env:GITHUB_OUTPUT
           Write-Host "OUTPUT: APP_VERSION=$app"
@@ -150,17 +135,13 @@ jobs:
           Write-Host "--- STEP: Compute tag and check existence ---"
           $app = $env:APP_VERSION
           $nw = $env:NEW_NW_VERSION
-          
           Write-Host "Input: app='$app', nw='$nw'"
-          
           # Тег: только цифры и точки, без v
           $tag = "${app}.${nw}"
           # Красивая метка с v для релиза
           $full = "v${app}.${nw}"
-          
           Write-Host "Computed tag (for Git): '$tag'"
           Write-Host "Full label (for Release name): '$full'"
-          
           # Проверка: есть ли уже такой тег в репозитории
           Write-Host "Checking if tag '$tag' exists in repo '${{ github.repository }}'..."
           try {
@@ -184,7 +165,6 @@ jobs:
               exit 1
             }
           }
-          
           echo "TAG_NAME=$tag" >> $env:GITHUB_OUTPUT
           echo "FULL_VERSION=$full" >> $env:GITHUB_OUTPUT
           Write-Host "OUTPUT: TAG_NAME=$tag, FULL_VERSION=$full"

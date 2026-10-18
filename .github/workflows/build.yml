@@ -93,9 +93,17 @@ jobs:
         run: |
           $app = $env:APP_VERSION
           $nw = $env:NEW_NW_VERSION -replace '^v', ''
-          $final = "v${app}.${nw}"
-          echo "FINAL_VERSION=$final" >> $env:GITHUB_OUTPUT
-          Write-Host "Final version: $final"
+          
+          # Тег для GitHub: только цифры и точки, без префикса v (например, 4.0.2.0.118.0)
+          $tag = "${app}.${nw}"
+          
+          # Полная версия для названия и описания (с v, как ты хочешь видеть)
+          $full = "v${app}.${nw}"
+
+          echo "TAG_NAME=$tag" >> $env:GITHUB_OUTPUT
+          echo "FULL_VERSION=$full" >> $env:GITHUB_OUTPUT
+          Write-Host "Tag for release: $tag"
+          Write-Host "Full version label: $full"
         shell: pwsh
 
       # Твой скрипт сборки: обновляет конфиги, data.json, делает exe
@@ -125,11 +133,12 @@ jobs:
         if: steps.check-nw-version.outputs.BUILD_REQUIRED == 'true'
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ steps.compute-final-version.outputs.FINAL_VERSION }}
-          name: "radioApp-lite ${{ steps.compute-final-version.outputs.FINAL_VERSION }}"
+          tag_name: ${{ steps.compute-final-version.outputs.TAG_NAME }}
+          name: "radioApp-lite ${{ steps.compute-final-version.outputs.FULL_VERSION }}"
           body: |
             Сборка radioApp-lite.
-            Версия: ${{ steps.compute-final-version.outputs.FINAL_VERSION }}
+            Версия релиза: ${{ steps.compute-final-version.outputs.FULL_VERSION }}
+            Тег (для Git): ${{ steps.compute-final-version.outputs.TAG_NAME }}
             NW.js: ${{ steps.check-nw-version.outputs.NEW_NW_VERSION }}
           files: setup/YourRadioLightSetup.exe
           draft: false

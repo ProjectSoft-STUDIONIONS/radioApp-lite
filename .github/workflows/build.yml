@@ -91,19 +91,32 @@ jobs:
         if: steps.check-nw-version.outputs.BUILD_REQUIRED == 'true'
         id: compute-final-version
         run: |
+          # Сначала просто показываем, что пришло — это ключ к отладке
+          Write-Host "DEBUG: APP_VERSION='$env:APP_VERSION'"
+          Write-Host "DEBUG: NEW_NW_VERSION='$env:NEW_NW_VERSION'"
+
           $app = $env:APP_VERSION
           $nw = $env:NEW_NW_VERSION -replace '^v', ''
-          
-          # Тег для GitHub: только цифры и точки, без префикса v (например, 4.0.2.0.118.0)
+
+          if ([string]::IsNullOrWhiteSpace($app)) {
+            Write-Host "ERROR: APP_VERSION is empty! Check step 'Read app version from package.json'."
+            exit 1
+          }
+          if ([string]::IsNullOrWhiteSpace($nw)) {
+            Write-Host "ERROR: NEW_NW_VERSION is empty! Check step 'Compare NW.js versions'."
+            exit 1
+          }
+
+          # Тег: только цифры и точки (например, 4.0.2.0.118.0)
           $tag = "${app}.${nw}"
-          
-          # Полная версия для названия и описания (с v, как ты хочешь видеть)
+          # Для красивого названия: с v (v4.0.2.0.118.0)
           $full = "v${app}.${nw}"
+
+          Write-Host "Tag for release: $tag"
+          Write-Host "Full version label: $full"
 
           echo "TAG_NAME=$tag" >> $env:GITHUB_OUTPUT
           echo "FULL_VERSION=$full" >> $env:GITHUB_OUTPUT
-          Write-Host "Tag for release: $tag"
-          Write-Host "Full version label: $full"
         shell: pwsh
 
       # Твой скрипт сборки: обновляет конфиги, data.json, делает exe

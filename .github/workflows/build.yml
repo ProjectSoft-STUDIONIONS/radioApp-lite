@@ -15,7 +15,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      # 1. Запрос version.json (nwjs.io) и получение stable
       - name: [DEBUG] Fetch remote NW.js stable version
         id: fetch-nw-remote
         run: |
@@ -26,12 +25,15 @@ jobs:
             $resp = $respRaw | ConvertFrom-Json
             Write-Host "Remote JSON parsed successfully."
             Write-Host "Remote stable raw: '$($resp.stable)'"
+            
             $stable = $resp.stable -replace '^v', ''
             Write-Host "Normalized remote stable (no 'v'): '$stable'"
+            
             if ([string]::IsNullOrWhiteSpace($stable)) {
               Write-Host "ERROR: Normalized stable version is empty!"
               exit 1
             }
+            
             echo "NW_STABLE=$stable" >> $env:GITHUB_OUTPUT
             Write-Host "OUTPUT: NW_STABLE=$stable"
           } catch {
@@ -40,12 +42,12 @@ jobs:
           }
         shell: pwsh
 
-      # 2. Чтение нашего manifest.json
       - name: [DEBUG] Read local manifest.json
         id: read-local-manifest
         run: |
           Write-Host "--- STEP: Read local manifest ---"
           $path = ".\.cache\manifest.json"
+          
           if (-not (Test-Path $path)) {
             Write-Host "WARNING: .cache\manifest.json not found. Treating as new version."
             echo "LOCAL_NW=0.0.0" >> $env:GITHUB_OUTPUT
@@ -54,27 +56,32 @@ jobs:
             Write-Host "Found manifest at: $(Resolve-Path $path)"
             $content = Get-Content $path -Raw
             Write-Host "Manifest content (first 200 chars): $($content.Substring(0, [Math]::Min(200, $content.Length)))"
+            
             $m = $content | ConvertFrom-Json
             Write-Host "Parsed manifest.nwVersion raw: '$($m.nwVersion)'"
+            
             $local = $m.nwVersion -replace '^v', ''
             Write-Host "Normalized local NW version (no 'v'): '$local'"
+            
             if ([string]::IsNullOrWhiteSpace($local)) {
               Write-Host "ERROR: Local NW version is empty after normalization!"
               exit 1
             }
+            
             echo "LOCAL_NW=$local" >> $env:GITHUB_OUTPUT
             Write-Host "OUTPUT: LOCAL_NW=$local"
           }
         shell: pwsh
 
-      # 3. Сравнение: если одинаковые — выходим
       - name: [DEBUG] Compare NW.js versions
         id: compare-versions
         run: |
           Write-Host "--- STEP: Compare versions ---"
           $remote = $env:NW_STABLE
           $local = $env:LOCAL_NW
+          
           Write-Host "Comparing: remote='$remote' vs local='$local'"
+          
           if ($remote -eq $local) {
             Write-Host "RESULT: Versions are EQUAL. Stopping workflow."
             echo "BUILD_REQUIRED=false" >> $env:GITHUB_OUTPUT
@@ -88,64 +95,62 @@ jobs:
           }
         shell: pwsh
 
-      - name: Skip if no new version
-        if: steps.compare-versions.outputs.BUILD_REQUIRED == 'false'
-        run: Write-Host "Build skipped: NW.js version unchanged."
-        shell: pwsh
-
       - name: Setup Node.js
         if: steps.compare-versions.outputs.BUILD_REQUIRED == 'true'
         uses: actions/setup-node@v4
         with:
           node-version: '20'
 
-      # 4. Читаем package.json — забираем версию приложения
       - name: [DEBUG] Read app version from package.json
         if: steps.compare-versions.outputs.BUILD_REQUIRED == 'true'
         id: read-app-version
         run: |
           Write-Host "--- STEP: Read package.json ---"
           $path = ".\package.json"
+          
           if (-not (Test-Path $path)) {
             Write-Host "ERROR: package.json not found at path: $(Resolve-Path .)"
             exit 1
           }
+          
           Write-Host "Found package.json at: $(Resolve-Path $path)"
           $content = Get-Content $path -Raw
           Write-Host "package.json content (first 300 chars): $($content.Substring(0, [Math]::Min(300, $content.Length)))"
+          
           $pkg = $content | ConvertFrom-Json
           Write-Host "Parsed package.version raw: '$($pkg.version)'"
+          
           $app = $pkg.version.Trim()
           if ([string]::IsNullOrWhiteSpace($app)) {
             Write-Host "ERROR: package.json 'version' field is missing or empty!"
             exit 1
           }
+          
           Write-Host "App version normalized: '$app'"
           echo "APP_VERSION=$app" >> $env:GITHUB_OUTPUT
           Write-Host "OUTPUT: APP_VERSION=$app"
         shell: pwsh
 
-      # 5. Складываем версии и 6. Проверяем существование тега
       - name: [DEBUG] Compute final version & check tag existence
         if: steps.compare-versions.outputs.BUILD_REQUIRED == 'true'
         id: compute-and-check-tag
-        env:                                # ✅ Сначала env
+        env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           Write-Host "--- STEP: Compute tag and check existence ---"
           $app = $env:APP_VERSION
           $nw = $env:NEW_NW_VERSION
+          
           Write-Host "Input: app='$app', nw='$nw'"
-          # Тег: только цифры и точки, без v
+          
           $tag = "${app}.${nw}"
-          # Красивая метка с v для релиза
           $full = "v${app}.${nw}"
+          
           Write-Host "Computed tag (for Git): '$tag'"
           Write-Host "Full label (for Release name): '$full'"
-          # Проверка: есть ли уже такой тег в репозитории
+          
           Write-Host "Checking if tag '$tag' exists in repo '${{ github.repository }}'..."
           try {
-            # -s скрывает вывод JSON, нам важно только наличие ответа
             $exists = (gh api repos/${{ github.repository }}/git/ref/tags/$tag -s 2>$null)
             if ($exists) {
               Write-Host "RESULT: Tag '$tag' ALREADY EXISTS. Stopping to avoid duplicate release."
@@ -156,27 +161,24 @@ jobs:
               Write-Host "RESULT: Tag '$tag' does NOT exist yet. Proceeding."
             }
           } catch {
-            # Если gh вернул ошибку, кроме 404 (тег не найден), считаем это проблемой
             if ($_.Exception.Response.StatusCode -eq 404) {
-              # 404 — это хорошо, значит тега нет
               Write-Host "RESULT (via 404): Tag '$tag' not found. Proceeding."
             } else {
               Write-Host "ERROR: Unexpected error while checking tag existence: $_"
               exit 1
             }
           }
+          
           echo "TAG_NAME=$tag" >> $env:GITHUB_OUTPUT
           echo "FULL_VERSION=$full" >> $env:GITHUB_OUTPUT
           Write-Host "OUTPUT: TAG_NAME=$tag, FULL_VERSION=$full"
         shell: pwsh
 
-      # Установка зависимостей
       - name: Install dependencies
         if: steps.compute-and-check-tag.outputs.BUILD_REQUIRED == 'true'
         run: npm run inst
         shell: pwsh
 
-      # ImageMagick
       - name: Install ImageMagick
         if: steps.compute-and-check-tag.outputs.BUILD_REQUIRED == 'true'
         run: choco install imagemagick --no-progress --yes
@@ -187,13 +189,11 @@ jobs:
         run: magick --version
         shell: pwsh
 
-      # Запуск сборки
       - name: Run build script
         if: steps.compute-and-check-tag.outputs.BUILD_REQUIRED == 'true'
         run: node index.js --version "${{ steps.compute-and-check-tag.outputs.FULL_VERSION }}"
         shell: pwsh
 
-      # Коммит изменений
       - name: Commit changed files
         if: steps.compute-and-check-tag.outputs.BUILD_REQUIRED == 'true'
         run: |
@@ -209,7 +209,6 @@ jobs:
           }
         shell: pwsh
 
-      # Создание релиза
       - name: Create GitHub Release and upload exe
         if: steps.compute-and-check-tag.outputs.BUILD_REQUIRED == 'true'
         uses: softprops/action-gh-release@v1

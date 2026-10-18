@@ -15,7 +15,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: [DEBUG] Fetch remote NW.js stable version
+      - name: "DEBUG Fetch remote NW.js stable version"
         id: fetch-nw-remote
         run: |
           Write-Host "--- STEP: Fetch remote NW.js version ---"
@@ -39,7 +39,7 @@ jobs:
           }
         shell: pwsh
 
-      - name: [DEBUG] Read local manifest.json
+      - name: "DEBUG Read local manifest.json"
         id: read-local-manifest
         run: |
           Write-Host "--- STEP: Read local manifest ---"
@@ -65,7 +65,7 @@ jobs:
           }
         shell: pwsh
 
-      - name: [DEBUG] Compare NW.js versions
+      - name: "DEBUG Compare NW.js versions"
         id: compare-versions
         run: |
           Write-Host "--- STEP: Compare versions ---"
@@ -91,7 +91,7 @@ jobs:
         with:
           node-version: '20'
 
-      - name: [DEBUG] Read app version from package.json
+      - name: "DEBUG Read app version from package.json"
         if: steps.compare-versions.outputs.BUILD_REQUIRED == 'true'
         id: read-app-version
         run: |
@@ -116,7 +116,7 @@ jobs:
           Write-Host "OUTPUT: APP_VERSION=$app"
         shell: pwsh
 
-      - name: [DEBUG] Compute final version & check tag existence
+      - name: "DEBUG Compute final version & check tag existence"
         if: steps.compare-versions.outputs.BUILD_REQUIRED == 'true'
         id: compute-and-check-tag
         env:

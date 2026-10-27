@@ -1,0 +1,13 @@
+{
+	"1793118243156": {
+		"favicon": false,
+		"genre": [
+			"RAP/URBAN",
+			"Спорт"
+		],
+		"id": 1793118243156,
+		"image": "https://solfm.ru/stations/sol-fm-phonk.png",
+		"name": "Соль FM Phonk",
+		"stream": "https://solfm.ru:8443/phonk128"
+	}
+}

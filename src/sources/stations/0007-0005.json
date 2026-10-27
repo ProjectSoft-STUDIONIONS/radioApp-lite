@@ -1,0 +1,12 @@
+{
+	"1793118183196": {
+		"favicon": false,
+		"genre": [
+			"HOUSE"
+		],
+		"id": 1793118183196,
+		"image": "https://solfm.ru/stations/sol-fm-deep.png",
+		"name": "Соль FM Deep",
+		"stream": "https://solfm.ru:8443/deep128"
+	}
+}

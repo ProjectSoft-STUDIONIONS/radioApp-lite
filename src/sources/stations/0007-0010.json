@@ -1,0 +1,12 @@
+{
+	"1793118268900": {
+		"favicon": false,
+		"genre": [
+			"ROCK"
+		],
+		"id": 1793118268900,
+		"image": "https://solfm.ru/stations/sol-fm-rock.png",
+		"name": "Соль FM Rock",
+		"stream": "https://solfm.ru:8443/rock128"
+	}
+}

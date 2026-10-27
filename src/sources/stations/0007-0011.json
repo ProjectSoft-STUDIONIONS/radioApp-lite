@@ -1,0 +1,14 @@
+{
+	"1793118283828": {
+		"favicon": false,
+		"genre": [
+			"Эпохи",
+			"POP",
+			"OLDSCHOOL"
+		],
+		"id": 1793118283828,
+		"image": "https://solfm.ru/stations/sol-fm-90.png",
+		"name": "Соль FM 90-е",
+		"stream": "https://solfm.ru:8443/solfm90_128"
+	}
+}

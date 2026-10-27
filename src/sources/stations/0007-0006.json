@@ -1,0 +1,13 @@
+{
+	"1793118215852": {
+		"favicon": false,
+		"genre": [
+			"DRUM",
+			"BASS"
+		],
+		"id": 1793118215852,
+		"image": "https://solfm.ru/stations/sol-fm-dnb.png",
+		"name": "Соль FM Drum & Bass",
+		"stream": "https://solfm.ru:8443/dnb128"
+	}
+}

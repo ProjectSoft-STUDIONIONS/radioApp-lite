@@ -1,0 +1,12 @@
+{
+	"1793118167315": {
+		"favicon": false,
+		"genre": [
+			"DANCE"
+		],
+		"id": 1793118167315,
+		"image": "https://solfm.ru/stations/sol-fm-dance.png",
+		"name": "Соль FM Dance",
+		"stream": "https://solfm.ru:8443/dance128"
+	}
+}

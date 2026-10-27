@@ -1,0 +1,13 @@
+{
+	"1793118228427": {
+		"favicon": false,
+		"genre": [
+			"CHILL",
+			"Сон"
+		],
+		"id": 1793118228427,
+		"image": "https://solfm.ru/stations/sol-fm-lofi.png",
+		"name": "Соль FM LO-FI",
+		"stream": "https://solfm.ru:8443/lofi128"
+	}
+}

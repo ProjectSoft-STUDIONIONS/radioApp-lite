@@ -14,6 +14,26 @@ https://nashe1.hostingradio.ru/nashesongs.mp3
 https://listen8.myradio24.com/8226
 #EXTINF:-1,Synthetic FM
 https://mediaserv38.live-streams.nl:18040/live
+#EXTINF:-1,Соль FM
+https://solfm.ru:8443/online128
+#EXTINF:-1,Соль FM Chill (CHILL)
+https://solfm.ru:8443/chill128
+#EXTINF:-1,Соль FM Dance (DANCE)
+https://solfm.ru:8443/dance128
+#EXTINF:-1,Соль FM Deep (HOUSE)
+https://solfm.ru:8443/deep128
+#EXTINF:-1,Соль FM Drum & Bass (DRUM, BASS)
+https://solfm.ru:8443/dnb128
+#EXTINF:-1,Соль FM LO-FI (CHILL, Сон)
+https://solfm.ru:8443/lofi128
+#EXTINF:-1,Соль FM Phonk (RAP/URBAN, Спорт)
+https://solfm.ru:8443/phonk128
+#EXTINF:-1,Соль FM Rap (RAP/URBAN)
+https://solfm.ru:8443/rap128
+#EXTINF:-1,Соль FM Rock (ROCK)
+https://solfm.ru:8443/rock128
+#EXTINF:-1,Соль FM 90-е (Эпохи, POP, OLDSCHOOL)
+https://solfm.ru:8443/solfm90_128
 #EXTINF:-1,Радио DFM «Дискач 90-х» (Эпохи)
 https://dfm-disc90.hostingradio.ru/disc9096.aacp
 #EXTINF:-1,Радио DFM «DANCE» (DANCE)

@@ -1,0 +1,12 @@
+{
+	"1793118255804": {
+		"favicon": false,
+		"genre": [
+			"RAP/URBAN"
+		],
+		"id": 1793118255804,
+		"image": "https://solfm.ru/stations/sol-fm-rap.png",
+		"name": "Соль FM Rap",
+		"stream": "https://solfm.ru:8443/rap128"
+	}
+}

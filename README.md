@@ -102,6 +102,16 @@
 | 🌐‍🎧 | **НАШЕ Радио «Щас спою!»** | `https://nashe1.hostingradio.ru/nashesongs.mp3` | `RUSSIAN`, `ROCK` |
 | 🌐‍🎧 | **Радио Enigmatic Station 1** | `https://listen8.myradio24.com/8226` | --- |
 | 🌐‍🎧 | **Synthetic FM** | `https://mediaserv38.live-streams.nl:18040/live` | --- |
+| 🌐‍🎧 | **Соль FM** | `https://solfm.ru:8443/online128` | --- |
+| 🌐‍🎧 | **Соль FM Chill** | `https://solfm.ru:8443/chill128` | `CHILL` |
+| 🌐‍🎧 | **Соль FM Dance** | `https://solfm.ru:8443/dance128` | `DANCE` |
+| 🌐‍🎧 | **Соль FM Deep** | `https://solfm.ru:8443/deep128` | `HOUSE` |
+| 🌐‍🎧 | **Соль FM Drum & Bass** | `https://solfm.ru:8443/dnb128` | `DRUM`, `BASS` |
+| 🌐‍🎧 | **Соль FM LO-FI** | `https://solfm.ru:8443/lofi128` | `CHILL`, `Сон` |
+| 🌐‍🎧 | **Соль FM Phonk** | `https://solfm.ru:8443/phonk128` | `RAP/URBAN`, `Спорт` |
+| 🌐‍🎧 | **Соль FM Rap** | `https://solfm.ru:8443/rap128` | `RAP/URBAN` |
+| 🌐‍🎧 | **Соль FM Rock** | `https://solfm.ru:8443/rock128` | `ROCK` |
+| 🌐‍🎧 | **Соль FM 90-е** | `https://solfm.ru:8443/solfm90_128` | `Эпохи`, `POP`, `OLDSCHOOL` |
 | 🌐‍🎧 | **Радио DFM «Дискач 90-х»** | `https://dfm-disc90.hostingradio.ru/disc9096.aacp` | `Эпохи` |
 | 🌐‍🎧 | **Радио DFM «DANCE»** | `https://dfm.hostingradio.ru/dfm96.aacp` | `DANCE` |
 | 🌐‍🎧 | **Радио DFM «POP DANCE»** | `https://dfm-popdance.hostingradio.ru/popdance96.aacp` | `POP`, `DANCE` |

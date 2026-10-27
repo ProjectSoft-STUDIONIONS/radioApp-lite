@@ -101,6 +101,7 @@
 | 🌐‍🎧 | **НАШЕ Радио «Панки хой!»** | `http://nashe1.hostingradio.ru/nashepunks.mp3` | `RUSSIAN`, `ROCK` |
 | 🌐‍🎧 | **НАШЕ Радио «Щас спою!»** | `https://nashe1.hostingradio.ru/nashesongs.mp3` | `RUSSIAN`, `ROCK` |
 | 🌐‍🎧 | **Радио Enigmatic Station 1** | `https://listen8.myradio24.com/8226` | --- |
+| 🌐‍🎧 | **Synthetic FM** | `https://mediaserv38.live-streams.nl:18040/live` | --- |
 | 🌐‍🎧 | **Радио DFM «Дискач 90-х»** | `https://dfm-disc90.hostingradio.ru/disc9096.aacp` | `Эпохи` |
 | 🌐‍🎧 | **Радио DFM «DANCE»** | `https://dfm.hostingradio.ru/dfm96.aacp` | `DANCE` |
 | 🌐‍🎧 | **Радио DFM «POP DANCE»** | `https://dfm-popdance.hostingradio.ru/popdance96.aacp` | `POP`, `DANCE` |

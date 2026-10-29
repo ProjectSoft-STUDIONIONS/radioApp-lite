@@ -4,4 +4,2150 @@
  * @author	ProjectSoft <projectsoft2009@yandex.ru>
  * @license GPL-3.0
  */
-const locale=require("./locale.js"),fs=require("fs"),path=require("path"),http=require("http"),{URL:URL}=require("url"),mime=require("mime").default,icy=require("icy"),notifier=require("node-notifier"),EventDispatcher=require("./eventdispatcher.js"),StationEl=require("./station.js"),nwdialog=require("./nwdialog.js"),DATA_DIR=path.normalize(path.join(nw.App.dataPath,"radio")),SOURCE_FILE=path.normalize(path.join(nw.__dirname,"radio","data.json")),{translit:translit,tagTranslit:tagTranslit}=require("./translit.js"),butterchurn=require("butterchurn").default,EventEmitter=require("node:events"),errorTpl=t=>`<!DOCTYPE html>\n<html lang="ru">\n\t<head>\n\t\t<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>\n\t\t<meta name="viewport" content="width=device-width,initial-scale=1"/>\n\t\t<meta http-equiv="X-UA-Compatible" content="IE=edge"/>\n\t\t<meta name="SKYPE_TOOLBAR" content="SKYPE_TOOLBAR_PARSER_COMPATIBLE"/>\n\t\t<title>Ваше Радио</title>\n\t\t<meta name="color-scheme" content="light"/>\n\t\t<meta name="theme-color" content="#fff"/>\n\t\t<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon"/>\n\t</head>\n\t<body style="font-family:Tahoma,sans-serif;margin:0;padding:10;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;">\n\t\t<h1>${t.title}</h1>\n\t\t<p>${t.text}</p>\n\t</body>\n</html>`;fs.existsSync(DATA_DIR)||fs.mkdirSync(DATA_DIR,{recursive:!0,force:!0});var settime,isMaximized=!1,win_state=!0,init_server=!1,volume=0,player=!1,isPlaying=!1,isOnline=!1,metainterval=0,active=0,stations={},dataStations={},genres=[],presetsSelectIndex=0;const copyStationItem=new nw.MenuItem({label:locale.get("copyTitle"),type:"normal",icon:"images/copy.png"}),addStationItem=new nw.MenuItem({label:locale.get("insertTitle"),type:"normal",icon:"images/add.png"}),editStationItem=new nw.MenuItem({label:locale.get("editTitle"),type:"normal",icon:"images/edit.png"}),removeStationItem=new nw.MenuItem({label:locale.get("deleteTitle"),type:"normal",icon:"images/delete.png"}),separator=nw.MenuItem({type:"separator"}),exportStations=new nw.MenuItem({label:locale.get("exportTitle"),type:"normal",icon:"images/export.png"}),importStations=new nw.MenuItem({label:locale.get("importTitle"),type:"normal",icon:"images/import.png"}),menu=new nw.Menu,menuLi=new nw.Menu;menu.append(addStationItem),menu.append(separator),menu.append(exportStations),menu.append(importStations),menuLi.append(addStationItem),menuLi.append(separator),menuLi.append(copyStationItem),menuLi.append(editStationItem),menuLi.append(separator),menuLi.append(removeStationItem),menuLi.append(separator),menuLi.append(exportStations),menuLi.append(importStations);const clipboard=nw.Clipboard.get();class App extends EventDispatcher{#t=null;#e=null;audio=null;audioCtx=null;genreList=null;presets={};presetsIndex=0;presetsSelectIndex=-1;presetsNames=[];presetTime=0;radioList=null;resolve=null;reject=null;sourceNode=null;tray=null;vizualizer=null;vizualizerCanvas=null;vizualizerStart=0;visualTime=0;constructor(t,e,i){super(),this.tray=null,this.audioCtx=null,this.sourceNode=null,this.win=t,this.window=e,this.document=i,init_server=!1,this.title=locale.get("appName"),this.GLOB_SERVER={HOST:"localhost",PORT:0,URL:""},this.#e=new Promise((t,e)=>{this.resolve=t,this.reject=e}),player=require("./audioplayer.js")(this.window,this.document),this.audio=player.audio,this.dialogSettings=this.document.querySelector("dialog.settings-block"),this.dialogBox=this.document.querySelector("dialog.dialogBox"),this.appBlock=this.document.querySelector("dialog.appBlock"),this.radioList=this.document.querySelector("ul#radio-list"),this.genreList=this.document.querySelector("ul#genre"),this.vizualizerCanvas=this.document.querySelector(".vizualizer canvas"),this.presets=Object.fromEntries(Object.entries(Object.assign({},this.window.butterchurnPresets.getPresets(),this.window.butterchurnPresetsExtra.getPresets(),this.window.butterchurnPresetsExtra2.getPresets())).sort((t,e)=>t[0].localeCompare(e[0]))),this.presetsNames=Object.keys(this.presets),this.presetsIndex=!!this.presetsNames.length&&0,this.presetsSelectIndex=-1,this.visualTime=0,this.vizualizer=null,this.vizualizerStart=0,this.initDocument(),this.startImageServer(4e3),this.window.navigator.mediaSession.setActionHandler("play",this.play.bind(this)),this.window.navigator.mediaSession.setActionHandler("pause",this.stop.bind(this)),this.window.navigator.mediaSession.setActionHandler("previoustrack",this.prev.bind(this)),this.window.navigator.mediaSession.setActionHandler("nexttrack",this.next.bind(this)),isOnline=this.window.navigator.onLine,this.window.addEventListener("online",this.updateOnlineStatus.bind(this)),this.window.addEventListener("offline",this.updateOnlineStatus.bind(this)),nwdialog.context=this.document,process.on("uncaughtException",t=>{this.console.error("Необработанное исключение:"),this.console.log(t.message),this.console.error("Стек:"),this.console.log(t.stack)}),process.on("unhandledRejection",(t,e)=>{this.console.error("Необработанное отклонение промиса:"),this.console.log(t),this.console.error("Промис:"),this.console.log(e)})}disableDragDrop(t){return t.preventDefault(),!1}updateOnlineStatus(t){switch(t.type){case"online":isOnline=!0,isPlaying?(this.stop(),this.play()):this.stop();break;case"offline":isOnline=!1,this.stop()}}log(...t){this.console.dir(...t)}error(...t){this.console.error(...t)}get console(){return this.window.console}initDocument(){this.win.icon="favicon.png",this.tray=new nw.Tray({title:locale.get("appName"),tooltip:locale.get("appName"),icon:"favicon.png"});const t=new nw.Menu,e=new nw.MenuItem({label:""+locale.get("close"),icon:"images/tray_close.png",click:()=>{this.win.close()}}),i=new nw.MenuItem({label:""+locale.get("minimize"),icon:"images/tray_minimize.png",click:()=>{win_state?(this.win.minimize(),i.label=""+locale.get("restore")):(this.win.show(),this.win.setShowInTaskbar(!1),i.label=""+locale.get("minimize"))}});this.tray.menu=t,t.append(i),t.append(e),this.tray.on("click",()=>{win_state?(this.win.minimize(),i.label=""+locale.get("restore")):(this.win.show(),i.label=""+locale.get("minimize"))});this.document.querySelector("#minimized");const s=this.document.querySelector("#restored"),a=(this.document.querySelector("#close"),this.document.querySelector("#settings"),this.document.querySelector("#fullscreen")),n=s.querySelector("svg path"),o=a.querySelector("svg path");this.document.addEventListener("click",async t=>{const e=t.target.id;if(["minimized","restored","close","settings","fullscreen","noSettings","okSettings"].includes(e)){t.preventDefault();var i=this.dialogSettings.querySelector("#clear_stations"),s=this.dialogSettings.querySelector("#loadDefault"),a=this.dialogSettings.querySelector("#notify"),n=this.dialogSettings.querySelector("#custombg"),o=this.dialogSettings.querySelector("#presetsRandom"),r=this.dialogSettings.querySelector("#selectPreset"),l=this.dialogSettings.querySelector("#background");switch(e){case"minimized":case"restored":case"close":"minimized"==e?this.win.minimize():"close"==e?this.win.close():isMaximized?this.win.restore():this.win.maximize();break;case"settings":this.document.querySelector("main").classList.add("saving");var c=this.dialogSettings.querySelector(".preview"),d=(new Date).getTime(),h=this.document.createElement("input");h.type="file",h.accept="image/*",h.id="background",r.innerHTML="";var u=this.document.createElement("option");for(var p in u.value="-1",u.textContent=locale.get("selectPresetNo"),r.append(u),this.presetsNames){const t=this.document.createElement("option");t.value=p,t.textContent=this.presetsNames[p],r.append(t)}r.value=dataStations.presetindex,this.dialogSettings.querySelector("#background").parentNode.replaceChild(h,this.dialogSettings.querySelector("#background")),this.dialogSettings.showModal(),i.checked=!1,s.checked=!1,a.checked=Boolean(dataStations.notify),n.checked=Boolean("string"==typeof dataStations.custombg),dataStations.custombg&&fs.existsSync(path.join(this.DATA_DIR,"background",`${dataStations.custombg}`))?c.setAttribute("style",`--background-config: url(${this.GLOB_SERVER.URL}/background/${dataStations.custombg})`):(c.removeAttribute("style"),n.checked=!1,dataStations.custombg=0),n.dispatchEvent(new Event("input")),o.checked=!!dataStations.presetsRandom,dataStations.presetsRandom=o.checked,o.dispatchEvent(new Event("input"));break;case"fullscreen":clearTimeout(m),this.document.fullscreenElement?(this.offVizualizer(),this.document.exitFullscreen(),this.document.body.classList.contains("fullscreen")&&this.document.body.classList.remove("fullscreen")):(!this.document.body.classList.contains("fullscreen")&&this.document.body.classList.add("fullscreen"),this.document.querySelector(".vizualizer").requestFullscreen(),this.onVizualizer());break;case"noSettings":this.dialogSettings.close(),this.document.querySelector("main").classList.remove("saving");break;case"okSettings":if(this.document.body.removeAttribute("style"),this.document.querySelector("main").classList.remove("saving"),dataStations.notify=a.checked,dataStations.presetsRandom=o.checked,this.presetsSelectIndex=Number(r.value),dataStations.presetindex=this.presetsSelectIndex,i.checked&&(this.clearStattions(),this.saveStations(),this.readListStations(),s.checked&&(this.defaultListStations(),this.saveStations())),!i.checked&&s.checked&&(this.clearStattions(),this.saveStations(),this.defaultListStations(),this.saveStations()),n.checked)if(l.files.length){this.document.createElement("canvas").getContext("2d");var g=l.files[0];if(!g.type.startsWith("image/"))return this.window.alert("Файл не поддерживается"),!1;g=l.files[0].path.replace(/\\/g,"/"),d=(new Date).getTime();const t=new Image;t.onload=t=>{const e=path.extname(g);dataStations.custombg=`${d+e}`,fs.copyFileSync(g,path.normalize(path.join(this.DATA_DIR,"background",`${dataStations.custombg}`))),this.setStyleBackground(),this.dialogSettings.close()},t.onerror=t=>{dataStations.custombg=0,this.setStyleBackground(),this.dialogSettings.close()},t.src=g}else fs.existsSync(path.join(this.DATA_DIR,"background",`${dataStations.custombg}`))?(this.setStyleBackground(),this.dialogSettings.close()):(this.document.body.removeAttribute("style"),dataStations.custombg=0,this.setStyleBackground(),this.dialogSettings.close());else dataStations.custombg=0,this.setStyleBackground(),this.dialogSettings.close()}return!1}if("a"===t.target.tagName.toLowerCase()&&"_blank"==t.target.getAttribute("target"))return t.preventDefault(),nw.Shell.openExternal(t.target.href),!1}),this.genreList.addEventListener("click",t=>{t.preventDefault();const e=t.target,i=e.dataset.filter;return[...this.genreList.querySelectorAll("li")].forEach(t=>{t.classList.remove("active")}),e.classList.add("active"),[...this.radioList.querySelectorAll("li")].forEach(t=>{t.classList.remove("hidden"),"all"!==i&&!t.classList.contains(i)&&t.classList.add("hidden")}),this.scrollActive(),!1}),this.document.addEventListener("input",t=>{t.preventDefault();const e=t.target;var i,s;if("custombg"==e.id){var a=this.document.querySelector(".customBg");e.checked?a.classList.remove("hidden-block"):a.classList.add("hidden-block")}if("background"==e.id)if(e.files.length){var n=e.files[0].path.replace(/\\/g,"/");this.document.querySelector(".preview").setAttribute("style",`--background-config: url(${n})`)}else this.document.querySelector(".preview").removeAttribute("style");"range"==e.type&&(i=Math.min(e.max,Math.max(e.min,parseFloat(e.value))),"volume"===e.id&&(e.setAttribute("style",`--background-range: ${i}%;`),player.volume=i/100,(s=this.document.querySelector(".left span.writ"))&&(s.textContent=`${parseInt(i)}%`,s.classList.add("visible"),clearTimeout(settime),settime=setTimeout(()=>{s.classList.remove("visible")},2e3))));return!1}),this.document.addEventListener("mousewheel",t=>{const e=t.target;if("range"==e.type){var i=t.wheelDelta,s=parseFloat(e.min),a=parseFloat(e.max),n=parseFloat(e.value),o=parseFloat(e.step);if(e.value=Math.min(a,Math.max(s,n+(i>0?o:-o))),"input"===e.id)this.volume=e.value;else e.dispatchEvent(new Event("input",{bubbles:!0,composed:!0}))}}),this.document.addEventListener("radio:click",t=>{const e=t.target;if(!isOnline)return e.classList.remove("play"),e.classList.remove("preload"),void e.classList.add("stop");[...this.radioList.querySelectorAll("li")].forEach(t=>{t.dataset.id!==e.dataset.id?(t.classList.remove("active"),t.classList.remove("play"),t.classList.remove("preload"),t.classList.add("stop")):t.classList.add("active")}),dataStations.active=e.dataset.id,e.classList.contains("play")?(isPlaying=!0,this.play()):e.classList.contains("stop")&&(isPlaying=!1,this.stop())}),player.addEventListener("statechange",t=>{const e=this.radioList.querySelector("li.active");if(e)switch(t.audioev){case"play":case"playing":e.classList.remove("stop"),e.classList.add("play"),e.classList[t.bufering?"add":"remove"]("preload");break;case"stop":e.classList.remove("preload"),e.classList.remove("play"),e.classList.add("stop")}}),this.updateLocale(),nw.Screen.Init();var r=nw.App.manifest.window.width,l=nw.App.manifest.window.height,c=nw.Screen.screens[0],d=(parseInt(c.bounds.x+(c.bounds.width-r)/2),parseInt(c.bounds.y+(c.bounds.height-l)/2),c.work_area.width),h=c.work_area.height;let m;l=l>h?h:l,r=r>d?d:r,this.win.setMinimumSize(r,l),this.win.on("maximize",t=>{isMaximized=!0,n.setAttribute("d","m 2,1e-5 0,2 -2,0 0,8 8,0 0,-2 2,0 0,-8 z m 1,1 6,0 0,6 -1,0 0,-5 -5,0 z m -2,2 6,0 0,6 -6,0 z"),s.setAttribute("title",locale.get("restore")),i.label=""+locale.get("minimize"),i.icon="images/tray_minimize.png",this.win.setShowInTaskbar(!0),win_state=!0,this.scrollActive()}).on("restore",t=>{isMaximized=!1,s.setAttribute("title",locale.get("default")),n.setAttribute("d","M 0,0 0,10 10,10 10,0 Z M 1,1 9,1 9,9 1,9 Z"),i.label=""+locale.get("minimize"),i.icon="images/tray_minimize.png",a.setAttribute("title",locale.get("fullscreenOn")),o.setAttribute("d","M5.828 10.172a.5.5 0 0 0-.707 0l-4.096 4.096V11.5a.5.5 0 0 0-1 0v3.975a.5.5 0 0 0 .5.5H4.5a.5.5 0 0 0 0-1H1.732l4.096-4.096a.5.5 0 0 0 0-.707zm4.344 0a.5.5 0 0 1 .707 0l4.096 4.096V11.5a.5.5 0 1 1 1 0v3.975a.5.5 0 0 1-.5.5H11.5a.5.5 0 0 1 0-1h2.768l-4.096-4.096a.5.5 0 0 1 0-.707zm0-4.344a.5.5 0 0 0 .707 0l4.096-4.096V4.5a.5.5 0 1 0 1 0V.525a.5.5 0 0 0-.5-.5H11.5a.5.5 0 0 0 0 1h2.768l-4.096 4.096a.5.5 0 0 0 0 .707zm-4.344 0a.5.5 0 0 1-.707 0L1.025 1.732V4.5a.5.5 0 0 1-1 0V.525a.5.5 0 0 1 .5-.5H4.5a.5.5 0 0 1 0 1H1.732l4.096 4.096a.5.5 0 0 1 0 .707z"),this.win.setShowInTaskbar(!0),win_state=!0,this.scrollActive()}).on("minimize",()=>{i.label=""+locale.get("restore"),i.icon="images/tray_"+(isMaximized?"maximize.png":"normal.png"),s.setAttribute("title",isMaximized?locale.get("restore"):locale.get("default")),this.win.setShowInTaskbar(!1),win_state=!1}).on("enter-fullscreen",()=>{a.setAttribute("title",locale.get("fullscreenOff")),o.setAttribute("d","M.2 15.8c.2.2.5.2.7 0L5 11.7v2.8c0 .3.2.5.5.5s.5-.2.5-.5v-4c0-.3-.2-.5-.5-.5h-4c-.3 0-.5.2-.5.5s.2.5.5.5h2.8L.2 15.1c-.2.2-.2.5 0 .7zm15.6 0c-.2.2-.5.2-.7 0L11 11.7v2.8c0 .3-.2.5-.5.5s-.5-.2-.5-.5v-4c0-.3.2-.5.5-.5h4c.3 0 .5.2.5.5s-.2.5-.5.5h-2.8l4.1 4.1c.2.2.2.5 0 .7zm0-15.6c-.2-.2-.5-.2-.7 0L11 4.3V1.5c0-.3-.2-.5-.5-.5s-.5.2-.5.5v4c0 .3.2.5.5.5h4c.3 0 .5-.2.5-.5s-.2-.5-.5-.5h-2.8L15.8.9c.2-.2.2-.5 0-.7zM.2.2c.2-.2.5-.2.7 0L5 4.3V1.5c0-.3.2-.5.5-.5s.5.2.5.5v4c0 .3-.2.5-.5.5h-4c-.3 0-.5-.2-.5-.5s.2-.5.5-.5h2.8L.2.9C0 .7 0 .4.2.2z"),this.scrollActive()}).on("close",()=>{try{dataStations.notify&&chrome.notifications.clear(String(nw.App.manifest.name));var t=this.document.querySelector("main");t.classList.remove("saving"),t.classList.remove("loading"),this.document.body.classList.add("closing"),this.dialogSettings.open&&this.dialogSettings.close(),this.dialogBox.open&&this.dialogBox.close(),this.document.querySelector("main").classList.add("saving");try{this.tray.remove(),this.stop()}catch(t){}this.saveStations(),setTimeout(()=>this.win.close(!0),1100)}catch(t){this.console.log(t)}}),"dragover dragenter dragleave dragend".split(" ").forEach(t=>{this.window.addEventListener(t,this.disableDragDrop)}),this.document.body.addEventListener("dragstart",this.disableDragDrop),this.document.body.addEventListener("drop",this.disableDragDrop),new this.window.Sortable(this.radioList,{animation:50,direction:"vertical",handle:".radio-item-handler",scroll:!1,onChoose:()=>{"dragover dragenter dragleave dragend".split(" ").forEach(t=>{this.window.removeEventListener(t,this.disableDragDrop)}),this.document.body.removeEventListener("dragstart",this.disableDragDrop),this.document.body.removeEventListener("drop",this.disableDragDrop)},onStart:()=>{"dragover dragenter dragleave dragend".split(" ").forEach(t=>{this.window.removeEventListener(t,this.disableDragDrop)}),this.document.body.removeEventListener("dragstart",this.disableDragDrop),this.document.body.removeEventListener("drop",this.disableDragDrop)},onEnd:()=>{this.saveStations(),"dragover dragenter dragleave dragend".split(" ").forEach(t=>{this.window.addEventListener(t,this.disableDragDrop)}),this.document.body.addEventListener("dragstart",this.disableDragDrop),this.document.body.addEventListener("drop",this.disableDragDrop)}}),this.document.addEventListener("contextmenu",t=>{if(!this.document.fullscreenElement){if(addStationItem.click=()=>{this.addStation(),addStationItem.click=null},exportStations.click=()=>{this.exportStations(),exportStations.click=null},importStations.click=()=>{this.importStations(),importStations.click=null},t.target.classList.contains("radio-item")||t.target.closest("li.radio-item")){t.preventDefault();const e=t.target.classList.contains("radio-item")?t.target:t.target.closest("li.radio-item"),{id:i,name:s,genre:a,stream:n,title:o}=e.dataset;return copyStationItem.label=locale.get("copyTitle",[s]),editStationItem.label=locale.get("editTitle",[s]),removeStationItem.label=locale.get("deleteTitle",[s]),copyStationItem.click=()=>{copyStationItem.click=null,clipboard.set(n,"text"),this.dialogBox.setAttribute("type","alert");const t=this.dialogBox.querySelector(".wrap"),e=this.dialogBox.querySelector("#ok");this.dialogBox.querySelector("#cancel");t.innerHTML=`${locale.get("copyOk",[s])}<br><br>${n}`,e.onclick=t=>{e.onclick=null,this.dialogBox.open&&this.dialogBox.close()},this.dialogBox.showModal()},removeStationItem.click=()=>{removeStationItem.click=null,this.dialogBox.setAttribute("type","confirm");const t=this.dialogBox.querySelector(".wrap"),e=this.dialogBox.querySelector("#ok"),r=this.dialogBox.querySelector("#cancel");e.onclick=t=>{e.onclick=null,this.removeStation({id:i,name:s,genre:a,stream:n,title:o})},r.onclick=t=>{r.onclick=null,this.dialogBox.open&&this.dialogBox.close()},t.innerHTML=`${locale.get("deleteStation",[s])}`,this.dialogBox.showModal()},editStationItem.click=()=>{editStationItem.click=null,this.editStation({favicon:this.GLOB_SERVER.URL+`/${i}.png?${(new Date).getTime()}`,genre:a,genres:dataStations.genre,id:i,image:this.GLOB_SERVER.URL+`/${i}_big.png?${(new Date).getTime()}`,name:s,stream:n,title:o})},menuLi.popup(parseInt(t.screenX),parseInt(t.screenY)),!1}if(t.target.classList.contains("notcontext")||t.target.closest(".notcontext"))return t.preventDefault(),menu.popup(parseInt(t.screenX),parseInt(t.screenY)),!1}}),this.window.addEventListener("resize",t=>{this.document.fullscreenElement?!this.document.body.classList.contains("fullscreen")&&this.document.body.classList.add("fullscreen"):this.document.body.classList.contains("fullscreen")&&this.document.body.classList.remove("fullscreen"),this.document.fullscreenElement&&(this.vizualizerCanvas.width=this.window.screen.width,this.vizualizerCanvas.height=this.window.screen.height,this.vizualizer&&this.vizualizer.setRendererSize(this.window.screen.width,this.window.screen.height))}),this.document.querySelector("main").addEventListener("dblclick",t=>(t.preventDefault(),!!this.document.fullscreenElement&&(clearTimeout(m),this.offVizualizer(),this.document.exitFullscreen(),this.document.body.classList.contains("fullscreen")&&this.document.body.classList.remove("fullscreen"),!1))),this.document.body.addEventListener("mousemove",t=>{this.document.fullscreenElement?(clearTimeout(m),!this.document.body.classList.contains("mouse")&&this.document.body.classList.add("mouse"),m=setTimeout(()=>{this.document.body.classList.contains("mouse")&&this.document.body.classList.remove("mouse")},3e3)):this.document.body.classList.contains("mouse")&&this.document.body.classList.remove("mouse")}),this.initAudioSystem().then(t=>{}).catch(t=>{}),this.document.addEventListener("keydown",t=>{switch(t.code){case"Escape":clearTimeout(m),this.document.fullscreenElement&&(this.offVizualizer(),this.document.exitFullscreen(),this.document.body.classList.contains("fullscreen")&&this.document.body.classList.remove("fullscreen"));break;case"F11":clearTimeout(m),this.document.fullscreenElement?(this.offVizualizer(),this.document.exitFullscreen(),this.document.body.classList.contains("fullscreen")&&this.document.body.classList.remove("fullscreen")):(!this.document.body.classList.contains("fullscreen")&&this.document.body.classList.add("fullscreen"),this.document.querySelector("canvas").requestFullscreen(),this.onVizualizer())}})}initAudioSystem(){return new Promise((t,e)=>{try{this.audioCtx||(this.audioCtx=new(window.AudioContext||window.webkitAudioContext),this.sourceNode=this.audioCtx.createMediaElementSource(this.audio),this.sourceNode.connect(this.audioCtx.destination)),this.vizualizer||(this.vizualizer=butterchurn.createVisualizer(this.audioCtx,this.vizualizerCanvas,{width:this.window.screen.width,height:this.window.screen.height})),t()}catch(t){e(t)}})}getPreset(){clearTimeout(this.presetTime),dataStations.presetindex>-1?this.presetsIndex=this.presetsSelectIndex:(dataStations.presetsRandom?(this.presetsIndex=Math.floor(Math.random()*this.presetsNames.length),dataStations.presetsRandom=!0):(this.presetsIndex=(this.presetsIndex+1)%this.presetsNames.length,dataStations.presetsRandom=!1),this.presetsNames.length&&this.vizualizer.loadPreset(this.presets[this.presetsNames[this.presetsIndex]],1)),this.presetTime=setTimeout(this.getPreset.bind(this),1e4)}onVizualizer(){this.initAudioSystem().then(t=>{this.vizualizer.connectAudio(this.sourceNode),this.presetsSelectIndex>=0?this.vizualizer.loadPreset(this.presets[this.presetsNames[this.presetsSelectIndex]],0):this.vizualizer.loadPreset(this.presets[this.presetsNames[this.presetsIndex]],0),this.visualTime=this.window.requestAnimationFrame(this.renderAnimated.bind(this)),this.vizualizerStart=setTimeout(()=>{const t=this.radioList.querySelector("li.active").dataset.title;this.vizualizer.launchSongTitleAnim(`${t}`)},2e3),this.getPreset()}).catch(t=>{this.console.error(t)})}offVizualizer(){clearTimeout(this.vizualizerStart),clearTimeout(this.presetTime),this.initAudioSystem().then(()=>{this.window.cancelAnimationFrame(this.visualTime);try{this.vizualizer.disconnectAudio(this.sourceNode)}catch(t){}}).catch(t=>{this.console.error(t)})}renderAnimated(){null!=this.vizualizer&&this.vizualizer.render(),this.visualTime=this.window.requestAnimationFrame(this.renderAnimated.bind(this))}startImageServer(t){const e={title:"",text:""},i=http.createServer((t,i)=>{if("GET"!==t.method)return i.writeHead(404,{"Content-Type":"text/html; charset=utf8"}),e.title=locale.get("NotFound"),e.text=locale.get("NotFoundText"),void i.end(errorTpl(e));if(!t.url.startsWith("/"))return i.writeHead(403,{"Content-Type":"text/html; charset=utf8"}),e.title=locale.get("Forbidden"),e.text=locale.get("ForbiddenText"),void i.end(errorTpl(e));const s=t.url.indexOf("?"),a=-1===s?t.url:t.url.substring(0,s),n=this.window.decodeURIComponent(a.substring(1)),o=path.join(DATA_DIR,n),r=path.resolve(DATA_DIR),l=path.resolve(o);if(""==String(n).trim()||!l.startsWith(r))return i.writeHead(403,{"Content-Type":"text/html; charset=utf8"}),e.title=locale.get("Forbidden"),e.text=locale.get("ForbiddenText"),void i.end(errorTpl(e));fs.readFile(o,(t,s)=>{if(t)return i.writeHead(404,{"Content-Type":"text/html; charset=utf8"}),e.title=locale.get("NotFound"),e.text=locale.get("NotFoundText"),void i.end(errorTpl(e));path.extname(n).toLowerCase();let a=mime.getType(path.extname(n).toLowerCase());a=a||"application/octet-stream",i.writeHead(200,{"Content-Type":a,"Cache-Control":"no-cache, no-store, must-revalidate",Pragma:"no-cache",Expires:"0"}),i.end(s)})});i.listen(t,()=>{const t=i.address().port;this.GLOB_SERVER.PORT=t,this.GLOB_SERVER.URL=`http://${this.GLOB_SERVER.HOST}:${this.GLOB_SERVER.PORT}`,this.resolve()}),i.on("error",e=>{if("EADDRINUSE"===e.code)return t<4101?void this.startImageServer(t+1):void this.reject(locale.get("ErrorServerPort",[String(t)]));this.reject("Server error: "+JSON.stringify(e.code,null,"\t"))})}updateLocale(){[...this.document.querySelectorAll("[data-i18n]")].forEach(t=>{const e=t.dataset.i18n;t.textContent=locale.get(e)}),[...this.document.querySelectorAll("[data-i18n-title]")].forEach(t=>{const e=t.dataset.i18nTitle;t.setAttribute("title",locale.get(e))})}setStyleBackground(){this.document.querySelector("#background").value="","string"==typeof dataStations.custombg?fs.existsSync(path.join(this.DATA_DIR,"background",`${dataStations.custombg}`))?(this.document.body.setAttribute("style",`--background-config: url(${this.GLOB_SERVER.URL}/background/${dataStations.custombg})`),this.document.querySelector(".preview").setAttribute("style",`--background-config: url(${this.GLOB_SERVER.URL}/background/${dataStations.custombg})`),[...fs.readdirSync(path.join(this.DATA_DIR,"background"),{withFileTypes:!0})].filter(t=>!!t.isFile()&&t.name!==`${dataStations.custombg}`).map(t=>path.join(path.join(this.DATA_DIR,"background"),t.name)).forEach(t=>{try{fs.unlinkSync(t)}catch(t){this.log(t)}})):(dataStations.custombg=0,this.document.body.removeAttribute("style"),this.document.querySelector(".preview").removeAttribute("style"),[...fs.readdirSync(path.join(this.DATA_DIR,"background"),{withFileTypes:!0})].filter(t=>t.isFile()).map(t=>path.join(path.join(this.DATA_DIR,"background"),t.name)).forEach(t=>{try{fs.unlinkSync(t)}catch(t){this.log(t)}})):([...fs.readdirSync(path.join(this.DATA_DIR,"background"),{withFileTypes:!0})].filter(t=>t.isFile()).map(t=>path.join(path.join(this.DATA_DIR,"background"),t.name)).forEach(t=>{try{fs.unlinkSync(t)}catch(t){this.log(t)}}),this.document.body.removeAttribute("style"),this.document.querySelector(".preview").removeAttribute("style"))}blobToBuffer(t){return new Promise((e,i)=>{"undefined"!=typeof Blob&&t instanceof Blob||i("first argument must be a Blob");const s=new FileReader,a=t=>{s.removeEventListener("loadend",a,!1),t.error?i(t.error):e(Buffer.from(s.result))};s.addEventListener("loadend",a,!1),s.readAsArrayBuffer(t)})}defaultListStations(){this.stop();const t=this.genreList,e=this.radioList,i=new Set;for(fs.existsSync(DATA_DIR)||fs.mkdirSync(DATA_DIR,{recursive:!0,force:!0}),[...fs.readdirSync(this.DATA_DIR,{withFileTypes:!0})].filter(t=>t.isFile()).map(t=>path.join(this.DATA_DIR,t.name)).forEach(t=>{try{fs.unlinkSync(t)}catch(t){this.log(t)}});e.firstChild;)e.removeChild(e.firstChild);for(;t.firstChild;)t.removeChild(t.firstChild);const s={active:0,genre:[],notify:!0,presetindex:dataStations.presetindex,presetsRandom:dataStations.presetsRandom,stations:{},volume:player.volume,custombg:0};var a=0;dataStations.custombg&&(a=dataStations.custombg),dataStations=Object.assign({active:0,genre:[],notify:!0,presetindex:-1,presetsRandom:!1,stations:{},volume:player.volume,custombg:a},JSON.parse(fs.readFileSync(SOURCE_FILE).toString()));for(const t in dataStations.stations){dataStations.stations[t];const{favicon:a,genre:n,id:o,image:r,name:l,stream:c}=dataStations.stations[t],d=a.split(";base64,").pop(),h=r.split(";base64,").pop();for(const t in n)""!==String(n[t]).trim()&&i.add(String(n[t]).trim());s.stations[t]={genre:n,id:o,name:l,stream:c};try{fs.writeFileSync(path.join(this.DATA_DIR,`${o}.png`),d,{encoding:"base64"}),fs.writeFileSync(path.join(this.DATA_DIR,`${o}_big.png`),h,{encoding:"base64"});const t=new StationEl({genre:n,id:o,name:l,stream:c},this.document,this.GLOB_SERVER.URL);e.append(t.li),dataStations.active==o&&t.li.classList.add("active"),t.li.classList.add("stop")}catch(t){this.log(t)}}genres=[...i].sort((t,e)=>t.localeCompare(e)),t.innerHTML='<li class="genre_item active" data-filter="all"><span>Все</span></li>';for(const e in genres){const i=this.document.createElement("li"),s=this.document.createElement("span"),a=`${tagTranslit(String(genres[e]).trim())}`;i.append(s),s.textContent=String(genres[e]).trim(),t.append(i),i.classList.add("genre_item"),i.dataset.filter=a}this.volume=100*s.volume,s.genre=genres,s.active=dataStations.active,s.notify=dataStations.notify,s.genre=dataStations.genre.sort((t,e)=>t.localeCompare(e)),s.volume=this.volume/100,s.custombg=dataStations.custombg=a,stations=Object.assign({},s.stations);try{fs.writeFileSync(path.join(this.DATA_DIR,"data.json"),JSON.stringify(s,null,"\t"))}catch(t){this.log(t)}this.scrollActive(),this.setStyleBackground()}readListStations(t=!0){const e=this.genreList,i=this.radioList,s=new Set;for(this.stop();i.firstChild;)i.removeChild(i.firstChild);for(;e.firstChild;)e.removeChild(e.firstChild);const a=path.join(this.DATA_DIR,"data.json");var n=JSON.parse(fs.readFileSync(a).toString());dataStations=Object.assign({active:0,genre:[],notify:!0,presetindex:-1,presetsRandom:!1,stations:{},volume:1,custombg:0},n);for(const t in dataStations.stations){dataStations.stations[t];const{genre:e,id:a,name:n,stream:r}=dataStations.stations[t];try{var o=new StationEl({genre:e,id:a,name:n,stream:r},this.document,this.GLOB_SERVER.URL);i.append(o.li),dataStations.active==a&&o.li.classList.add("active"),o.li.classList.add("stop");for(const t in e)""!==String(e[t]).trim()&&s.add(String(e[t]).trim())}catch(t){this.log(t)}}genres=[...s].sort((t,e)=>t.localeCompare(e)),e.innerHTML='<li class="genre_item active" data-filter="all"><span>Все</span></li>';for(const t in genres){const i=this.document.createElement("li"),s=this.document.createElement("span"),a=`${tagTranslit(String(genres[t]).trim())}`;i.append(s),s.textContent=String(genres[t]).trim(),e.append(i),i.classList.add("genre_item"),i.dataset.filter=a}dataStations.genre=genres,this.volume=100*dataStations.volume,stations=Object.assign({},dataStations.stations),t&&this.scrollActive(),this.setStyleBackground()}showAppBlock(t="insert",e){const i=Object.assign({type:t},e),s="insert"==i.type?locale.get("insertTitle"):locale.get("editTitle",[i.name]);this.appBlock.innerHTML=`<div class="modal clearfix"><div class="modal-dialog"><div class="modal-wrapper"><div class="cropie_big"></div><h2 class="modal-title text-center">${s}</h2><div class="modal-inputs row"><label class="modal-label container"><input class="control name" type="text" value="" placeholder="${locale.get("insertName")}"><span>${locale.get("insertName")}</span></label><label class="modal-label container"><input class="control stream" type="text" value="" placeholder="${locale.get("inserStream")}"><span>${locale.get("inserStream")}</span></label></div><div class="modal-crop"><div class="cropie"></div><div class="modal-fileicon"><div class="fileicon icon-add-photo" title="${locale.get("addIcon")}"></div></div></div><div class="modal-tags"><tags-editor list="${i.genre.toString()}" genre="${i.genres.toString()}"></tags-editor></div><div class="modal-buttons"><button class="control ok" type="button">${locale.get("ok")}</button><button class="control cancel" type="button">${locale.get("cancel")}</button></div></div></div></div>`;const a=this.dialogBox.querySelector("#ok"),n=this.dialogBox.querySelector(".wrap");this.dialogBox.setAttribute("type","alert"),a.onclick=t=>{this.dialogBox.open&&this.dialogBox.close()};const o=this.appBlock.querySelector("button.ok"),r=this.appBlock.querySelector("button.cancel"),l=this.appBlock.querySelector(".fileicon"),c=this.appBlock.querySelector("tags-editor"),d=this.appBlock.querySelector("input.name"),h=this.appBlock.querySelector("input.stream");c.setAttribute("list",i.genre.toString()),c.setAttribute("genre",i.genres.toString()),d.value=i.name,h.value=i.stream;const m=new this.window.Croppie(this.appBlock.querySelector(".cropie_big"),{viewport:{width:360,height:180,type:"square"},boundary:{width:360,height:180},showZoomer:!1,mouseWheelZoom:!1,enableExif:!1,enableZoomenableZoom:!1});m.bind({url:"insert"==i.type?`${this.GLOB_SERVER.URL}/image_big.png`:i.image});const u=new this.window.Croppie(this.appBlock.querySelector(".cropie"),{viewport:{width:180,height:180,type:"circle"},boundary:{width:180,height:180},showZoomer:!0,enableOrientation:!0,mouseWheelZoom:!0,enableExif:!0});u.bind({url:"insert"==i.type?`${this.GLOB_SERVER.URL}/image_big.png`:i.image}),l.onclick=t=>{nwdialog.openFileDialog([".jpeg",".jpg",".png"],t=>{t&&(t="file:///"+t.split("\\").join("/"),u.bind({url:t}),m.bind({url:t}))})},o.onclick=async t=>{if(!String(d.value).trim())return n.innerHTML=locale.get("editNameAlert"),void this.dialogBox.showModal();if(!String(h.value).trim())return n.innerHTML=locale.get("editStreamAlert"),void this.dialogBox.showModal();try{fs.existsSync(path.normalize(path.join(this.DATA_DIR,`${i.id}.png`)))&&fs.unlinkSync(path.normalize(path.join(this.DATA_DIR,`${i.id}.png`))),fs.existsSync(path.normalize(path.join(this.DATA_DIR,`${i.id}_big.png`)))&&fs.unlinkSync(path.normalize(path.join(this.DATA_DIR,`${i.id}_big.png`)))}catch(t){}try{let t=await u.result({type:"base64",size:"viewport",format:"png",quality:1,circle:!0}),e=await m.result({type:"base64",size:"viewport",format:"png",quality:1,circle:!1});t=t.split(";base64,").pop(),e=e.split(";base64,").pop(),i.id="insert"==i.type?(new Date).getTime():i.id,fs.writeFileSync(path.normalize(path.join(this.DATA_DIR,`${i.id}.png`)),t,{encoding:"base64"}),fs.writeFileSync(path.normalize(path.join(this.DATA_DIR,`${i.id}_big.png`)),e,{encoding:"base64"});const s="insert"==i.type?this.document.createElement("li"):this.radioList.querySelector(`li[data-id="${i.id}"]`);d.value=String(d.value).trim(),h.value=String(h.value).trim(),s.setAttribute("data-id",i.id),s.setAttribute("data-name",d.value),s.setAttribute("data-title",d.value),s.setAttribute("data-stream",h.value),s.setAttribute("data-genre",c.getAttribute("list").trim()),"insert"==i.type&&this.radioList.append(s),this.saveStations(),this.readListStations(!1),setTimeout(()=>{this.scrollToEl(this.radioList.querySelector(`li[data-id="${i.id}"]`))},10)}catch(t){return this.console.error(t),n.innerHTML=locale.get("errorSaveMessageAlert"),void this.dialogBox.showModal()}u.destroy(),m.destroy(),o.onclick=null,r.onclick=null,a.onclick=null,this.appBlock.close(),this.appBlock.innerHTML=""},r.onclick=t=>{o.onclick=null,r.onclick=null,a.onclick=null,this.appBlock.close(),this.appBlock.innerHTML=""},this.appBlock.showModal()}addStation(){this.stop(),this.showAppBlock("insert",{favicon:"",genre:[],genres:dataStations.genre,id:(new Date).getTime(),image:"",name:"",stream:"",title:""})}editStation(t){this.stop(),this.showAppBlock("edit",t)}removeStation(t){var e=this.radioList.querySelector(`[data-id="${t.id}"]`);if(e){var i=player.isPlaying();this.stop(),e.remove(),this.saveStations();var s=path.normalize(path.join(this.DATA_DIR,`${t.id}.png`)),a=path.normalize(path.join(this.DATA_DIR,`${t.id}_big.png`));fs.existsSync(s)&&fs.unlinkSync(s),fs.existsSync(a)&&fs.unlinkSync(a),setTimeout(()=>{this.readListStations(!1),i&&this.play()},10)}this.dialogBox.open&&this.dialogBox.close()}exportStations(){try{var t={active:dataStations.active,custombg:!1,genre:[],notify:dataStations.notify,presetindex:dataStations.presetindex,presetsRandom:!!dataStations.presetsRandom,stations:{},volume:dataStations.volume};if(dataStations.custombg){var e=path.normalize(path.join(this.DATA_DIR,"background",dataStations.custombg));if(fs.existsSync(e)){const i=path.extname(e).toLowerCase(),s=mime.getType(i);if(s)try{const i=fs.readFileSync(e,{encoding:"base64"});t.custombg=`data:${s};base64,${i}`}catch(e){t.custombg=!1}else t.custombg=!1}}const i=new Set;for(const e in dataStations.stations){const s=fs.readFileSync(path.normalize(path.join(this.DATA_DIR,`${e}.png`)),{encoding:"base64"}),a=fs.readFileSync(path.normalize(path.join(this.DATA_DIR,`${e}_big.png`)),{encoding:"base64"});dataStations.stations[e].genre.forEach(t=>{i.add(t)}),t.stations[e]={favicon:`data:image/png;base64,${s}`,genre:dataStations.stations[e].genre,id:e,image:`data:image/png;base64,${a}`,name:dataStations.stations[e].name,stream:dataStations.stations[e].stream}}t.genre=[...i].filter(t=>""!==t).sort((t,e)=>t.localeCompare(e));const s=JSON.stringify(t);nwdialog.saveFileDialog("radio-export",".json",function(t){fs.writeFile(t,s,"utf8",t=>{if(t)throw"Error write file json"})})}catch(t){const e=this.dialogBox.querySelector("#ok"),i=this.dialogBox.querySelector(".wrap");this.dialogBox.setAttribute("type","alert"),i.innerHTML=locale.get("exportError"),this.dialogBox.showModal(),e.onclick=t=>{e.onclick=null,this.dialogBox.open&&this.dialogBox.close()}}}importStations(){try{this.console.log("ИМПОРТ"),nwdialog.openFileDialog([".json"],!1,t=>{!1!==t&&(player.stop(),this.console.log(t),this.document.querySelector("main").classList.add("saving"),setTimeout(()=>{const e=fs.readFileSync(t).toString(),i=JSON.parse(e);this.stop();const s=this.genreList,a=this.radioList,n=new Set;for(fs.existsSync(path.join(DATA_DIR,"background"))||fs.mkdirSync(path.join(DATA_DIR,"background"),{recursive:!0,force:!0}),[...fs.readdirSync(this.DATA_DIR,{withFileTypes:!0})].filter(t=>t.isFile()).map(t=>path.join(this.DATA_DIR,t.name)).forEach(t=>{fs.unlinkSync(t)}),[...fs.readdirSync(path.join(DATA_DIR,"background"),{withFileTypes:!0})].filter(t=>t.isFile()).map(t=>path.join(this.DATA_DIR,"background",t.name)).forEach(t=>{fs.unlinkSync(t)});a.firstChild;)a.removeChild(a.firstChild);for(;s.firstChild;)s.removeChild(s.firstChild);const o={active:i.active,genre:[],notify:i.notify,presetindex:this.presetsSelectIndex,presetsRandom:!!i.presetsRandom,stations:{},volume:i.volume,custombg:!1};if(i.custombg){const t=i.custombg.split(",")[0].split(":")[1].split(";")[0];this.console.log(t);const e=mime.getExtension(t);if(this.console.log(e),e){const t=(new Date).getTime(),s=i.custombg.split(";base64,").pop();fs.writeFileSync(path.join(this.DATA_DIR,"background",`${t}.${e}`),s,{encoding:"base64"}),o.custombg=`${t}.${e}`}}for(const t in i.stations){const{favicon:e,genre:s,id:a,image:r,name:l,stream:c}=i.stations[t];o.stations[t]={genre:s,id:a,name:l,stream:c};for(const t in s)""!==String(s[t]).trim()&&n.add(String(s[t]).trim());const d=e.split(";base64,").pop(),h=r.split(";base64,").pop();fs.writeFileSync(path.join(this.DATA_DIR,`${a}.png`),d,{encoding:"base64"}),fs.writeFileSync(path.join(this.DATA_DIR,`${a}_big.png`),h,{encoding:"base64"})}o.genre=[...n].sort((t,e)=>t.localeCompare(e)),fs.writeFileSync(path.join(this.DATA_DIR,"data.json"),JSON.stringify(o,null,"\t")),this.readListStations(),this.document.querySelector("main").classList.remove("saving")},1e3))})}catch(t){const e=this.dialogBox.querySelector("#ok"),i=this.dialogBox.querySelector(".wrap");this.dialogBox.setAttribute("type","alert"),i.innerHTML=locale.get("importError"),this.dialogBox.showModal(),e.onclick=t=>{e.onclick=null,this.dialogBox.open&&this.dialogBox.close(),this.document.querySelector("main").classList.remove("saving")}}}saveStations(){const t=path.join(this.DATA_DIR,"data.json"),e=(this.genreList,[...this.radioList.querySelectorAll("li")]),i=new Set;var s=0;stations={};for(const t in e){const{id:a,name:n,stream:o,genre:r}=e[t].dataset,l=r.split(",").map(t=>String(t).trim());stations[a]={genre:l,id:a,name:n,stream:o};for(const t in l)""!==String(l[t]).trim()&&i.add(String(l[t]).trim());e[t].classList.contains("active")&&(s=a)}dataStations.active=s,dataStations.genre=[...i].sort((t,e)=>t.localeCompare(e)),dataStations.presetindex=this.presetsSelectIndex,dataStations.presetsRandom=!!dataStations.presetsRandom,dataStations.stations=stations,dataStations.volume=player.volume;try{fs.writeFileSync(t,JSON.stringify(dataStations,null,"\t")),["image_fav.png","image_big.png","favicon.ico"].forEach(t=>{fs.existsSync(path.join(this.DATA_DIR,`${t}`))||fs.copyFileSync(path.join(nw.__dirname,`${t}`),path.join(this.DATA_DIR,`${t}`))}),fs.existsSync(path.join(this.DATA_DIR,"background"))||fs.mkdirSync(path.join(this.DATA_DIR,"background"),{recursive:!0,force:!0})}catch(t){this.error(t)}}clearStattions(){const t=this.genreList,e=this.radioList;new Set;for(this.stop();e.firstChild;)e.removeChild(e.firstChild);for(;t.firstChild;)t.removeChild(t.firstChild);dataStations.active=0,dataStations.genre=[],dataStations.presetindex=this.presetsSelectIndex,dataStations.presetsRandom=!!dataStations.presetsRandom,dataStations.stations={},fs.existsSync(DATA_DIR)||fs.mkdirSync(DATA_DIR,{recursive:!0,force:!0}),[...fs.readdirSync(this.DATA_DIR,{withFileTypes:!0})].filter(t=>t.isFile()).map(t=>path.join(this.DATA_DIR,t.name)).forEach(t=>{try{fs.unlinkSync(t)}catch(t){this.log(t)}}),this.saveStations()}getMetaData(){metainterval&&clearTimeout(metainterval);const t=this.radioList.querySelector("li.active"),{id:e,name:i,stream:s,title:a}=t.dataset;icy.get(player.stream,s=>{const n=a.length>5?a:i;s.on("metadata",s=>{const a=icy.parse(s),o=String(a.StreamTitle).trim(),r=`${this.GLOB_SERVER.URL}/`+(fs.existsSync(path.join(this.DATA_DIR,`${e}_big.png`))?`${e}_big.png?`:"image_big.png?")+(new Date).getTime(),l=`${this.GLOB_SERVER.URL}/`+(fs.existsSync(path.join(this.DATA_DIR,`${e}.png`))?`${e}.png?`:"image_fav.png?")+(new Date).getTime();player.isPlaying()?(o.length>5?this.title=o+" | "+i+" | "+locale.get("appName"):(this.title=i+" | "+locale.get("appName"),dataStations.notify&&chrome.notifications.clear(String(nw.App.manifest.name))),o!==n&&o.length>5?(t.setAttribute("data-title",o),this.spawnNotification({icon:r,favicon:l,id:e,name:i,title:o})):t.setAttribute("data-title",n),metainterval=setTimeout(()=>this.getMetaData(),5e3)):(t.setAttribute("data-title",i),this.title=locale.get("appName"))}).on("error",e=>{this.console.log("err",e),player.isPlaying()?(this.title=i+" | "+locale.get("appName"),metainterval=setTimeout(()=>this.getMetaData(),5e3)):(t.setAttribute("data-title",i),this.title=locale.get("appName"))})})}spawnNotification(t){const{icon:e,favicon:i,id:s,name:a,title:n}=t;this.window.navigator.mediaSession.metadata=new this.window.MediaMetadata({title:a,artist:n,album:"",artwork:[{src:i,type:"image/png",sizes:"180x180"}]}),this.vizualizer&&this.vizualizer.launchSongTitleAnim(`${n}`);const o=path.join(DATA_DIR,`${s}.png`);try{dataStations.notify&&notifier.notify({title:a,message:n,icon:o,type:"info",sound:!1,id:"yourradio",appID:locale.get("appName"),application:nw.process.execPath})}catch(t){this.console.error(t)}}scrollToEl(t){const e=this.document.querySelector("main > .container > .row");if(!e)return;const i=e.getBoundingClientRect(),s=t.getBoundingClientRect(),a=s.top-i.top,n=a+s.height>i.height;a<0?(e.scrollTo({top:0,left:0}),t.scrollIntoView({block:"start"})):n&&t.scrollIntoView({block:"end"})}scrollActive(){const t=this.document.querySelector("#radio-list > li.active");t&&this.scrollToEl(t)}get title(){try{return this.document.title}catch(t){return""}}set title(t){try{this.win.name=t,this.win.title=t,this.document.title=t,this.document.querySelector("#TitleBar-text span").textContent=t}catch(t){}}get volume(){return volume}set volume(t){var e;Number.isNaN(Number(t))||(t=volume=Math.min(100,Math.max(0,parseFloat(t))),player.volume=volume/100,(e=this.document.querySelector("#volume"))&&(e.value=t,e.dispatchEvent(new Event("input",{bubbles:!0,composed:!0})))),dataStations.volume=player.volume}play(){const t=this.radioList.querySelector("li.active");if(this.stop(),t){t.setAttribute("data-title",t.dataset.name);try{const{id:e,name:i,stream:s,genre:a}=t.dataset;this.title=`${i} | ${locale.get("appName")}`,player.stream=s,player.play(),this.title=i+" | "+locale.get("appName"),this.window.navigator.mediaSession.metadata=new this.window.MediaMetadata({title:locale.get("appName"),artist:i,album:"",artwork:[{src:`${this.GLOB_SERVER.URL}/${e}.png`,type:"image/png",sizes:"180x180"}]}),this.getMetaData(e),this.document.fullscreenElement&&this.onVizualizer()}catch(t){this.stop()}dataStations.notify&&chrome.notifications.clear(String(nw.App.manifest.name))}}stop(){clearTimeout(metainterval),player.stop(),this.offVizualizer(),this.title=locale.get("appName");const t=this.radioList.querySelector("li.active");t&&t.setAttribute("data-title",t.dataset.name),dataStations.notify&&chrome.notifications.clear(String(nw.App.manifest.name)),this.title=locale.get("appName")}prev(){this.stop();const t=this.radioList.querySelector(".active"),e=Array.from(this.radioList.querySelectorAll("li:not(.hidden)"));if(0===e.length)return;const i=e.findIndex(t=>t.classList.contains("active"));let s;s=-1!==i?(i-1+e.length)%e.length:e.length-1;const a=e[s];t&&(t.classList.remove("active"),t.classList.remove("play"),t.classList.remove("preload"),t.classList.add("stop"),t.setAttribute("data-title",t.dataset.name)),a.classList.add("active"),this.play(),this.scrollActive()}next(){this.stop();const t=this.radioList.querySelector(".active"),e=Array.from(this.radioList.querySelectorAll("li:not(.hidden)"));if(0===e.length)return;const i=e.findIndex(t=>t.classList.contains("active"));let s;s=-1!==i?(i+1)%e.length:0;const a=e[s];t&&(t.classList.remove("active"),t.classList.remove("play"),t.classList.remove("preload"),t.classList.add("stop"),t.setAttribute("data-title",t.dataset.name)),a.classList.add("active"),this.play(),this.scrollActive()}isNumber(t){return"number"==typeof t&&Number.isFinite(t)&&!0!==t&&!1!==t}get presetsSelectIndex(){return dataStations.presetindex}set presetsSelectIndex(t){const e=Number(t);this.console.log(this.presetsNames.length);const i=this.presetsNames.length-1;dataStations.presetindex=Number.isFinite(e)?Math.max(-1,Math.min(Math.floor(e),i)):-1}get server(){return this.#e}set server(t){this.error("Нельзя задать значение app.server")}get DATA_DIR(){return DATA_DIR}set DATA_DIR(t){this.error("Нельзя задать значение app.DATA_DIR")}}module.exports=(t,e,i)=>({app:new App(t,e,i)});
+const locale = require('./locale.js');
+const fs = require('fs');
+const path = require('path');
+const http = require('http');
+const { URL } = require('url');
+const mime = require('mime').default;
+const icy = require('icy');
+const { toastNotify } = require('./toast.js');
+const EventDispatcher = require('./eventdispatcher.js');
+const StationEl = require('./station.js');
+const nwdialog = require('./nwdialog.js');
+const DATA_DIR = path.normalize(path.join(nw.App.dataPath, 'radio'));
+const SOURCE_FILE = path.normalize(path.join(nw.__dirname, 'radio', 'data.json'));
+const { translit, tagTranslit } = require('./translit.js');
+const butterchurn = require('butterchurn').default;
+const EventEmitter = require('node:events');
+
+// Шаблон ошибки сервера.
+const errorTpl = (obj) => {
+	return `<!DOCTYPE html>
+<html lang="ru">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+		<meta name="viewport" content="width=device-width,initial-scale=1"/>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+		<meta name="SKYPE_TOOLBAR" content="SKYPE_TOOLBAR_PARSER_COMPATIBLE"/>
+		<title>Ваше Радио</title>
+		<meta name="color-scheme" content="light"/>
+		<meta name="theme-color" content="#fff"/>
+		<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon"/>
+	</head>
+	<body style="font-family:Tahoma,sans-serif;margin:0;padding:10;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;">
+		<h1>${obj.title}</h1>
+		<p>${obj.text}</p>
+	</body>
+</html>`;
+};
+
+if(!fs.existsSync(DATA_DIR)) {
+	fs.mkdirSync(DATA_DIR, { recursive: true, force: true });
+}
+
+var isMaximized = false,
+	win_state = true,
+	init_server = false,
+	volume = 0,
+	settime,
+	player = false,
+	isPlaying = false,
+	isOnline = false,
+	metainterval = 0,
+	active = 0,
+	stations = {},
+	dataStations = {},
+	genres = [],
+	presetsSelectIndex = 0;
+/**
+ * Context Menu Constants.
+ **/
+const copyStationItem = new nw.MenuItem({
+		label: locale.get("copyTitle"),
+		type: 'normal',
+		icon: 'images/copy.png'
+	}),
+	addStationItem = new nw.MenuItem({
+		label: locale.get("insertTitle"),
+		type: 'normal',
+		icon: 'images/add.png'
+	}),
+	editStationItem = new nw.MenuItem({
+		label: locale.get("editTitle"),
+		type: 'normal',
+		icon: 'images/edit.png'
+	}),
+	removeStationItem = new nw.MenuItem({
+		label: locale.get("deleteTitle"),
+		type: 'normal',
+		icon: 'images/delete.png'
+	}),
+	separator = nw.MenuItem({
+		type: 'separator'
+	}),
+	exportStations = new nw.MenuItem({
+		label: locale.get("exportTitle"),
+		type: 'normal',
+		icon: 'images/export.png',
+	}),
+	importStations = new nw.MenuItem({
+		label: locale.get("importTitle"),
+		type: 'normal',
+		icon: 'images/import.png',
+	}),
+	menu = new nw.Menu(),
+	menuLi = new nw.Menu();
+/**
+ * Collecting the context menu.
+ **/
+menu.append(addStationItem);
+menu.append(separator);
+menu.append(exportStations);
+menu.append(importStations);
+menuLi.append(addStationItem);
+menuLi.append(separator);
+menuLi.append(copyStationItem);
+menuLi.append(editStationItem);
+menuLi.append(separator);
+menuLi.append(removeStationItem);
+menuLi.append(separator);
+menuLi.append(exportStations);
+menuLi.append(importStations);
+// буфер обмена.
+const clipboard = nw.Clipboard.get();
+
+
+
+class App extends EventDispatcher {
+	#server = null;
+  	#ready = null;
+ 	audio = null;
+ 	audioCtx = null;
+ 	genreList = null;
+	presets = {};
+	presetsIndex = 0;
+	presetsSelectIndex = -1;
+	presetsNames = [];
+	presetTime = 0;
+ 	radioList = null;
+  	resolve = null;
+ 	reject = null;
+	sourceNode = null;
+ 	tray = null;
+	vizualizer = null;
+	vizualizerCanvas = null;
+	vizualizerStart = 0;
+	visualTime = 0;
+ 	// Конструктор.
+	constructor(win, window, document) {
+		super();
+		this.tray = null;
+		this.audioCtx = null;
+		this.sourceNode = null;
+		this.win = win;
+		this.window = window;
+		this.document = document;
+		init_server = false;
+		this.title = locale.get('appName');
+		this.GLOB_SERVER = {
+			HOST: 'localhost',
+			PORT: 0,
+			URL: ''
+		};
+		this.#ready = new Promise((resolve, reject) => {
+			this.resolve = resolve;
+			this.reject = reject;
+		});
+		// Плеер.
+		player = require('./audioplayer.js')(this.window, this.document);
+		// Для визуализатора.
+		this.audio = player.audio;
+		// Диалоги.
+		this.dialogSettings = this.document.querySelector('dialog.settings-block');
+		this.dialogBox = this.document.querySelector('dialog.dialogBox');
+		this.appBlock = this.document.querySelector('dialog.appBlock');
+		// Листы.
+		this.radioList = this.document.querySelector("ul#radio-list");
+		this.genreList = this.document.querySelector("ul#genre");
+		// Визуализер блок.
+		this.vizualizerCanvas = this.document.querySelector(".vizualizer canvas");
+		// Объединение объектов пресетов и сортировка по названиям.
+		this.presets = Object.fromEntries(
+			Object.entries(
+				Object.assign(
+					{},
+					this.window.butterchurnPresets.getPresets(),
+					this.window.butterchurnPresetsExtra.getPresets(),
+					this.window.butterchurnPresetsExtra2.getPresets(),
+				)
+			).sort((a, b) =>  a[0].localeCompare(b[0]))
+		);
+		this.presetsNames = Object.keys(this.presets);
+		this.presetsIndex = this.presetsNames.length ? 0 : false;
+		this.presetsSelectIndex = -1;
+		this.visualTime = 0;
+		this.vizualizer = null;
+		this.vizualizerStart = 0;
+		// Инициализируем документ.
+		this.initDocument();
+		// Запускаем сервер.
+		this.startImageServer(4000);
+		// События о play? pause, previoustrack и nexttrack
+		this.window.navigator.mediaSession.setActionHandler('play', this.play.bind(this));
+		this.window.navigator.mediaSession.setActionHandler('pause', this.stop.bind(this));
+		this.window.navigator.mediaSession.setActionHandler('previoustrack', this.prev.bind(this));
+		this.window.navigator.mediaSession.setActionHandler('nexttrack', this.next.bind(this));
+		// online и offline.
+		isOnline = this.window.navigator.onLine;
+		this.window.addEventListener('online',  this.updateOnlineStatus.bind(this));
+		this.window.addEventListener('offline', this.updateOnlineStatus.bind(this));
+		// Пресеты.
+		// Контекст диалога.
+		nwdialog.context = this.document;
+		// Это прям обязательно нужно для вывода в консоли приложения.
+		// Для необработанных синхронных исключений.
+		process.on('uncaughtException', (error) => {
+			this.console.error('Необработанное исключение:');
+			this.console.log(error.message);
+			this.console.error('Стек:');
+			this.console.log(error.stack);
+		});
+		// Для необработанных отклонений промисов.
+		process.on('unhandledRejection', (reason, promise) => {
+			this.console.error('Необработанное отклонение промиса:');
+			this.console.log(reason);
+			this.console.error('Промис:');
+			this.console.log(promise);
+		});
+	}
+	// Запрет на перетаскивание.
+	disableDragDrop(e) {
+		e.preventDefault();
+		return !1;
+	}
+	// Слушаем online или offline.
+	updateOnlineStatus(e) {
+		switch(e.type) {
+			case "online":
+				isOnline = true;
+				if(isPlaying) {
+					this.stop();
+					this.play();
+				} else {
+					this.stop();
+				}
+				break;
+			case "offline":
+				isOnline = false;
+				this.stop();
+				break;
+		}
+	}
+	// Простой лог.
+	log(...args) {
+		this.console.dir(...args);
+	}
+	// Лог ошибок.
+	error(...args) {
+		this.console.error(...args);
+	}
+	// console.
+	get console() {
+		return this.window.console;
+	}
+	// Инициализация приложения.
+	initDocument() {
+		const _self = this;
+		this.win.icon = 'favicon.png';
+		// Собираем иконкн трея
+		this.tray = new nw.Tray({
+			title: locale.get("appName"),
+			tooltip: locale.get("appName"),
+			icon: 'favicon.png'
+		});
+		const trayMenu = new nw.Menu(),
+			tray_close = new nw.MenuItem({
+				label: "" + locale.get("close"),
+				icon: "images/tray_close.png",
+				click: () => {
+					this.win.close();
+				}
+			}),
+			tray_mini_restore = new nw.MenuItem({
+				label: "" + locale.get("minimize"),
+				icon: "images/tray_minimize.png",
+				click: () => {
+					win_state ? (
+						this.win.minimize(),
+						tray_mini_restore.label = "" + locale.get("restore")
+					) : (
+						this.win.show(),
+						this.win.setShowInTaskbar(false),
+						tray_mini_restore.label = "" + locale.get("minimize")
+					);
+				}
+			});
+		this.tray.menu = trayMenu;
+		trayMenu.append(tray_mini_restore);
+		trayMenu.append(tray_close);
+		this.tray.on('click', () => {
+			win_state ? (
+				this.win.minimize(),
+				tray_mini_restore.label = "" + locale.get("restore")
+			) : (
+				this.win.show(),
+				tray_mini_restore.label = "" + locale.get("minimize")
+			);
+		});
+		// Сначала запускаем обработку кнопок в titlebar.
+		const miniBtn = this.document.querySelector('#minimized'),
+			restoreBtn = this.document.querySelector('#restored'),
+			closeBtn = this.document.querySelector('#close'),
+			settingsBtn = this.document.querySelector('#settings'),
+			fullscreenBtn = this.document.querySelector('#fullscreen'),
+			maxRes = restoreBtn.querySelector('svg path'),
+			fullRes = fullscreenBtn.querySelector('svg path'),
+			restorePath = 'm 2,1e-5 0,2 -2,0 0,8 8,0 0,-2 2,0 0,-8 z m 1,1 6,0 0,6 -1,0 0,-5 -5,0 z m -2,2 6,0 0,6 -6,0 z',
+			maximizePath = 'M 0,0 0,10 10,10 10,0 Z M 1,1 9,1 9,9 1,9 Z',
+			fullscreenOn = "M5.828 10.172a.5.5 0 0 0-.707 0l-4.096 4.096V11.5a.5.5 0 0 0-1 0v3.975a.5.5 0 0 0 .5.5H4.5a.5.5 0 0 0 0-1H1.732l4.096-4.096a.5.5 0 0 0 0-.707zm4.344 0a.5.5 0 0 1 .707 0l4.096 4.096V11.5a.5.5 0 1 1 1 0v3.975a.5.5 0 0 1-.5.5H11.5a.5.5 0 0 1 0-1h2.768l-4.096-4.096a.5.5 0 0 1 0-.707zm0-4.344a.5.5 0 0 0 .707 0l4.096-4.096V4.5a.5.5 0 1 0 1 0V.525a.5.5 0 0 0-.5-.5H11.5a.5.5 0 0 0 0 1h2.768l-4.096 4.096a.5.5 0 0 0 0 .707zm-4.344 0a.5.5 0 0 1-.707 0L1.025 1.732V4.5a.5.5 0 0 1-1 0V.525a.5.5 0 0 1 .5-.5H4.5a.5.5 0 0 1 0 1H1.732l4.096 4.096a.5.5 0 0 1 0 .707z",
+			fullscreenOff = "M.2 15.8c.2.2.5.2.7 0L5 11.7v2.8c0 .3.2.5.5.5s.5-.2.5-.5v-4c0-.3-.2-.5-.5-.5h-4c-.3 0-.5.2-.5.5s.2.5.5.5h2.8L.2 15.1c-.2.2-.2.5 0 .7zm15.6 0c-.2.2-.5.2-.7 0L11 11.7v2.8c0 .3-.2.5-.5.5s-.5-.2-.5-.5v-4c0-.3.2-.5.5-.5h4c.3 0 .5.2.5.5s-.2.5-.5.5h-2.8l4.1 4.1c.2.2.2.5 0 .7zm0-15.6c-.2-.2-.5-.2-.7 0L11 4.3V1.5c0-.3-.2-.5-.5-.5s-.5.2-.5.5v4c0 .3.2.5.5.5h4c.3 0 .5-.2.5-.5s-.2-.5-.5-.5h-2.8L15.8.9c.2-.2.2-.5 0-.7zM.2.2c.2-.2.5-.2.7 0L5 4.3V1.5c0-.3.2-.5.5-.5s.5.2.5.5v4c0 .3-.2.5-.5.5h-4c-.3 0-.5-.2-.5-.5s.2-.5.5-.5h2.8L.2.9C0 .7 0 .4.2.2z";
+		// Обработка клика по кнопкам minimized, restored, close, settings, fullscreen.
+		this.document.addEventListener('click', async (e) => {
+			const eId = e.target.id;
+			// ids.
+			if(
+				[
+					// Управление.
+					"minimized",
+					"restored",
+					"close",
+					"settings",
+					"fullscreen",
+					// Настройки
+					"noSettings",
+					"okSettings"
+				].includes(eId)
+			) {
+				e.preventDefault();
+				
+				var clear_stations = this.dialogSettings.querySelector("#clear_stations");
+				var loadDefault = this.dialogSettings.querySelector("#loadDefault");
+				var notify = this.dialogSettings.querySelector("#notify");
+				var customBg = this.dialogSettings.querySelector("#custombg");
+				var presetsRandom = this.dialogSettings.querySelector("#presetsRandom");
+				var selectPreset = this.dialogSettings.querySelector("#selectPreset");
+				// Выбор файла
+				var inputFile = this.dialogSettings.querySelector("#background");
+				switch(eId) {
+					case "minimized":
+					case "restored":
+					case "close":
+						eId == "minimized" ? this.win.minimize() : (eId == "close" ? this.win.close() : (isMaximized ? this.win.restore() : this.win.maximize()));
+						break;
+					case "settings":
+						this.document.querySelector('main').classList.add('saving');
+						var bg = this.dialogSettings.querySelector(".preview");
+						var time = new Date().getTime();
+						// Новый элемент.
+						var tempInput = this.document.createElement('input');
+						tempInput.type = "file";
+						tempInput.accept = "image/*";
+						tempInput.id = "background";
+						// selectPreset.
+						selectPreset.innerHTML = "";
+						var optionNull = this.document.createElement('option');
+						optionNull.value = "-1";
+						optionNull.textContent = locale.get('selectPresetNo');
+						selectPreset.append(optionNull);
+						for(var index in this.presetsNames) {
+							const option = this.document.createElement('option');
+							option.value = index;
+							option.textContent = this.presetsNames[index];
+							selectPreset.append(option);
+						}
+						selectPreset.value = dataStations.presetindex;
+						// Замена.
+						this.dialogSettings.querySelector("#background").parentNode.replaceChild(tempInput, this.dialogSettings.querySelector("#background"));
+						// Выбор файла.
+						this.dialogSettings.showModal();
+						clear_stations.checked = false;
+						loadDefault.checked = false;
+						notify.checked = Boolean(dataStations.notify);
+						customBg.checked = Boolean(typeof dataStations.custombg == "string");
+						// Если есть файл - загружаем.
+						if(dataStations.custombg && fs.existsSync(path.join(this.DATA_DIR, 'background', `${dataStations.custombg}`))) {
+							// Загружаем.
+							bg.setAttribute("style", `--background-config: url(${this.GLOB_SERVER.URL}/background/${dataStations.custombg})`)
+						} else {
+							// Иначе customBg.checked = false; dataStations.custombg = false;
+							bg.removeAttribute("style");
+							customBg.checked = false;
+							dataStations.custombg = 0;
+						}
+						// Генерируем событие.
+						customBg.dispatchEvent(new Event("input"));
+						// Загрузка пресетов в рандомно или по порядку.
+						presetsRandom.checked = dataStations.presetsRandom ? true : false;
+						dataStations.presetsRandom = presetsRandom.checked;
+						// Генерируем событие.
+						presetsRandom.dispatchEvent(new Event("input"));
+						break;
+					case "fullscreen":
+						//this.win.toggleFullscreen();
+						// Добавить блок, установить canvas, подключить breadcrumb.
+						clearTimeout(timeMouse);
+						if(this.document.fullscreenElement){
+							this.offVizualizer();
+							this.document.exitFullscreen();
+							this.document.body.classList.contains('fullscreen') && this.document.body.classList.remove('fullscreen');
+							// Отключение визуализатора.
+						} else {
+							//if(this.player.isPlaying()) {
+								!this.document.body.classList.contains('fullscreen') && this.document.body.classList.add('fullscreen');
+								this.document.querySelector(".vizualizer").requestFullscreen();
+								// Подключение визуализатора.
+								this.onVizualizer();
+							//}
+						}
+						break;
+					case "noSettings":
+						this.dialogSettings.close();
+						this.document.querySelector('main').classList.remove('saving');
+						break;
+					case "okSettings":
+						this.document.body.removeAttribute("style");
+						this.document.querySelector('main').classList.remove('saving');
+						dataStations.notify = notify.checked;
+						dataStations.presetsRandom = presetsRandom.checked;
+						this.presetsSelectIndex = Number(selectPreset.value);
+						dataStations.presetindex = this.presetsSelectIndex;
+						if(clear_stations.checked) {
+							this.clearStattions();
+							// Эти две операции обязательны.
+							this.saveStations();
+							this.readListStations();
+							if(loadDefault.checked){
+								this.defaultListStations();
+								this.saveStations();
+							}
+						}
+						if(!clear_stations.checked && loadDefault.checked) {
+							this.clearStattions();
+							this.saveStations();
+							this.defaultListStations();
+							this.saveStations();
+						};
+						// Если есть выбор.
+						if(customBg.checked) {
+							if(inputFile.files.length){
+								// Если не png, Преобразуем в png.
+								var canvas = this.document.createElement('canvas');
+								var ctx = canvas.getContext('2d');
+								var file = inputFile.files[0];
+								// Если не изображение
+								if (!file.type.startsWith('image/')) {
+									// Ничего не делаем и возвращаемся.
+									this.window.alert("Файл не поддерживается");
+									return !1;
+								}
+								file = inputFile.files[0].path.replace(/\\/g, "/");
+								time = new Date().getTime();
+								const img = new Image();
+								img.onload = (ev) => {
+									// Копируем.
+									// Получить расширение.
+									const ext = path.extname(file);
+									dataStations.custombg = `${time + ext}`;
+									fs.copyFileSync(file, path.normalize(path.join(this.DATA_DIR, 'background', `${dataStations.custombg}`)));
+									this.setStyleBackground();
+									this.dialogSettings.close();
+
+								};
+								img.onerror = (ev) => {
+									// Ничего не делаем.
+									dataStations.custombg = 0;
+									this.setStyleBackground();
+									this.dialogSettings.close();
+									return;
+								};
+								img.src = file;
+							} else {
+								// Если нет файлов, то проверяем файл по конфигу.
+								if(!fs.existsSync(path.join(this.DATA_DIR, 'background', `${dataStations.custombg}`))){
+									// Файла нет.
+									this.document.body.removeAttribute("style");
+									dataStations.custombg = 0;
+									this.setStyleBackground();
+									this.dialogSettings.close();
+								} else {
+									// Файл есть. Обновим запись.
+									this.setStyleBackground();
+									this.dialogSettings.close();
+								}
+							}
+						} else {
+							dataStations.custombg = 0;
+							this.setStyleBackground();
+							this.dialogSettings.close();
+						}
+						break;
+				}
+				return !1;
+			}
+			// Открываем ссылки в браузере.
+			if(e.target.tagName.toLowerCase() === 'a' && e.target.getAttribute('target') == "_blank") {
+				e.preventDefault();
+				nw.Shell.openExternal(e.target.href);
+				return !1;
+			}
+		});
+		// Клик на жанрах.
+		this.genreList.addEventListener('click', (e) => {
+			e.preventDefault();
+			const li = e.target;
+			const filter = li.dataset.filter;
+			[...this.genreList.querySelectorAll('li')].forEach((el) => {
+				el.classList.remove('active');
+			});
+			li.classList.add('active');
+			[...this.radioList.querySelectorAll('li')].forEach((el) => {
+				el.classList.remove('hidden');
+				if(filter !== 'all') {
+					!el.classList.contains(filter) && el.classList.add('hidden');
+				}
+			})
+			this.scrollActive();
+			return !1;
+		});
+		// Установить действие на input["file"], input["chekbox"] фона, input["range"] громкость, кроп.
+		// Чекбокс.
+		this.document.addEventListener('input', (e) => {
+			e.preventDefault();
+			const el = e.target;
+			var vol;
+			// Чекбокс #custombg.
+			if(el.id == "custombg") {
+				var prevDiv = this.document.querySelector(".customBg");
+				if(el.checked) {
+					prevDiv.classList.remove('hidden-block');
+				} else {
+					prevDiv.classList.add("hidden-block");
+				}
+			}
+			// Выбор файла #background.
+			if(el.id == "background") {
+				if(el.files.length) {
+					var fl = el.files[0].path.replace(/\\/g, "/");
+					this.document.querySelector(".preview").setAttribute('style', `--background-config: url(${fl})`);
+				}else{
+					this.document.querySelector(".preview").removeAttribute('style');
+				}
+			}
+			// Громкость.
+			if(el.type == "range") {
+				vol = Math.min(el.max, Math.max(el.min, parseFloat(el.value)));
+				switch(el.id) {
+					case "volume":
+						el.setAttribute('style', `--background-range: ${vol}%;`);
+						player.volume = vol / 100;
+						// set update text.
+						var txt;
+						if(txt = this.document.querySelector(`.left span.writ`)) {
+							txt.textContent = `${parseInt(vol)}%`;
+							txt.classList.add('visible');
+							clearTimeout(settime);
+							settime = setTimeout(() => {
+								txt.classList.remove('visible')
+							}, 2000);
+						}
+						break;
+					// дальше по реализации.
+				}
+			}
+			return !1;
+		});
+		// Колёсико над Громкостью. Croppier?
+		this.document.addEventListener('mousewheel', (e) => {
+			const el = e.target;
+			if(el.type == "range") {
+				var o = e.wheelDelta,
+					min = parseFloat(el.min),
+					max = parseFloat(el.max),
+					val = parseFloat(el.value),
+					step = parseFloat(el.step);
+				el.value = Math.min(max, Math.max(min, (val + (o > 0 ? step : -step))));
+				switch(el.id) {
+					case "input":
+						this.volume = el.value;
+						break;
+					default:
+						el.dispatchEvent(new Event('input', {bubbles: true, composed: true}));
+						break;
+				}
+			}
+		});
+		// Старт, Стоп станции.
+		this.document.addEventListener('radio:click', (e) => {
+			const li = e.target;
+			if(!isOnline) {
+				li.classList.remove('play');
+				li.classList.remove('preload');
+				li.classList.add("stop");
+				return;
+			}
+			[...this.radioList.querySelectorAll('li')].forEach((el) => {
+				if(el.dataset.id !== li.dataset.id) {
+					el.classList.remove('active');
+					el.classList.remove('play');
+					el.classList.remove('preload');
+					el.classList.add("stop");
+				} else {
+					el.classList.add('active');
+				}
+			});
+			dataStations.active = li.dataset.id;
+			if(li.classList.contains('play')) {
+				// Воспроизведение.
+				isPlaying = true;
+				this.play();
+			} else if(li.classList.contains('stop')) {
+				// Остановлен.
+				isPlaying = false;
+				this.stop();
+			}
+		});
+		// События состояния плеера.
+		player.addEventListener('statechange', (e) => {
+			const list = this.radioList;
+			const el = list.querySelector("li.active");
+			if(el) {
+				switch(e.audioev) {
+					case "play":
+					case "playing":
+						el.classList.remove("stop");
+						el.classList.add('play');
+						el.classList[e.bufering ? "add" : "remove"]('preload');
+						break;
+					case "stop":
+						el.classList.remove('preload');
+						el.classList.remove('play');
+						el.classList.add("stop");
+						break;
+				}
+			}
+		});
+		// Локализацмя.
+		this.updateLocale();
+		// События win.
+		/**
+		 * Позиция окна при запуске.
+		 */
+		nw.Screen.Init();
+		var w = nw.App.manifest.window.width,
+			h = nw.App.manifest.window.height,
+			screen = nw.Screen.screens[0],
+			x = parseInt(screen.bounds.x + (screen.bounds.width - w) / 2) || 0,
+			y = parseInt(screen.bounds.y + (screen.bounds.height - h) / 2) || 0,
+			wid = screen.work_area.width,
+			hei = screen.work_area.height;
+		h = h > hei ? hei : h;
+		w = w > wid ? wid : w;
+		this.win.setMinimumSize(w, h);
+		this.win.on('maximize', (e) => {
+			isMaximized = !0;
+			maxRes.setAttribute("d", restorePath);
+			restoreBtn.setAttribute("title", locale.get("restore"));
+			tray_mini_restore.label = "" + locale.get("minimize");
+			tray_mini_restore.icon = "images/tray_minimize.png";
+			this.win.setShowInTaskbar(true);
+			win_state = !0;
+			this.scrollActive();
+		}).on('restore', (e) => {
+			isMaximized = !1;
+			restoreBtn.setAttribute("title", locale.get("default"));
+			maxRes.setAttribute("d", maximizePath);
+			tray_mini_restore.label = "" + locale.get("minimize");
+			tray_mini_restore.icon = "images/tray_minimize.png";
+			fullscreenBtn.setAttribute("title", locale.get("fullscreenOn"));
+			fullRes.setAttribute("d", fullscreenOn);
+			this.win.setShowInTaskbar(true);
+			win_state = !0;
+			this.scrollActive();
+		}).on('minimize', () => {
+			tray_mini_restore.label = "" + locale.get("restore");
+			tray_mini_restore.icon = "images/tray_" + (isMaximized ? "maximize.png" : "normal.png");
+			restoreBtn.setAttribute("title", (isMaximized ? locale.get("restore") : locale.get("default")));
+			this.win.setShowInTaskbar(false);
+			win_state = !1;
+		}).on('enter-fullscreen', () => {
+			fullscreenBtn.setAttribute("title", locale.get("fullscreenOff"));
+			fullRes.setAttribute("d", fullscreenOff);
+			this.scrollActive();
+		}).on('close', () => {
+			try {
+				dataStations.notify && chrome.notifications.clear(String(nw.App.manifest.name));
+				var main = this.document.querySelector('main');
+				main.classList.remove('saving');
+				main.classList.remove('loading');
+				this.document.body.classList.add('closing');
+				this.dialogSettings.open && this.dialogSettings.close();
+				this.dialogBox.open && this.dialogBox.close();
+				this.document.querySelector('main').classList.add('saving');
+				try { this.tray.remove(); this.stop(); } catch (e) {}
+				this.saveStations();
+				// Просто специально ставим паузу для красивого закрытия.
+				setTimeout(() => this.win.close(true), 1100);
+			} catch(e) {
+				this.console.log(e)
+			}
+		});
+		// Вырубаем перетаскивание на окно. Перенесено сюда.
+		'dragover dragenter dragleave dragend'.split(' ').forEach((ev) => {
+			this.window.addEventListener(ev, this.disableDragDrop);
+		});
+		this.document.body.addEventListener("dragstart", this.disableDragDrop);
+		this.document.body.addEventListener("drop", this.disableDragDrop);
+		// Перенесён сюда Sortable
+		new this.window.Sortable(this.radioList, {
+			animation: 50,
+			direction: 'vertical',
+			handle: ".radio-item-handler",
+			scroll: false,
+			onChoose: () => {
+				'dragover dragenter dragleave dragend'.split(' ').forEach((ev) => {
+					this.window.removeEventListener(ev, this.disableDragDrop);
+				});
+				this.document.body.removeEventListener("dragstart", this.disableDragDrop);
+				this.document.body.removeEventListener("drop", this.disableDragDrop);
+			},
+			onStart: () => {
+				'dragover dragenter dragleave dragend'.split(' ').forEach((ev) => {
+					this.window.removeEventListener(ev, this.disableDragDrop);
+				});
+				this.document.body.removeEventListener("dragstart", this.disableDragDrop);
+				this.document.body.removeEventListener("drop", this.disableDragDrop);
+			},
+			// сохранение.
+			onEnd: () => {
+				this.saveStations();
+				'dragover dragenter dragleave dragend'.split(' ').forEach((ev) => {
+					this.window.addEventListener(ev, this.disableDragDrop);
+				});
+				this.document.body.addEventListener("dragstart", this.disableDragDrop);
+				this.document.body.addEventListener("drop", this.disableDragDrop);
+			}
+		});
+		// Визуализация начинается здесь.
+		// Контекстное меню.
+		this.document.addEventListener('contextmenu', (e) => {
+			// Если не находимся в fullscreen.
+			if(!this.document.fullscreenElement){
+				addStationItem.click = () => {this.addStation();addStationItem.click = null};
+				exportStations.click = () => {this.exportStations();exportStations.click = null};
+				importStations.click = () => {this.importStations();importStations.click = null};
+				if(e.target.classList.contains('radio-item') || e.target.closest('li.radio-item')) {
+					e.preventDefault();
+					const li = e.target.classList.contains('radio-item') ? e.target : e.target.closest('li.radio-item');
+					// Формируем меню.
+					const {id, name, genre, stream, title} = li.dataset;
+					copyStationItem.label = locale.get("copyTitle", [name]);
+					editStationItem.label = locale.get("editTitle", [name]);
+					removeStationItem.label = locale.get("deleteTitle", [name]);
+					// Событие для пункта Копирование.
+					copyStationItem.click = () => {
+						copyStationItem.click = null;
+						// Копируем.
+						clipboard.set(stream, 'text');
+						// Диалог.
+						this.dialogBox.setAttribute("type", "alert");
+						const wrap = this.dialogBox.querySelector(".wrap");
+						const ok = this.dialogBox.querySelector("#ok");
+						const no = this.dialogBox.querySelector("#cancel");
+						wrap.innerHTML = `${locale.get("copyOk", [name])}<br><br>${stream}`;
+						ok.onclick = (e) => {
+							ok.onclick = null;
+							this.dialogBox.open && this.dialogBox.close();
+						};
+						//ok.addEventListener('click', this.noStation.bind(this, []));
+						this.dialogBox.showModal();
+					};
+					// Событие для пункта Удаление.
+					removeStationItem.click = () => {
+						// Диалог.
+						removeStationItem.click = null;
+						this.dialogBox.setAttribute("type", "confirm");
+						const wrap = this.dialogBox.querySelector(".wrap");
+						const ok = this.dialogBox.querySelector("#ok");
+						const no = this.dialogBox.querySelector("#cancel");
+						ok.onclick = (e) => {
+							ok.onclick = null;
+							this.removeStation({
+								id: id,
+								name: name,
+								genre: genre,
+								stream: stream,
+								title: title
+							});
+						};
+						no.onclick = (e) => {
+							no.onclick = null;
+							this.dialogBox.open && this.dialogBox.close();
+						};
+						wrap.innerHTML = `${locale.get("deleteStation", [name])}`
+						this.dialogBox.showModal();
+					};
+					// Событие для пункта Редактирование.
+					editStationItem.click = () => {
+						editStationItem.click = null;
+						this.editStation({
+							favicon: this.GLOB_SERVER.URL + `/${id}.png?${new Date().getTime()}`,
+							genre: genre,
+							genres: dataStations.genre,
+							id: id,
+							image: this.GLOB_SERVER.URL + `/${id}_big.png?${new Date().getTime()}`,
+							name: name,
+							stream: stream,
+							title: title
+						});
+					};
+					menuLi.popup(parseInt(e.screenX), parseInt(e.screenY));
+					return !1;
+				} else {
+					if(e.target.classList.contains('notcontext') || e.target.closest('.notcontext')) {
+						e.preventDefault();
+						menu.popup(parseInt(e.screenX), parseInt(e.screenY));
+						return !1;
+					}
+				}
+			}
+		});
+		// Nouse show/hide fullscreen.
+		let timeMouse;
+		// Слушаем Ресайз.
+		this.window.addEventListener("resize", (e) => {
+			this.document.fullscreenElement ? (!this.document.body.classList.contains('fullscreen') && this.document.body.classList.add("fullscreen")) : (this.document.body.classList.contains('fullscreen') && this.document.body.classList.remove("fullscreen"));
+			if(this.document.fullscreenElement){
+				this.vizualizerCanvas.width  = this.window.screen.width;
+				this.vizualizerCanvas.height = this.window.screen.height;
+				this.vizualizer && this.vizualizer.setRendererSize(this.window.screen.width, this.window.screen.height);
+			}
+		});
+		// Двойной клик на канвасе. Фулскрин. По сути только для выхода.
+		this.document.querySelector("main").addEventListener("dblclick", e => {
+			e.preventDefault();
+			if(this.document.fullscreenElement){
+				clearTimeout(timeMouse);
+				this.offVizualizer();
+				this.document.exitFullscreen();
+				this.document.body.classList.contains('fullscreen') && this.document.body.classList.remove('fullscreen');
+				return !1;
+			}
+			return !1;
+		});
+		// Движение мыши для fullscreen.
+		this.document.body.addEventListener('mousemove', e => {
+			if(this.document.fullscreenElement){
+				clearTimeout(timeMouse);
+				!this.document.body.classList.contains('mouse') && this.document.body.classList.add('mouse');
+				timeMouse = setTimeout(() => {
+					this.document.body.classList.contains('mouse') && this.document.body.classList.remove('mouse');
+				}, 3000);
+			}else{
+				this.document.body.classList.contains('mouse') && this.document.body.classList.remove('mouse');
+			}
+		});
+		this.initAudioSystem().then(e=>{}).catch(e => {});
+		this.document.addEventListener('keydown', (e) => {
+			switch(e.code) {
+				case "Escape":
+					clearTimeout(timeMouse);
+					if(this.document.fullscreenElement){
+						this.offVizualizer();
+						this.document.exitFullscreen();
+						this.document.body.classList.contains('fullscreen') && this.document.body.classList.remove('fullscreen');
+					}
+					break;
+				case "F11":
+					clearTimeout(timeMouse);
+					if(this.document.fullscreenElement){
+						this.offVizualizer();
+						this.document.exitFullscreen();
+						this.document.body.classList.contains('fullscreen') && this.document.body.classList.remove('fullscreen');
+					} else {
+						!this.document.body.classList.contains('fullscreen') && this.document.body.classList.add('fullscreen');
+						this.document.querySelector("canvas").requestFullscreen();
+						this.onVizualizer();
+					}
+					break;
+			}
+		});
+	}
+	// Инициализация AudioContext.
+	initAudioSystem() {
+		return new Promise((resolve, reject) => {
+			try {
+				if (!this.audioCtx) {
+					this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+					this.sourceNode = this.audioCtx.createMediaElementSource(this.audio);
+					this.sourceNode.connect(this.audioCtx.destination);
+				}
+				if (!this.vizualizer) {
+					this.vizualizer = butterchurn.createVisualizer(
+						this.audioCtx,
+						this.vizualizerCanvas,
+						{
+							width: this.window.screen.width,
+							height: this.window.screen.height
+						}
+					);
+				}
+				resolve();
+			} catch(e) {
+				reject(e);
+			}
+		});
+	}
+	getPreset() {
+		clearTimeout(this.presetTime);
+		if(dataStations.presetindex > -1) {
+			this.presetsIndex = this.presetsSelectIndex;
+		} else {
+			if(dataStations.presetsRandom) {
+				// Рандомный пресет.
+				this.presetsIndex = Math.floor(Math.random() * this.presetsNames.length);
+				dataStations.presetsRandom = true;
+			} else {
+				// По порядку пресет.
+				this.presetsIndex = (this.presetsIndex + 1) % this.presetsNames.length;
+				dataStations.presetsRandom = false;
+			}
+			this.presetsNames.length && this.vizualizer.loadPreset(this.presets[this.presetsNames[this.presetsIndex]], 1.0);
+		}
+		this.presetTime = setTimeout(this.getPreset.bind(this), 10000);
+	}
+	// Подключение Визуализатора.
+	onVizualizer() {
+		this.initAudioSystem().then((e) => {
+			this.vizualizer.connectAudio(this.sourceNode);
+			// (Здесь позже можно делать viz.loadPreset(...) — логика).
+			//this.presetsIndex = Math.floor(Math.random() * this.presetsNames.length);
+			if(this.presetsSelectIndex >=0) {
+				this.vizualizer.loadPreset(this.presets[this.presetsNames[this.presetsSelectIndex]], 0.0);
+			} else {
+				this.vizualizer.loadPreset(this.presets[this.presetsNames[this.presetsIndex]], 0.0);
+			}
+			this.visualTime = this.window.requestAnimationFrame(this.renderAnimated.bind(this));
+			this.vizualizerStart = setTimeout(() => {
+				// Получить тайтл, разбить по `|` Получить первый;
+				const title = this.radioList.querySelector('li.active').dataset.title;
+				this.vizualizer.launchSongTitleAnim(`${title}`);
+			}, 2000);
+			this.getPreset();
+		}).catch(e => {
+			this.console.error(e);
+		});
+	}
+	// Отключение Визуализатора.
+	offVizualizer() {
+		clearTimeout(this.vizualizerStart);
+		clearTimeout(this.presetTime);
+		this.initAudioSystem().then(() => {
+			//if(this.visualTime) {
+			//}
+			this.window.cancelAnimationFrame(this.visualTime);
+			try {
+				this.vizualizer.disconnectAudio(this.sourceNode);
+			}catch(e){}
+		}).catch(e => {
+			this.console.error(e);
+		});
+	}
+	// Рендер canvas.
+	renderAnimated() {
+		if(this.vizualizer != null) this.vizualizer.render();
+		this.visualTime = this.window.requestAnimationFrame(this.renderAnimated.bind(this));
+	}
+	// Старт сервера.
+	startImageServer(attemptPort) {
+		const obj = {
+			title: "",
+			text: ""
+		};
+		const server = http.createServer((req, res) => {
+			if (req.method !== 'GET') {
+				res.writeHead(404, { 'Content-Type': 'text/html; charset=utf8' });
+				obj.title = locale.get("NotFound");
+				obj.text = locale.get("NotFoundText");
+				res.end(errorTpl(obj));
+				return;
+			}
+			if(!req.url.startsWith('/')) {
+				res.writeHead(403, { 'Content-Type': 'text/html; charset=utf8' });
+				obj.title = locale.get("Forbidden");
+				obj.text = locale.get("ForbiddenText");
+				res.end(errorTpl(obj));
+				return;
+			}
+			const queryStart = req.url.indexOf('?');
+			const pathPart = queryStart === -1 ? req.url : req.url.substring(0, queryStart);
+			const fileName = this.window.decodeURIComponent(pathPart.substring('/'.length));
+			const filePath = path.join(DATA_DIR, fileName);
+			const realDir = path.resolve(DATA_DIR);
+			const realFile = path.resolve(filePath);
+			// Если к контейнеру.
+			// Защита от выхода за пределы DATA_DIR.
+			if (String(fileName).trim() == "" || !realFile.startsWith(realDir)) {
+				res.writeHead(403, { 'Content-Type': 'text/html; charset=utf8' });
+				obj.title = locale.get("Forbidden");
+				obj.text = locale.get("ForbiddenText");
+				res.end(errorTpl(obj));
+				return;
+			}
+			fs.readFile(filePath, (err, data) => {
+				if (err) {
+					res.writeHead(404, { 'Content-Type': 'text/html; charset=utf8' });
+					obj.title = locale.get("NotFound");
+					obj.text = locale.get("NotFoundText");
+					res.end(errorTpl(obj));
+					return;
+				}
+				// Определяем тип файла.
+				const ext = path.extname(fileName).toLowerCase();
+				let mimeType = mime.getType(path.extname(fileName).toLowerCase());
+				mimeType = mimeType ? mimeType : 'application/octet-stream';
+				res.writeHead(200, {
+					'Content-Type': mimeType,
+					'Cache-Control': 'no-cache, no-store, must-revalidate',
+					'Pragma': 'no-cache',
+					'Expires': '0',
+				});
+				res.end(data);
+			});
+		});
+		server.listen(attemptPort, () => {
+			const port = server.address().port;
+			this.GLOB_SERVER.PORT = port;
+			this.GLOB_SERVER.URL = `http://${this.GLOB_SERVER.HOST}:${this.GLOB_SERVER.PORT}`;
+			//this.initDocument();
+			this.resolve();
+		});
+		server.on('error', (err) => {
+			if (err.code === 'EADDRINUSE') {
+				// Рекурсивно пробуем следующий порт.
+				if(attemptPort < 4101){
+					this.startImageServer(attemptPort + 1);
+					return;
+				}
+				//this.initDocument();
+				this.reject(locale.get("ErrorServerPort", [String(attemptPort)]));
+				return;
+			}
+			//this.initDocument();
+			this.reject('Server error: ' + JSON.stringify(err.code, null, "\t"));
+		});
+	};
+	// Локаль приложения.
+	updateLocale() {
+		// Тексты
+		[...this.document.querySelectorAll("[data-i18n]")].forEach((el) => {
+			const key = el.dataset.i18n;
+			el.textContent = locale.get(key);
+		});
+		// Тайтлы
+		[...this.document.querySelectorAll("[data-i18n-title]")].forEach((el) => {
+			const key = el.dataset.i18nTitle;
+			el.setAttribute("title", locale.get(key));
+		});
+	}
+	// Установка фона.
+	setStyleBackground() {
+		this.document.querySelector("#background").value = "";
+		if(typeof dataStations.custombg == "string") {
+			if(fs.existsSync(path.join(this.DATA_DIR, 'background', `${dataStations.custombg}`))) {
+				this.document.body.setAttribute('style', `--background-config: url(${this.GLOB_SERVER.URL}/background/${dataStations.custombg})`);
+			this.document.querySelector(".preview").setAttribute('style', `--background-config: url(${this.GLOB_SERVER.URL}/background/${dataStations.custombg})`);
+				// Удалить кроме этой в директории.
+				[...fs.readdirSync(path.join(this.DATA_DIR, 'background'), { withFileTypes: true })]
+					// Получить только файлы.
+					.filter(f => {
+						if(f.isFile()) {
+							return f.name !== `${dataStations.custombg}`;
+						}
+						return false;
+					})
+					// Сформировать полный путь.
+					.map(f => path.join(path.join(this.DATA_DIR, 'background'), f.name))
+					// Прбежаться и удалить.
+					.forEach(f => {
+						try {
+							fs.unlinkSync(f);
+						} catch (e) {
+							this.log(e);
+						}
+					});
+			} else {
+				dataStations.custombg = 0;
+				this.document.body.removeAttribute('style');
+				this.document.querySelector(".preview").removeAttribute('style');
+				// Удалить всё в директории.
+				[...fs.readdirSync(path.join(this.DATA_DIR, 'background'), { withFileTypes: true })]
+					// Получить только файлы.
+					.filter(f => f.isFile())
+					// Сформировать полный путь.
+					.map(f => path.join(path.join(this.DATA_DIR, 'background'), f.name))
+					// Прбежаться и удалить.
+					.forEach(f => {
+						try {
+							fs.unlinkSync(f);
+						} catch (e) {
+							this.log(e);
+						}
+					});
+			}
+		} else {
+			// Удалить всё в директории.
+			[...fs.readdirSync(path.join(this.DATA_DIR, 'background'), { withFileTypes: true })]
+				// Получить только файлы.
+				.filter(f => f.isFile())
+				// Сформировать полный путь.
+				.map(f => path.join(path.join(this.DATA_DIR, 'background'), f.name))
+				// Прбежаться и удалить.
+				.forEach(f => {
+					try {
+						fs.unlinkSync(f);
+					} catch (e) {
+						this.log(e);
+					}
+				});
+			this.document.body.removeAttribute('style');
+			this.document.querySelector(".preview").removeAttribute('style');
+		}
+	}
+	blobToBuffer(blob) {
+		return new Promise((resolve, reject) => {
+			if (typeof Blob === 'undefined' || !(blob instanceof Blob)) {
+				reject('first argument must be a Blob');
+			}
+			const reader = new FileReader();
+			const onLoadEnd = (e) =>  {
+				reader.removeEventListener('loadend', onLoadEnd, false);
+				if (e.error) reject(e.error);
+				else resolve(Buffer.from(reader.result));
+			}
+			reader.addEventListener('loadend', onLoadEnd, false);
+			reader.readAsArrayBuffer(blob);
+		});
+	}
+	// Чтение дефолтного листа станций.
+	defaultListStations() {
+		this.stop();
+		const genre = this.genreList;
+		const list = this.radioList;
+		const setters = new Set();
+		// Если каталог не существует.
+		if(!fs.existsSync(DATA_DIR)) {
+			fs.mkdirSync(DATA_DIR, { recursive: true, force: true });
+		}
+		// Очистка каталога.
+		[...fs.readdirSync(this.DATA_DIR, { withFileTypes: true })]
+			// Получить только файлы.
+			.filter(f => f.isFile())
+			// Сформировать полный путь.
+			.map(f => path.join(this.DATA_DIR, f.name))
+			// Прбежаться и удалить.
+			.forEach(f => {
+				try {
+					fs.unlinkSync(f);
+				} catch (e) {
+					this.log(e);
+				}
+			});
+		// Очищаем список радио.
+		while (list.firstChild) {
+			list.removeChild(list.firstChild);
+		}
+		// Очищаем список станций.
+		while (genre.firstChild) {
+			genre.removeChild(genre.firstChild);
+		}
+		// Временный объект для данных data.json.
+		const temp = {
+			active: 0,
+			genre: [],
+			notify: true,
+			presetindex: dataStations.presetindex,
+			presetsRandom: dataStations.presetsRandom,
+			stations: {},
+			volume: player.volume,
+			custombg: 0,
+		};
+		// Чтение дефолтного файла.
+		// Кастомный бакграунд.
+		var bg = 0;
+		if(dataStations.custombg) {
+			bg = dataStations.custombg;
+		}
+		dataStations = Object.assign({
+			active: 0,
+			genre: [],
+			notify: true,
+			presetindex: -1,
+			presetsRandom: false,
+			stations: {},
+			volume: player.volume,
+			custombg: bg,
+		}, JSON.parse(fs.readFileSync(SOURCE_FILE).toString()));
+		for (const key in dataStations.stations) {
+			const station = dataStations.stations[key];
+			const { favicon, genre, id, image, name, stream } = dataStations.stations[key];
+			const favData = favicon.split(';base64,').pop();
+			const imgData = image.split(';base64,').pop();
+			for(const gn in genre) {
+				if(String(genre[gn]).trim() !== ""){
+					setters.add(String(genre[gn]).trim());
+				}
+			}
+			temp.stations[key] = {
+				genre: genre,
+				id: id,
+				name: name,
+				stream: stream
+			};
+			try {
+				fs.writeFileSync(path.join(this.DATA_DIR, `${id}.png`), favData, { encoding: 'base64' });
+				fs.writeFileSync(path.join(this.DATA_DIR, `${id}_big.png`), imgData, { encoding: 'base64' });
+				// Ставим станцию в лист.
+				const st= new StationEl({
+					genre: genre,
+					id: id,
+					name: name,
+					stream: stream,
+				}, this.document, this.GLOB_SERVER.URL);
+				list.append(st.li);
+				if(dataStations.active == id) {
+					st.li.classList.add('active');
+				}
+				st.li.classList.add('stop');
+			}catch(e){
+				this.log(e);
+			}
+		}
+		//
+		genres = [...setters].sort((a, b) => a.localeCompare(b));
+		genre.innerHTML = `<li class="genre_item active" data-filter="all"><span>Все</span></li>`;
+		for(const key in genres){
+			const li = this.document.createElement('li');
+			const span = this.document.createElement('span');
+			const filter = `${tagTranslit(String(genres[key]).trim())}`;
+			li.append(span);
+			span.textContent = String(genres[key]).trim();
+			genre.append(li);
+			li.classList.add('genre_item');
+			li.dataset.filter = filter;
+		}
+		// Устанавливаем громкость из файла. 
+		this.volume = temp.volume * 100;
+		// Копируем дефолтную иконку и картинку.
+		// Сохраняем JSON.
+		temp.genre = genres;
+		temp.active = dataStations.active;
+		temp.notify = dataStations.notify;
+		temp.genre = dataStations.genre.sort((a, b) => a.localeCompare(b));
+		temp.volume = this.volume / 100;
+		temp.custombg = dataStations.custombg = bg;
+		stations = Object.assign({}, temp.stations);
+		try {
+			fs.writeFileSync(path.join(this.DATA_DIR, `data.json`), JSON.stringify(temp, null, "\t"));
+		}catch(e){
+			this.log(e);
+		}
+		this.scrollActive();
+		this.setStyleBackground();
+	}
+	// Чтение сохранёного листа станций.
+	readListStations(scroll = true) {
+		const genre = this.genreList;
+		const list = this.radioList;
+		const setters = new Set();
+		this.stop();
+		// Очищаем список радио.
+		while (list.firstChild) {
+			list.removeChild(list.firstChild);
+		}
+		// Очищаем список станций.
+		while (genre.firstChild) {
+			genre.removeChild(genre.firstChild);
+		}
+		const file = path.join(this.DATA_DIR, 'data.json');
+		var dataFile = JSON.parse(fs.readFileSync(file).toString());
+		dataStations = Object.assign({
+			active: 0,
+			genre: [],
+			notify: true,
+			presetindex: -1,
+			presetsRandom: false,
+			stations: {},
+			volume: 1,
+			custombg: 0,
+		}, dataFile);
+		for (const key in dataStations.stations) {
+			const station = dataStations.stations[key];
+			const { genre, id, name, stream } = dataStations.stations[key];
+			try {
+				// Ставим станцию в лист.
+				var st= new StationEl({
+					genre: genre,
+					id: id,
+					name: name,
+					stream: stream,
+				}, this.document, this.GLOB_SERVER.URL);
+				list.append(st.li);
+				if(dataStations.active == id) {
+					st.li.classList.add('active');
+				}
+				st.li.classList.add('stop');
+				for(const gn in genre) {
+					if(String(genre[gn]).trim() !== ""){
+						setters.add(String(genre[gn]).trim());
+					}
+				}
+			}catch(e){
+				this.log(e);
+			}
+		}
+		//
+		genres = [...setters].sort((a, b) => a.localeCompare(b));
+		genre.innerHTML = `<li class="genre_item active" data-filter="all"><span>Все</span></li>`;
+		for(const key in genres){
+			const li = this.document.createElement('li');
+			const span = this.document.createElement('span');
+			const filter = `${tagTranslit(String(genres[key]).trim())}`;
+			li.append(span);
+			span.textContent = String(genres[key]).trim();
+			genre.append(li);
+			li.classList.add('genre_item');
+			li.dataset.filter = filter;
+		}
+		dataStations.genre = genres;
+		this.volume = dataStations.volume * 100;
+		stations = Object.assign({}, dataStations.stations);
+		scroll && this.scrollActive();
+		this.setStyleBackground();
+	}
+	// Показ диалога Редактирования/Добавления this.appBlock и сохранение.
+	showAppBlock(type = "insert", obj) {
+		/**
+		{
+			favicon: this.GLOB_SERVER.URL + `/${id}.png?${new Date().getTime()}`,
+			genre: genre,
+			genres: dataStations.genre,
+			id: id,
+			image: this.GLOB_SERVER.URL + `/${id}_big.png?${new Date().getTime()}`,
+			name: name,
+			stream: stream,
+			title: title
+		}
+		*/
+		const data = Object.assign({type: type}, obj);
+		// И вот далее рендер и функционал зависящий от data.type.
+		const title = data.type == "insert" ? locale.get("insertTitle") : locale.get("editTitle", [data.name]);
+		this.appBlock.innerHTML = `<div class="modal clearfix">` +
+			`<div class="modal-dialog">` +
+				`<div class="modal-wrapper">` +
+					`<div class="cropie_big"></div>` +
+					`<h2 class="modal-title text-center">${title}</h2>` +
+					`<div class="modal-inputs row">` +
+						`<label class="modal-label container">` +
+							`<input class="control name" type="text" value="" placeholder="${locale.get("insertName")}">` +
+							`<span>${locale.get("insertName")}</span>` +
+						`</label>` +
+						`<label class="modal-label container">` +
+							`<input class="control stream" type="text" value="" placeholder="${locale.get("inserStream")}">` +
+							`<span>${locale.get("inserStream")}</span>` +
+						`</label>` +
+					`</div>` +
+					`<div class="modal-crop">` +
+						`<div class="cropie"></div>` +
+						`<div class="modal-fileicon">` +
+							`<div class="fileicon icon-add-photo" title="${locale.get("addIcon")}"></div>` +
+						`</div>` +
+					`</div>` +
+					`<div class="modal-tags">` +
+						`<tags-editor list="${data.genre.toString()}" genre="${data.genres.toString()}"></tags-editor>` +
+					`</div>` +
+					`<div class="modal-buttons">` +
+						`<button class="control ok" type="button">${locale.get("ok")}</button>` +
+						`<button class="control cancel" type="button">${locale.get("cancel")}</button>` +
+					`</div>` +
+				`</div>` +
+			`</div>` +
+		`</div>`;
+		const okBtn = this.dialogBox.querySelector("#ok");
+		const wrap = this.dialogBox.querySelector(".wrap");
+		this.dialogBox.setAttribute("type", "alert");
+		okBtn.onclick = (e) => {
+			this.dialogBox.open && this.dialogBox.close();
+		};
+		const ok = this.appBlock.querySelector("button.ok");
+		const cancel = this.appBlock.querySelector("button.cancel");
+		const btn = this.appBlock.querySelector(".fileicon");
+		const tagsEditor = this.appBlock.querySelector('tags-editor');
+		const name = this.appBlock.querySelector("input.name");
+		const stream = this.appBlock.querySelector("input.stream");
+		tagsEditor.setAttribute("list", data.genre.toString());
+		tagsEditor.setAttribute("genre", data.genres.toString());
+		name.value = data.name;
+		stream.value = data.stream;
+		const bigCropie = new this.window.Croppie(this.appBlock.querySelector('.cropie_big'), {
+			viewport: {
+				width: 360,
+				height: 180,
+				type: 'square'
+			},
+			boundary: {
+				width: 360,
+				height: 180
+			},
+			showZoomer: false,
+			mouseWheelZoom: false,
+			enableExif: false,
+			enableZoomenableZoom: false,
+		});
+		bigCropie.bind({
+			url: data.type == "insert" ? `${this.GLOB_SERVER.URL}/image_big.png` : data.image
+		});
+		const favCropie = new this.window.Croppie(this.appBlock.querySelector('.cropie'), {
+			viewport: {
+				width: 180,
+				height: 180,
+				type: 'circle'
+			},
+			boundary: {
+				width: 180,
+				height: 180
+			},
+			showZoomer: true,
+			enableOrientation: true,
+			mouseWheelZoom: true,
+			enableExif: true
+		});
+		favCropie.bind({
+			url: data.type == "insert" ? `${this.GLOB_SERVER.URL}/image_big.png` : data.image
+		});
+		btn.onclick = (event) => {
+			nwdialog.openFileDialog(['.jpeg', '.jpg', '.png'], (result) => {
+				if(!result) {
+					return;
+				}
+				result = "file:///" + result.split('\\').join('/');
+				favCropie.bind({
+					url: result
+				});
+				bigCropie.bind({
+					url: result
+				});
+			});
+		};
+		ok.onclick = async (event) => {
+			if(!String(name.value).trim()) {
+				wrap.innerHTML = locale.get("editNameAlert");
+				this.dialogBox.showModal();
+				return;
+			}
+			if(!String(stream.value).trim()) {
+				wrap.innerHTML = locale.get("editStreamAlert");
+				this.dialogBox.showModal();
+				return;
+			}
+			// Удалить исходные изображения.
+			try {
+				fs.existsSync(path.normalize(path.join(this.DATA_DIR, `${data.id}.png`))) && fs.unlinkSync(path.normalize(path.join(this.DATA_DIR, `${data.id}.png`)));
+				fs.existsSync(path.normalize(path.join(this.DATA_DIR, `${data.id}_big.png`))) && fs.unlinkSync(path.normalize(path.join(this.DATA_DIR, `${data.id}_big.png`)));
+			}catch(e){}
+			// Получение новых изображений.
+			try {
+				// заменить новыми,
+				let baseFav = await favCropie.result({
+					type: "base64",
+					size: "viewport",
+					format: "png",
+					quality: 1,
+					circle: true
+				});
+				let baseBig = await bigCropie.result({
+					type: "base64",
+					size: "viewport",
+					format: "png",
+					quality: 1,
+					circle: false
+				});
+				// Получаем base64 изображений для записи.
+				baseFav = baseFav.split(';base64,').pop();
+				baseBig = baseBig.split(';base64,').pop();
+				// id изменить при сохранении.
+				data.id = data.type == "insert" ? new Date().getTime() : data.id;
+				// Пишем в файлы.
+				fs.writeFileSync(path.normalize(path.join(this.DATA_DIR, `${data.id}.png`)), baseFav, { encoding: 'base64' });
+				fs.writeFileSync(path.normalize(path.join(this.DATA_DIR, `${data.id}_big.png`)), baseBig, { encoding: 'base64' });
+				// обновить станцию.
+				// Используем именно let. Будет переопределение.
+				const element = data.type == "insert" ? this.document.createElement("li") : this.radioList.querySelector(`li[data-id="${data.id}"]`);
+				name.value = String(name.value).trim();
+				stream.value = String(stream.value).trim();
+				element.setAttribute("data-id", data.id);
+				element.setAttribute("data-name", name.value);
+				element.setAttribute("data-title", name.value);
+				element.setAttribute("data-stream", stream.value);
+				element.setAttribute("data-genre", tagsEditor.getAttribute("list").trim());
+				// Вставить в лист.
+				data.type == "insert" && this.radioList.append(element);
+				// сохранить список.
+				this.saveStations();
+				// перезагрузить список.
+				this.readListStations(false);
+				// Прокрутить до редактируемой.
+				setTimeout(() => {
+					this.scrollToEl(this.radioList.querySelector(`li[data-id="${data.id}"]`));
+				}, 10);
+			} catch(err) {
+				this.console.error(err);
+				wrap.innerHTML = locale.get("errorSaveMessageAlert");
+				this.dialogBox.showModal();
+				return;
+			}
+			favCropie.destroy();
+			bigCropie.destroy();
+			ok.onclick = null;
+			cancel.onclick = null;
+			okBtn.onclick = null;
+			this.appBlock.close();
+			this.appBlock.innerHTML = "";
+			return;
+		};
+		cancel.onclick = (event) => {
+			ok.onclick = null;
+			cancel.onclick = null;
+			okBtn.onclick = null;
+			this.appBlock.close();
+			this.appBlock.innerHTML = "";
+			return;
+		};
+		this.appBlock.showModal();
+	}
+	// Добавление станции.
+	addStation() {
+		// Останавливаем воспроизведение.
+		this.stop();
+		// insert
+		this.showAppBlock("insert", {
+			favicon: "",
+			genre: [],
+			genres: dataStations.genre,
+			id: new Date().getTime(),
+			image: "",
+			name: "",
+			stream: "",
+			title: ""
+		});
+	}
+	// Редактирование станции.
+	editStation(obj) {
+		// Останавливаем воспроизведение.
+		this.stop();
+		// edit.
+		this.showAppBlock("edit", obj);
+	}
+	// Удаление станции.
+	removeStation(obj) {
+		// Получаем пункт станции.
+		var li = this.radioList.querySelector(`[data-id="${obj.id}"]`);
+		if(li) {
+			var isPlay = player.isPlaying();
+			this.stop();
+			li.remove();
+			// Сохраняем станции.
+			this.saveStations();
+			// Удалить файлы.
+			var icon = path.normalize(path.join(this.DATA_DIR, `${obj.id}.png`));
+			var iconBig = path.normalize(path.join(this.DATA_DIR, `${obj.id}_big.png`));
+			fs.existsSync(icon) && fs.unlinkSync(icon);
+			fs.existsSync(iconBig) && fs.unlinkSync(iconBig);
+			// Пауза и чтение.
+			setTimeout(() => {
+				this.readListStations(false);
+				isPlay && this.play();
+			}, 10);
+		}
+		this.dialogBox.open && this.dialogBox.close();
+	}
+	// Экспорт станций и настроек.
+	exportStations() {
+		try {
+			var saveStations = {
+				active: dataStations.active,
+				custombg: false,
+				genre: [],
+				notify: dataStations.notify,
+				presetindex: dataStations.presetindex,
+				presetsRandom : dataStations.presetsRandom ? true : false,
+				stations: {},
+				volume: dataStations.volume,
+			}
+			// Собрать станции, жанры, кастомный фон.
+			// заберём кастомный фон.
+			if(dataStations.custombg) {
+				var cbPath = path.normalize(path.join(this.DATA_DIR, 'background', dataStations.custombg));
+				if(fs.existsSync(cbPath)) {
+					const ext = path.extname(cbPath).toLowerCase();
+					const mimeType = mime.getType(ext);
+					if(mimeType){
+						try {
+							const cbBase = fs.readFileSync(cbPath, { encoding: 'base64' });
+							saveStations.custombg = `data:${mimeType};base64,${cbBase}`;
+						} catch(e){
+							saveStations.custombg = false;
+						}
+					} else {
+						saveStations.custombg = false;
+					}
+				}
+			}
+			// Собираем жанры.
+			const setters = new Set();
+			// Пробегаем по станциям.
+			for(const key in dataStations.stations) {
+				const favicon = fs.readFileSync( path.normalize(path.join(this.DATA_DIR, `${key}.png`)), { encoding: 'base64' });
+				const image = fs.readFileSync( path.normalize(path.join(this.DATA_DIR, `${key}_big.png`)), { encoding: 'base64' });
+				dataStations.stations[key].genre.forEach(f => {
+					setters.add(f);
+				});
+				saveStations.stations[key] = {
+					favicon: `data:image/png;base64,${favicon}`,
+					genre: dataStations.stations[key].genre,
+					id: key,
+					image: `data:image/png;base64,${image}`,
+					name: dataStations.stations[key].name,
+					stream: dataStations.stations[key].stream
+				}
+			}
+			saveStations.genre = [...setters].filter(f => f !== "").sort((a, b) => a.localeCompare(b));
+			const json = JSON.stringify(saveStations);
+			// Отдать json.
+			nwdialog.saveFileDialog('radio-export', '.json', function(sfile){
+				// loading.
+				fs.writeFile(sfile, json, 'utf8', (err) => {
+					//$("main").removeClass('loading');
+					if(!err){
+						// Успешно.
+					}else{
+						// Ошибка записи в файл.
+						throw "Error write file json";
+					}
+				});
+			});
+		} catch(e) {
+			const ok = this.dialogBox.querySelector("#ok");
+			const wrap = this.dialogBox.querySelector(".wrap");
+			this.dialogBox.setAttribute("type", "alert");
+			wrap.innerHTML = locale.get("exportError");
+			this.dialogBox.showModal();
+			ok.onclick = (e) => {
+				ok.onclick = null;
+				this.dialogBox.open && this.dialogBox.close();
+			};
+		}
+	}
+	// Импорт станций и настроек.
+	importStations() {
+		try {
+			this.console.log("ИМПОРТ");
+			nwdialog.openFileDialog(['.json'], false, (file) => {
+				if(file !== false) {
+					player.stop();
+					this.console.log(file)
+					this.document.querySelector('main').classList.add('saving');
+					setTimeout(() => {
+						const readFile = fs.readFileSync(file).toString();
+						const json = JSON.parse(readFile);
+						this.stop();
+						const genre = this.genreList;
+						const list = this.radioList;
+						const setters = new Set();
+						if(!fs.existsSync(path.join(DATA_DIR, 'background'))) {
+							fs.mkdirSync(path.join(DATA_DIR, 'background'), { recursive: true, force: true });
+						}
+						[...fs.readdirSync(this.DATA_DIR, { withFileTypes: true })]
+							.filter(f => f.isFile())
+							.map(f => path.join(this.DATA_DIR, f.name))
+							.forEach(f => {
+								fs.unlinkSync(f);
+							});
+						[...fs.readdirSync(path.join(DATA_DIR, 'background'), { withFileTypes: true })]
+							.filter(f => f.isFile())
+							.map(f => path.join(this.DATA_DIR, 'background', f.name))
+							.forEach(f => {
+								fs.unlinkSync(f);
+							});
+						while (list.firstChild) {
+							list.removeChild(list.firstChild);
+						}
+						while (genre.firstChild) {
+							genre.removeChild(genre.firstChild);
+						}
+						const temp = {
+							active: json.active,
+							genre: [],
+							notify: json.notify,
+							presetindex: this.presetsSelectIndex,
+							presetsRandom: json.presetsRandom ? true : false,
+							stations: {},
+							volume: json.volume,
+							custombg: false,
+						};
+						if(json.custombg) {
+							const mt = json.custombg.split(',')[0].split(':')[1].split(';')[0];
+							this.console.log(mt);
+							const ext = mime.getExtension(mt);
+							this.console.log(ext);
+							if(ext) {
+								const time = new Date().getTime();
+								const custombg = json.custombg.split(';base64,').pop();
+								fs.writeFileSync(path.join(this.DATA_DIR, 'background', `${time}.${ext}`), custombg, { encoding: 'base64' });
+								temp.custombg = `${time}.${ext}`;
+							}
+						}
+						for (const key in json.stations) {
+							const { favicon, genre, id, image, name, stream } = json.stations[key];
+							temp.stations[key] = {
+								genre: genre,
+								id: id,
+								name: name,
+								stream: stream
+							};
+							for(const gn in genre) {
+								if(String(genre[gn]).trim() !== ""){
+									setters.add(String(genre[gn]).trim());
+								}
+							}
+							const favData = favicon.split(';base64,').pop();
+							const imgData = image.split(';base64,').pop();
+							fs.writeFileSync(path.join(this.DATA_DIR, `${id}.png`), favData, { encoding: 'base64' });
+							fs.writeFileSync(path.join(this.DATA_DIR, `${id}_big.png`), imgData, { encoding: 'base64' });
+						}
+						temp.genre = [...setters].sort((a, b) => a.localeCompare(b));
+						fs.writeFileSync(path.join(this.DATA_DIR, `data.json`), JSON.stringify(temp, null, "\t"));
+						this.readListStations();
+						this.document.querySelector('main').classList.remove('saving');
+					}, 1000);
+				}
+			});
+		} catch(e) {
+			const ok = this.dialogBox.querySelector("#ok");
+			const wrap = this.dialogBox.querySelector(".wrap");
+			this.dialogBox.setAttribute("type", "alert");
+			wrap.innerHTML = locale.get("importError");
+			this.dialogBox.showModal();
+			ok.onclick = (e) => {
+				ok.onclick = null;
+				this.dialogBox.open && this.dialogBox.close();
+				this.document.querySelector('main').classList.remove('saving');
+			};
+		}
+	}
+	// Сохранение станций.
+	saveStations() {
+		const file = path.join(this.DATA_DIR, 'data.json');
+		const genre = this.genreList;
+		const list = this.radioList;
+		const lis = [...list.querySelectorAll("li")];
+		const setters = new Set();
+		var active = 0;
+		stations = {};
+		for (const key in lis) {
+			const { id, name, stream, genre } = lis[key].dataset;
+			const tempGenre = genre.split(',').map(f => String(f).trim());
+			stations[id] = {
+				genre: tempGenre,
+				id: id,
+				name: name,
+				stream: stream,
+			}
+			// Собрать жанры.
+			for(const gn in tempGenre) {
+				if(String(tempGenre[gn]).trim() !== ""){
+					setters.add(String(tempGenre[gn]).trim());
+				}
+			}
+			if(lis[key].classList.contains('active')) {
+				active = id;
+			}
+		}
+		dataStations.active = active;
+		dataStations.genre = [...setters].sort((a, b) => a.localeCompare(b));
+		dataStations.presetindex = this.presetsSelectIndex;
+		dataStations.presetsRandom = dataStations.presetsRandom ? true : false;
+		dataStations.stations = stations;
+		dataStations.volume = player.volume;
+		try{
+			fs.writeFileSync(file, JSON.stringify(dataStations, null, "\t"));
+			// Проверка на существование дополнительных файлов. Если нет - копируем.
+			[
+				`image_fav.png`,
+				`image_big.png`,
+				`favicon.ico`
+			].forEach(f => {
+				if(!fs.existsSync(path.join(this.DATA_DIR, `${f}`))){
+					fs.copyFileSync(path.join(nw.__dirname, `${f}`), path.join(this.DATA_DIR, `${f}`));
+				}
+			});
+			// Проверка на существование background.
+			if(!fs.existsSync(path.join(this.DATA_DIR, `background`))){
+				fs.mkdirSync(path.join(this.DATA_DIR, `background`), { recursive: true, force: true });
+			}
+		} catch(e) {
+			this.error(e);
+		}
+	}
+	// Очистка листа станций.
+	clearStattions() {
+		const genre = this.genreList;
+		const list = this.radioList;
+		const setters = new Set();
+		this.stop();
+		// Очищаем список радио.
+		while (list.firstChild) {
+			list.removeChild(list.firstChild);
+		}
+		// Очищаем список станций.
+		while (genre.firstChild) {
+			genre.removeChild(genre.firstChild);
+		}
+		dataStations.active = 0;
+		dataStations.genre = [];
+		dataStations.presetindex = this.presetsSelectIndex;
+		dataStations.presetsRandom = dataStations.presetsRandom ? true : false;
+		dataStations.stations = {};
+		// Если каталог не существует.
+		if(!fs.existsSync(DATA_DIR)) {
+			fs.mkdirSync(DATA_DIR, { recursive: true, force: true });
+		}
+		// Очистка каталога.
+		[...fs.readdirSync(this.DATA_DIR, { withFileTypes: true })]
+			// Получить только файлы.
+			.filter(f => f.isFile())
+			// Сформировать полный путь.
+			.map(f => path.join(this.DATA_DIR, f.name))
+			// Прбежаться и удалить.
+			.forEach(f => {
+				try {
+					fs.unlinkSync(f);
+				} catch (e) {
+					this.log(e);
+				}
+			});
+		this.saveStations();
+	}
+	// Запрос метаданных потока. Работает от id станции.
+	getMetaData() {
+		metainterval && clearTimeout(metainterval);
+		const el = this.radioList.querySelector(`li.active`);
+		const { id, name, stream, title } = el.dataset;
+		icy.get(player.stream, (res) => {
+			const _title = title.length > 5 ? title : name;
+			res.on('metadata', (metadata) => {
+				const parsed = icy.parse(metadata);
+				const $_title = String(parsed.StreamTitle).trim();
+				const icon = `${this.GLOB_SERVER.URL}/` + (fs.existsSync(path.join(this.DATA_DIR, `${id}_big.png`)) ? `${id}_big.png?` : `image_big.png?`) + (new Date()).getTime();
+				const favicon = `${this.GLOB_SERVER.URL}/` + (fs.existsSync(path.join(this.DATA_DIR, `${id}.png`)) ? `${id}.png?` : `image_fav.png?`) + (new Date()).getTime();
+				if(player.isPlaying()){
+					if($_title.length > 5) {
+						this.title = $_title + ' | ' + name + ' | ' + locale.get("appName");
+					}else{
+						this.title = name + ' | ' + locale.get("appName");
+						dataStations.notify && chrome.notifications.clear(String(nw.App.manifest.name));
+					}
+					if($_title !== _title && $_title.length > 5) {
+						el.setAttribute("data-title", $_title);
+						// Отправить сообщение для отображения.
+						this.spawnNotification({icon: icon, favicon: favicon, id: id, name: name, title: $_title});
+					} else {
+						el.setAttribute("data-title", _title);
+					}
+					metainterval = setTimeout(() => this.getMetaData(), 5000);
+				} else {
+					el.setAttribute("data-title", name);
+					this.title = locale.get("appName");
+				}
+			}).on("error", (err) => {
+				this.console.log('err', err);
+				player.isPlaying() ? (
+					this.title = name + ' | ' + locale.get("appName"),
+					metainterval = setTimeout(() => this.getMetaData(), 5000)
+				) : (
+					el.setAttribute("data-title", name),
+					this.title = locale.get("appName")
+				);
+			});
+		});
+		//
+	}
+	// Отправка сообщения для отображения.
+	spawnNotification(data) {
+		const {icon, favicon, id, name, title} = data;
+		this.window.navigator.mediaSession.metadata = new this.window.MediaMetadata({
+			title: name,
+			artist: title,
+			album: "",
+			artwork: [
+				{
+					src: favicon,
+					type: "image/png",
+					sizes: '180x180',
+				}
+			]
+		});
+		this.vizualizer && this.vizualizer.launchSongTitleAnim(`${title}`);
+		const iconPath = path.join(DATA_DIR, `${id}.png`);
+		const imagePath = path.join(DATA_DIR, `${id}_big.png`);
+		try {
+			/**
+			dataStations.notify && notifier.notify({
+				title: name,
+				message: title,
+				icon: iconPath,
+				type: 'info',
+				sound: false,
+				id: 'yourradio',
+				appID: locale.get('appName'),
+				application: nw.process.execPath
+			});
+			*/
+			// Сделать вывод под свой toast
+			/**
+			 * Если это не Windows 10 и ниже
+			 * выводим стандартный nwjs нотификатор
+			 * Если это Windows 10 и выше
+			 * выодим toast
+			 * 
+			 * Предусмотреть модуль именно под эти параметры.
+			 */
+			toastNotify({
+				station: name,
+				track: title,
+				iconPath: iconPath,
+				imagePath: imagePath,
+			});
+		} catch(e){
+			this.console.error(e);
+		}
+	}
+	// Прокрутка к элементу.
+	scrollToEl(el) {
+		const wrap = this.document.querySelector('main > .container > .row');
+		if (!wrap) return;
+		const wrapRect = wrap.getBoundingClientRect();
+		const elRect = el.getBoundingClientRect();
+		// Позиция элемента относительно контейнера (в пикселях).
+		const elTopRelative = elRect.top - wrapRect.top;
+		const elBottomRelative = elTopRelative + elRect.height;
+		const containerHeight = wrapRect.height;
+		// Элемент выше видимой области контейнера.
+		const isAboveTop = elTopRelative < 0;
+		// Элемент ниже видимой области контейнера.
+		const isBelowBottom = elBottomRelative > containerHeight;
+		if (isAboveTop) {
+			// Сначала сбрасываем скролл контейнера в начало.
+			wrap.scrollTo({ top: 0, left: 0 });
+			// Затем плавно показываем элемент сверху.
+			el.scrollIntoView({ block: 'start' });
+		} else if (isBelowBottom) {
+			// Показываем элемент снизу.
+			el.scrollIntoView({ block: 'end' });
+		}
+	}
+	// Прокрутка к активному элементу.
+	scrollActive() {
+		const el = this.document.querySelector('#radio-list > li.active');
+		if (!el) return;
+		this.scrollToEl(el);
+	}
+	// Тайтл.
+	get title() {
+		try {
+			return this.document.title;
+		} catch (e) {
+			return "";
+		}
+	}
+	set title(value) {
+		try {
+			this.win.name = value;
+			this.win.title = value;
+			this.document.title = value;
+			this.document.querySelector("#TitleBar-text span").textContent = value;
+		} catch (e) {}
+	}
+	// Громкость от 0 до 100.
+	get volume() {
+		return volume;
+	}
+	set volume(value) {
+		var inp;
+		if(!Number.isNaN(Number(value))){
+			value = volume = Math.min(100, Math.max(0, parseFloat(value)));
+			player.volume = volume / 100;
+			if(inp = this.document.querySelector("#volume")){
+				inp.value = value;
+				inp.dispatchEvent(new Event("input", { bubbles: true, composed: true }));
+			}
+		}
+		dataStations.volume = player.volume;
+	}
+	// Воспроизведение.
+	play() {
+		const list = this.radioList;
+		const el = list.querySelector("li.active");
+		this.stop();
+		if(!el) {
+			return;
+		}
+		el.setAttribute('data-title', el.dataset.name);
+		try {
+			const { id, name, stream, genre } = el.dataset;
+			this.title = `${name} | ${locale.get("appName")}`;
+			player.stream = stream;
+			player.play();
+			this.title = name + " | " + locale.get('appName');
+			this.window.navigator.mediaSession.metadata = new this.window.MediaMetadata({
+				title: locale.get("appName"),
+				artist: name,
+				album: "",
+				artwork: [
+					{
+						src: `${this.GLOB_SERVER.URL}/${id}.png`,
+						type: "image/png",
+						sizes: '180x180',
+					}
+				]
+			});
+			this.getMetaData(id);
+			if(this.document.fullscreenElement) {
+				this.onVizualizer();
+			}
+		} catch (e) {
+			this.stop();
+		}
+		dataStations.notify && chrome.notifications.clear(String(nw.App.manifest.name));
+	}
+	// Остановка.
+	stop() {
+		clearTimeout(metainterval);
+		player.stop();
+		this.offVizualizer();
+		this.title = locale.get('appName');
+		const list = this.radioList;
+		const el = list.querySelector("li.active");
+		el && el.setAttribute('data-title', el.dataset.name);
+		dataStations.notify && chrome.notifications.clear(String(nw.App.manifest.name));
+		this.title = locale.get("appName");
+	}
+	// Предыдущий.
+	prev() {
+		this.stop();
+		const currentEl = this.radioList.querySelector('.active');
+		const items = Array.from(this.radioList.querySelectorAll('li:not(.hidden)'));
+		if (items.length === 0) {
+			// вообще нет видимых — тут уже точно ничего не сделать.
+			return;
+		}
+		const currentIndex = items.findIndex(el => el.classList.contains('active'));
+		let targetIndex;
+		if (currentIndex !== -1) {
+			// Есть активный среди видимых — идём к предыдущему с зацикливанием.
+			targetIndex = (currentIndex - 1 + items.length) % items.length;
+		} else {
+			// Активного среди видимых нет — для prev выбираем последний видимый.
+			targetIndex = items.length - 1;
+		}
+		const prevEl = items[targetIndex];
+		// Убираем active со старого (если он был).
+		if (currentEl) {
+			// Удаляем классы.
+			currentEl.classList.remove('active');
+			currentEl.classList.remove('play');
+			currentEl.classList.remove('preload');
+			currentEl.classList.add("stop");
+			// Устанавливаем data-title.
+			currentEl.setAttribute("data-title", currentEl.dataset.name);
+		}
+		// Ставим на новый.
+		prevEl.classList.add('active');
+		this.play();
+		this.scrollActive();
+	}
+	// следующий.
+	next() {
+		this.stop();
+		const currentEl = this.radioList.querySelector('.active');
+		const items = Array.from(this.radioList.querySelectorAll('li:not(.hidden)'));
+		if (items.length === 0) {
+			return;
+		}
+		const currentIndex = items.findIndex(el => el.classList.contains('active'));
+		let targetIndex;
+		if (currentIndex !== -1) {
+			// Есть активный среди видимых — идём к следующему с зацикливанием.
+			targetIndex = (currentIndex + 1) % items.length;
+		} else {
+			// Активного среди видимых нет — для next выбираем первый видимый.
+			targetIndex = 0;
+		}
+		const nextEl = items[targetIndex];
+		if (currentEl) {
+			// Удаляем классы.
+			currentEl.classList.remove('active');
+			currentEl.classList.remove('play');
+			currentEl.classList.remove('preload');
+			currentEl.classList.add("stop");
+			// Устанавливаем data-title.
+			currentEl.setAttribute("data-title", currentEl.dataset.name);
+		}
+		nextEl.classList.add('active');
+		this.play();
+		this.scrollActive();
+	}
+	isNumber(value) {
+		return typeof value === 'number' && Number.isFinite(value) && value !== true && value !== false;
+	}
+	get presetsSelectIndex() {
+		return dataStations.presetindex;
+	}
+	set presetsSelectIndex(value) {
+		const num = Number(value);
+		this.console.log(this.presetsNames.length);
+		const max = this.presetsNames.length - 1;
+		dataStations.presetindex = !Number.isFinite(num) ? -1 : Math.max(-1, Math.min(Math.floor(num), max));
+	}
+	// Сервер.
+	get server() {
+		return this.#ready;
+	}
+	set server(value) {
+		this.error("Нельзя задать значение app.server");
+	}
+	// Директория.
+	get DATA_DIR() {
+		return DATA_DIR;
+	}
+	set DATA_DIR(value) {
+		this.error("Нельзя задать значение app.DATA_DIR");
+	}
+};
+
+module.exports = (win, window, document) => {
+	return {
+		app: new App(win, window, document)
+	};
+};
+

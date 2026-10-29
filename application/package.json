@@ -3,7 +3,7 @@
 	"version": "4.0.2.0.119.2",
 	"comments": "Ваше Радио. Облегчённая версия. Самостоятельное добавление радио потока. Импорт/Экспорт плейлиста радиостанций.",
 	"description": "Ваше Радио. Облегчённая версия.",
-	"buildDate": "29 October 2026 11:09:45",
+	"buildDate": "29 October 2026 15:16:16",
 	"author": "ProjectSoft",
 	"homepage": "https://github.com/ProjectSoft-STUDIONIONS/radioApp-lite",
 	"license": "GPL-3.0",
@@ -38,7 +38,6 @@
 		"butterchurn": "^2.6.7",
 		"icy": "latest",
 		"mime": "latest",
-		"node-notifier": "^10.0.1",
 		"string_decoder": "latest",
 		"transliteration": "^2.6.1"
 	}

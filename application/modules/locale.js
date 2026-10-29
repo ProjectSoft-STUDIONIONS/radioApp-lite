@@ -4,4 +4,28 @@
  * @author	ProjectSoft <projectsoft2009@yandex.ru>
  * @license GPL-3.0
  */
-const isEmpty=r=>{if(null==r)return!0;if(!1===r)return!0;if(void 0===r)return!0;return""===String(r).trim()},isArray=r=>Array.isArray(r),locale={get:(r,e=[])=>{r=String(r).trim(),e=isArray(e)?Object.values(e).slice(0,8):[];const t=chrome.i18n.getMessage(r,e);return isEmpty(t)?r:t}};module.exports=locale;
+const isEmpty = (value) => {
+	if (value == null) return true;
+	if (value === false) return true;
+	if (value === undefined) return true;
+	const s = String(value).trim();
+	return s === '';
+};
+
+const isArray = value => Array.isArray(value);
+
+const locale = {
+	get: (name, placeholders = []) => {
+		name = String(name).trim();
+		if(!isArray(placeholders)) {
+			placeholders = [];
+		} else {
+			placeholders = Object.values(placeholders).slice(0, 8);
+		}
+		const message = chrome.i18n.getMessage(name, placeholders);
+		return isEmpty(message) ? name : message;
+	}
+};
+
+module.exports = locale;
+

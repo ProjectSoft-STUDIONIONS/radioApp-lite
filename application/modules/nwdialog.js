@@ -4,4 +4,136 @@
  * @author	ProjectSoft <projectsoft2009@yandex.ru>
  * @license GPL-3.0
  */
-"use strict";var sdk="sdk"==nw.process.versions["nw-flavor"],_context=void 0===global.DOMDocument?document:global.DOMDocument;function isArray(t){return"[object Array]"===Object.prototype.toString.call(t)}var NwDialog=function(){};NwDialog.prototype={set context(t){"[object HTMLDocument]"==Object.prototype.toString.call(t)&&(_context=t)},get context(){return _context},openFileDialog:function(t,e,n,o){var i=o,r=this.context.createElement("input");r.type="file",r.id="open-file-dialog",r.style="display: none","function"==typeof t?i=t:"string"==typeof t?r.setAttribute("accept",t):"boolean"==typeof t&&!0===t?r.setAttribute("multiple",""):isArray(t)&&r.setAttribute("accept",t.join(",")),"function"==typeof e?i=e:"string"==typeof e?r.setAttribute("nwworkingdir",e):"boolean"==typeof e&&!0===e&&r.setAttribute("multiple",""),"function"==typeof n?i=n:"string"==typeof n&&r.setAttribute("nwworkingdir",n),this.context.body.appendChild(r),r.addEventListener("change",function(t){i(r.value),r.remove()}),r.addEventListener("cancel",function(){i(!1),r.remove()}),r.click()},saveFileDialog:function(t,e,n,o){var i=o,r=this.context.createElement("input");r.type="file",r.id="save-file-dialog",r.style="display: none",r.setAttribute("nwsaveas",""),"function"==typeof t?i=t:"string"==typeof t&&r.setAttribute("nwsaveas",t),"function"==typeof e?i=e:"string"==typeof e?r.setAttribute("accept",e):isArray(e)&&r.setAttribute("accept",e.join(",")),"function"==typeof n?i=n:"string"==typeof n&&r.setAttribute("nwworkingdir",n),this.context.body.appendChild(r),r.addEventListener("change",function(){i(r.value),r.remove()}),r.addEventListener("cancel",function(){i(!1),r.remove()}),r.click()},folderBrowserDialog:function(t,e){var n=e,o=this.context.createElement("input");o.type="file",o.id="folder-browser-dialog",o.style="display: none",o.nwdirectory=!0,"function"==typeof t?n=t:"string"==typeof t&&o.setAttribute("nwworkingdir",t),this.context.body.appendChild(o),o.addEventListener("change",function(){n(o.value),o.remove()}),o.addEventListener("cancel",function(){n(!1),o.remove()}),o.click()}},module.exports=new NwDialog;
+'use strict';
+var sdk = (nw.process.versions["nw-flavor"] == "sdk"),
+	_context = typeof global.DOMDocument === 'undefined' ? document : global.DOMDocument;
+function isArray(value){
+	return Object.prototype.toString.call(value) === '[object Array]';
+}
+var NwDialog = function(){};
+NwDialog.prototype = {
+	set context(value) {
+		if(Object.prototype.toString.call(value) == "[object HTMLDocument]"){
+			_context = value;
+		}
+	},
+	get context() {
+		return _context;
+	},
+	openFileDialog: function(filter, multiple, workdir, callback) {
+
+		var fn          = callback;
+		var node        = this.context.createElement('input');
+		node.type       = 'file';
+		node.id         = 'open-file-dialog';
+		node.style      = 'display: none';
+
+		if (typeof filter === 'function') {
+			fn = filter;
+		} else if (typeof filter === 'string') {
+			node.setAttribute('accept', filter);
+		} else if (typeof filter === 'boolean' && filter === true) {
+			node.setAttribute('multiple', '');
+		} else if (isArray(filter)) {
+			node.setAttribute('accept', filter.join(','));
+		}
+
+		if (typeof multiple === 'function') {
+			fn = multiple;
+		} else if (typeof multiple === 'string') {
+			node.setAttribute('nwworkingdir', multiple);
+		} else if (typeof multiple === 'boolean' && multiple === true) {
+			node.setAttribute('multiple', '');
+		}
+
+		if (typeof workdir === 'function') {
+			fn = workdir;
+		} else if (typeof workdir === 'string') {
+			node.setAttribute('nwworkingdir', workdir);
+		}
+
+		this.context.body.appendChild(node);
+		node.addEventListener('change', function(e) {
+			fn(node.value);
+			node.remove();
+		});
+		node.addEventListener('cancel', function() {
+			fn(false);
+			node.remove();
+		});
+		node.click();
+
+	},
+
+	saveFileDialog: function(name, accept, directory, callback) {
+
+		var fn          = callback;
+		var node        = this.context.createElement('input');
+		node.type       = 'file';
+		node.id         = 'save-file-dialog';
+		node.style      = 'display: none';
+		node.setAttribute('nwsaveas', '');
+
+		if (typeof name === 'function') {
+			fn = name;
+		} else if (typeof name === 'string') {
+			node.setAttribute('nwsaveas', name);
+		}
+
+		if (typeof accept === 'function') {
+			fn = accept;
+		} else if (typeof accept === 'string') {
+			node.setAttribute('accept', accept);
+		} else if (isArray(accept)) {
+			node.setAttribute('accept', accept.join(','));
+		}
+
+		if (typeof directory === 'function') {
+			fn = directory;
+		} else if (typeof directory === 'string') {
+			node.setAttribute('nwworkingdir', directory);
+		}
+
+		this.context.body.appendChild(node);
+		node.addEventListener('change', function() {
+			fn(node.value);
+			node.remove();
+		});
+		node.addEventListener('cancel', function() {
+			fn(false);
+			node.remove();
+		});
+		node.click();
+
+	},
+
+	folderBrowserDialog: function(workdir, callback) {
+		var fn          = callback;
+		var node        = this.context.createElement('input');
+		node.type       = 'file';
+		node.id         = 'folder-browser-dialog';
+		node.style      = 'display: none';
+		node.nwdirectory= true;
+
+		if (typeof workdir === 'function') {
+			fn = workdir
+		} else if (typeof workdir === 'string') {
+			node.setAttribute('nwworkingdir', workdir);
+		}
+
+		this.context.body.appendChild(node);
+		node.addEventListener('change', function() {
+			fn(node.value);
+			node.remove();
+		});
+		node.addEventListener('cancel', function() {
+			fn(false);
+			node.remove();
+		});
+		node.click();
+	}
+
+}
+
+module.exports = new NwDialog();
+

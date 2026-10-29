@@ -5,7 +5,7 @@ const http = require('http');
 const { URL } = require('url');
 const mime = require('mime').default;
 const icy = require('icy');
-const notifier = require('node-notifier');
+const { toastNotify } = require('./toast.js');
 const EventDispatcher = require('./eventdispatcher.js');
 const StationEl = require('./station.js');
 const nwdialog = require('./nwdialog.js');
@@ -1903,7 +1903,9 @@ class App extends EventDispatcher {
 		});
 		this.vizualizer && this.vizualizer.launchSongTitleAnim(`${title}`);
 		const iconPath = path.join(DATA_DIR, `${id}.png`);
+		const imagePath = path.join(DATA_DIR, `${id}_big.png`);
 		try {
+			/**
 			dataStations.notify && notifier.notify({
 				title: name,
 				message: title,
@@ -1913,6 +1915,22 @@ class App extends EventDispatcher {
 				id: 'yourradio',
 				appID: locale.get('appName'),
 				application: nw.process.execPath
+			});
+			*/
+			// Сделать вывод под свой toast
+			/**
+			 * Если это не Windows 10 и ниже
+			 * выводим стандартный nwjs нотификатор
+			 * Если это Windows 10 и выше
+			 * выодим toast
+			 * 
+			 * Предусмотреть модуль именно под эти параметры.
+			 */
+			toastNotify({
+				station: name,
+				track: title,
+				iconPath: iconPath,
+				imagePath: imagePath,
 			});
 		} catch(e){
 			this.console.error(e);

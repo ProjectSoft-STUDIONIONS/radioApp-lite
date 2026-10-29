@@ -62,3 +62,4 @@ Filename: {sys}\taskkill.exe; Parameters: "/F /IM YourRadio.exe /T"; Flags: skip
 [Icons]
 Name: "{autoprograms}\{cm:ProgramName}"; Filename: "{app}\{#RadioAppExeName}"
 Name: "{autodesktop}\{cm:ProgramName}"; Filename: "{app}\{#RadioAppExeName}"
+Name: "{autoprograms}\toast"; Filename: "{app}\{#RadioAppExeName}"; Parameters: "package.nw"; AppUserModelId: "YourRadio.app"

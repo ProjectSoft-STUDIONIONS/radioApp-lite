@@ -38,4 +38,5 @@ record.json
 !/src/sources/stations/*.txt
 /src/toast/Win*
 /src/toast/*.dproj.*
+/src/toast/*.identcache
 /src/toast/__*

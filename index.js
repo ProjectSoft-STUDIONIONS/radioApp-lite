@@ -179,6 +179,31 @@ const sleep = (ms) => {
 		log(colors.yellowBright(`Компиляция _locales завершено`), true);
 		breakLn();
 	},
+	copyToast = () => {
+		//
+		path.join(__dirname, 'src', 'toast', 'release', 'toast.exe');
+		fs.mkdirSync(path.join(__dirname, 'build'), { recursive: true, force: true });
+		// Delphi
+		/**
+		fs.cpSync(path.join(__dirname, 'src', 'toast', 'release', 'toast.exe'), path.join(__dirname, 'build', 'toast.exe'), { filter: function(src, dest) {
+			log(colors.yellowBright("Копирование".padStart(options.maxLength)) + ": " + colors.cyanBright(getPath(dest)));
+			return true;
+		} });
+		fs.cpSync(path.join(__dirname, 'src', 'toast', 'favicon.png'), path.join(__dirname, 'build', 'favicon.png'), { filter: function(src, dest) {
+			log(colors.yellowBright("Копирование".padStart(options.maxLength)) + ": " + colors.cyanBright(getPath(dest)));
+			return true;
+		} });
+		*/
+		// C++
+		fs.cpSync(path.join(__dirname, 'src', 'toast_с++', 'Release', 'toast.exe'), path.join(__dirname, 'build', 'toast.exe'), { filter: function(src, dest) {
+			log(colors.yellowBright("Копирование".padStart(options.maxLength)) + ": " + colors.cyanBright(getPath(dest)));
+			return true;
+		} });
+		fs.cpSync(path.join(__dirname, 'src', 'toast_с++', 'favicon.png'), path.join(__dirname, 'build', 'favicon.png'), { filter: function(src, dest) {
+			log(colors.yellowBright("Копирование".padStart(options.maxLength)) + ": " + colors.cyanBright(getPath(dest)));
+			return true;
+		} });
+	},
 	start = async () => {
 		// Удаляем build
 		deleteFile(getPath('.', 'build'));
@@ -207,6 +232,7 @@ const sleep = (ms) => {
 		 */
 		// Копируем в build
 		copyBuild();
+		copyToast();
 		// Сборка
 		// Парсинг станций
 		if (options.record) {

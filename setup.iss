@@ -8,6 +8,7 @@
 #define RadioAppSupportURL "https://github.com/ProjectSoft-STUDIONIONS/radioApp-lite/issues"
 #define RadioAppUpdateURL "https://github.com/ProjectSoft-STUDIONIONS/radioApp-lite/releases/latest"
 #define RadioAppExeName "YourRadio.exe"
+#define ToastAppID "YourRadio.DesktopNotification.Sample"
 
 [Setup]
 AppId={{9EA71393-889E-490E-84DC-266FF93269F5}
@@ -60,6 +61,5 @@ Type: filesandordirs; Name: {localappdata}\YourRadio
 Filename: {sys}\taskkill.exe; Parameters: "/F /IM YourRadio.exe /T"; Flags: skipifdoesntexist runhidden waituntilterminated; StatusMsg: "{cm:StopProgramm}"
 
 [Icons]
-Name: "{autoprograms}\{cm:ProgramName}"; Filename: "{app}\{#RadioAppExeName}"
+Name: "{autoprograms}\{cm:ProgramName}"; Filename: "{app}\{#RadioAppExeName}"; AppUserModelID: "{#ToastAppID}"
 Name: "{autodesktop}\{cm:ProgramName}"; Filename: "{app}\{#RadioAppExeName}"
-Name: "{autoprograms}\toast"; Filename: "{app}\{#RadioAppExeName}"; Parameters: "package.nw"; AppUserModelId: "YourRadio.app"

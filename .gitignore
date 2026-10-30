@@ -36,7 +36,9 @@ record.json
 !/src/sources/stations/*.png
 !/src/sources/stations/*.json
 !/src/sources/stations/*.txt
-/src/toast/Win*
-/src/toast/*.dproj.*
-/src/toast/*.identcache
-/src/toast/__*
+/src/toa*/Win*
+/src/toa*/*.dproj.*
+/src/toa*/*.cbproj.*
+/src/toa*/*.identcache
+/src/toa*/__*
+/src/toa*/debug

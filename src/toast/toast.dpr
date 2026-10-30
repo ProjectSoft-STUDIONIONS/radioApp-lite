@@ -1,21 +1,21 @@
 program toast;
 
-{$APPTYPE CONSOLE}
+{$APPTYPE GUI}
 
 {$R *.res}
 
 uses
   Classes,
   System.SysUtils,
-  WinAPI.WinRT,            // RoInitialize, WindowsCreateString
-  WinAPI.DataRT,           // Xml_Dom_IXmlDocument, Xml_Dom_IXmlDocumentIO
-  WinAPI.UI.Notifications, // IToastNotifier, IToastNotification2, менеджер
+  WinAPI.WinRT,
+  WinAPI.DataRT,
+  WinAPI.UI.Notifications,
   WinAPI.ActiveX,
-  WinAPI.CommonTypes,
-  WinAPI.PropKey,          // PKEY_AppUserModel_ID
-  WinAPI.PropSys,          // InitPropVariantFromString, IPropertyStore
-  WinAPI.ShlObj,           // IShellLink, CLSID_ShellLink
-  System.Win.ComObj,
+  WinAPI.PropKey,
+  WinAPI.PropSys,
+ // WinAPI.ShlObj,
+//  System.Win.ComObj,
+  System.Win.Registry,
   Windows;
 
 // ============================================================
@@ -24,11 +24,13 @@ uses
 const
   // Уникальный AppUserModelID. Он же прописывается в ярлык.
   // Должен совпадать ВЕЗДЕ — иначе Windows не поймёт, чей это тоаст.
-  FIXED_APP_ID = 'Delphi.DesktopNotification.Sample';
+  FIXED_APP_ID = 'YourRadio.DesktopNotification.Sample';
   // Перезапись: одинаковые Tag+Group => новый Show ЗАМЕНЯЕТ предыдущий тоаст.
   // Tag ограничен 16 символами (на свежих сборках — 64).
   TOAST_TAG   = 'current-track';
   TOAST_GROUP = 'radio-app';
+  // Иконка для шапки тоаста (png или ico). Можно положить рядом с exe.
+  APP_ICON_PATH = 'favicon.png';
 
 // ============================================================
 //  УТИЛИТЫ
@@ -84,58 +86,34 @@ begin
   end;
 end;
 
-// ============================================================
-//  ЯРЛЫК С APPUSERMODELID
-//  Без ярлыка с прописанным AppUserModelID тоасты для win32-приложения
-//  не работают. Запускать программу нужно ЧЕРЕЗ этот ярлык.
-// ============================================================
-function CreateDesktopShellLink(const TargetExe: string): Boolean;
-  function GetStartMenuFolder: string;
-  var
-    Buffer: array[0..MAX_PATH - 1] of Char;
-  begin
-    Result := '';
-    if GetEnvironmentVariable(PChar('APPDATA'), Buffer, MAX_PATH - 1) > 0 then
-      Result := Buffer + '\Microsoft\Windows\Start Menu\Programs\Ваше Радио.lnk';
-  end;
-
+// Регистрируем имя и иконку приложения в реестре.
+// Делается один раз при каждом запуске — быстрее, чем проверить наличие.
+procedure RegisterAppIdentity(AppName: string);
 var
-  IObject: IUnknown;
-  ISLink: IShellLink;
-  IPFile: IPersistFile;
-  LinkName: string;
-  LStore: WinAPI.PropSys.IPropertyStore;
-  LValue: TPropVariant;
+  Reg: TRegistry;
 begin
-  Result := False;
-  IObject := CreateComObject(CLSID_ShellLink);
-  ISLink  := IObject as IShellLink;
-  IPFile  := IObject as IPersistFile;
-  LStore  := IObject as WinAPI.PropSys.IPropertyStore;
-  ISLink.SetPath(PChar(TargetExe));
-  ISLink.SetArguments(nil);
-  // InitPropVariantFromString — ОДНА строка (не AsVector!).
-  if Succeeded(InitPropVariantFromString(PWideChar(FIXED_APP_ID), LValue)) then
-  begin
-    if Succeeded(LStore.SetValue(PKEY_AppUserModel_ID, LValue)) then
-      if Succeeded(LStore.Commit) then
-        Result := True;
+  Reg := TRegistry.Create(KEY_WRITE);
+  try
+    Reg.RootKey := HKEY_CURRENT_USER;
+    if Reg.OpenKey('Software\Classes\AppUserModelId\' + FIXED_APP_ID, True) then
+    try
+      // DisplayName — имя в шапке тоаста и в настройках уведомлений
+      Reg.WriteString('DisplayName', AppName);
+      // IconUri — иконка приложения (полный путь, .png или .ico)
+      Reg.WriteString('IconUri', ExtractFilePath(ParamStr(0)) + APP_ICON_PATH);
+    finally
+      Reg.CloseKey;
+    end;
+  finally
+    Reg.Free;
   end;
-  LinkName := GetStartMenuFolder;
-  // Перезаписываем ярлык каждый запуск: если сменился AppID или путь к exe,
-  // старый ярлык не останется с мусором. В продакшене можно вернуть FileExists.
-  if FileExists(LinkName) then
-    DeleteFile(PChar(LinkName));
-  if not Result then
-    Exit; // не сохраняем ярлык без AppID — он бесполезен
-  Result := (IPFile.Save(PWideChar(LinkName), True) = S_OK);
 end;
 
 // ============================================================
 //  ПАРСИНГ АРГУМЕНТОВ
 //  toast.exe -t "Станция" -d "Трек" -i "icon.png" -p "station.jpg"
 // ============================================================
-procedure ParseArgs(out Station, Track, IconUrl, StationImgUrl: string);
+procedure ParseArgs(out Station, Track, IconUrl, StationImgUrl, AppName: string);
 var
   i: Integer;
   Args: TStringList;
@@ -170,6 +148,11 @@ begin
         StationImgUrl := Args[1];
         Args.Delete(0); Args.Delete(0);
       end
+      else if (Args.Count >= 2) and (Args[0] = '-a') then
+      begin
+        AppName := Args[1];
+        Args.Delete(0); Args.Delete(0);
+      end
       else
         Args.Delete(0); // неизвестный флаг — пропускаем
     end;
@@ -195,10 +178,11 @@ begin
     '    <binding template="ToastGeneric">' + CRLF +
     '      <text hint-style="title">%s</text>' + CRLF +                    // Станция
     '      <text>%s</text>' + CRLF +                                      // Трек
-    '      <image placement="appLogoOverride" src="%s"/>' + CRLF +        // Иконка приложения
-    '      <image placement="hero" src="%s"/>' + CRLF +                   // Картинка станции
+    '      <image placement="appLogoOverride" hint-crop="circle" src="%s"/>' + CRLF + // иконка слева
+    '      <image src="%s"/>' + CRLF +                                    // картинка ВНИЗУ (inline, без placement!)
     '    </binding>' + CRLF +
     '  </visual>' + CRLF +
+    '  <audio silent="true"/>' + CRLF +
     '</toast>';
   Result := Format(Result, [
     EscapeXml(StationName),
@@ -212,7 +196,7 @@ end;
 //  ПОКАЗ ТОАСТА
 // ============================================================
 procedure ShowRadioToast(
-  const AppID, StationName, TrackName, AppIconUri, StationImageUri: string
+  const AppID, StationName, TrackName, AppIconUri, StationImageUri, AppName: string
 );
 const
   SToastNotificationManager = 'Windows.UI.Notifications.ToastNotificationManager';
@@ -233,18 +217,15 @@ var
   XmlStr: string;
   hAppID, hTag, hGroup: HSTRING;
 begin
-  // Writeln('DEBUG: Starting toast process...');
   if TOSVersion.Major < 10 then
   begin
-    // Writeln('DEBUG: Error: Windows version < 10');
     Exit;
   end;
   RoInitialize(RO_INIT_MULTITHREADED);
   // 1. Ярлык с AppUserModelID — обязательное условие для win32-тоастов.
-  // Writeln('DEBUG: Creating/Updating shortcut with AppUserModelId...');
-  CreateDesktopShellLink(ParamStr(0));
-  // if not CreateDesktopShellLink(ParamStr(0)) then
-    // Writeln('DEBUG: Warning: Failed to create shortcut. Toast may not appear!');
+  // Устанавливается установщиком. Портабле версиии не доступны и правильно.
+  // Пишем в реестр
+  RegisterAppIdentity(AppName);
   // 2. Статический менеджер тоастов.
   ToastManagerFactory := GetFactory(SToastNotificationManager, CLSID_ToastNotificationManager);
   ToastStatics := IToastNotificationManagerStatics(ToastManagerFactory);
@@ -253,11 +234,9 @@ begin
   XmlStr := BuildToastXml(StationName, TrackName, AppIconUri, StationImageUri);
   try
     (XmlDoc as Xml_Dom_IXmlDocumentIO).LoadXml(HStr(XmlStr));
-    // Writeln('DEBUG: XML loaded successfully.');
   except
     on E: Exception do
     begin
-      // Writeln('DEBUG: XML Load failed: ', E.Message);
       Exit;
     end;
   end;
@@ -293,12 +272,13 @@ begin
       HistoryStatics := ToastManagerFactory as IToastNotificationManagerStatics2;
       History := HistoryStatics.History as IToastNotificationHistory;
       History.Remove(hTag, hGroup, hAppID);
+      Sleep(300);
     except
       // Убирать нечего — не критично.
     end;
     // 9. ПОКАЗ нового тоаста.
     ToastNotifierObj.Show(ToastNotificationObj);
-    // Writeln('DEBUG: Toast shown (old popup hidden, history cleaned).');
+    Sleep(800);
   finally
     WindowsDeleteString(hAppID);
     WindowsDeleteString(hTag);
@@ -310,13 +290,12 @@ end;
 //  MAIN
 // ============================================================
 var
-  Station, Track, IconUrl, StationImgUrl: string;
+  Station, Track, IconUrl, StationImgUrl, AppName: string;
 begin
   try
-    ParseArgs(Station, Track, IconUrl, StationImgUrl);
+    ParseArgs(Station, Track, IconUrl, StationImgUrl, AppName);
     if (Station = '') and (Track = '') then
     begin
-      // Writeln('Usage: toast.exe -t "Station" -d "Track" -i "icon.png" -p "station.jpg"');
       Exit;
     end;
     ShowRadioToast(
@@ -324,11 +303,12 @@ begin
       Station,
       Track,
       FileUri(IconUrl),
-      FileUri(StationImgUrl)
+      FileUri(StationImgUrl),
+      AppName
     );
   except
     on E: Exception do
-      // Writeln('CRITICAL ERROR: ', E.ClassName, ' - ', E.Message);
+      //
   end;
 end.
 

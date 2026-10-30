@@ -1931,6 +1931,7 @@ class App extends EventDispatcher {
 				track: title,
 				iconPath: iconPath,
 				imagePath: imagePath,
+				appName: locale.get("appName") + " Light"
 			});
 		} catch(e){
 			this.console.error(e);

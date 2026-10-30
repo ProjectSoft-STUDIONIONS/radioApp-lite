@@ -1926,7 +1926,7 @@ class App extends EventDispatcher {
 			 * 
 			 * Предусмотреть модуль именно под эти параметры.
 			 */
-			toastNotify({
+			dataStations.notify && toastNotify({
 				station: name,
 				track: title,
 				iconPath: iconPath,

@@ -14,26 +14,30 @@ const toastNotify = (data) => {
 		return;
 	}
 
-	const exePath = path.join(__dirname, 'toast.exe');
+	const exePath = path.join(path.dirname(process.execPath), 'toast.exe');
 	const args = [];
 	var params = [exePath];
 
 	// Собираем аргументы только если поля есть — так не будет ошибок из‑за пустых значений
 	if (data.station){
 		args.push('-t', data.station);
-		params.push(`-t ${data.station}`);
+		params.push(`-t "${data.station}"`);
 	}
 	if (data.track){
 		args.push('-d', data.track);
-		params.push(`-d ${data.track}`);
+		params.push(`-d "${data.track}"`);
 	}
 	if (data.iconPath){
 		args.push('-i', data.iconPath);
-		params.push(`-i ${data.iconPath}`);
+		params.push(`-i "${data.iconPath}"`);
 	}
 	if (data.imagePath){
 		args.push('-p', data.imagePath);
-		params.push(`-p ${data.imagePath}`);
+		params.push(`-p "${data.imagePath}"`);
+	}
+	if(data.appName) {
+		args.push('-a', data.appName);
+		params.push(`-a "${data.appName}"`);
 	}
 	console.log(params.join(" "));
 	execFile(exePath, args, (err) => {

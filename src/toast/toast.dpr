@@ -173,7 +173,7 @@ const
   CRLF = #13#10;
 begin
   Result :=
-    '<toast activationType="foreground">' + CRLF +
+    '<toast activationType="foreground" scenario="urgent">' + CRLF +
     '  <visual>' + CRLF +
     '    <binding template="ToastGeneric">' + CRLF +
     '      <text hint-style="title">%s</text>' + CRLF +                    // Станция

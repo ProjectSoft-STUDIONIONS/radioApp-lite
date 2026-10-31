@@ -1,5 +1,5 @@
-const { execFile } = require('node:child_process');
-const path = require('node:path');
+const { execFile } = require('child_process');
+const path = require('path');
 
 const toastNotify = (data) => {
 		// Проверка: если нет объекта или нет хотя бы станции/трека — не делаем ничего
@@ -8,7 +8,7 @@ const toastNotify = (data) => {
 		return;
 	}
 
-	//const exePath = path.join(path.dirname(process.execPath), 'toast.exe');
+	const exePath = path.join(path.dirname(process.execPath), 'toast.exe');
 	const args = [];
 	var params = [exePath];
 

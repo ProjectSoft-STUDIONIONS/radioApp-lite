@@ -37,6 +37,7 @@ WizardStyle=modern
 CloseApplications=force
 MissingRunOnceIdsWarning=no
 UsedUserAreasWarning=no
+RestartApplications=no
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
@@ -94,4 +95,15 @@ procedure CurUninstallStepChanged(CurStep: TUninstallStep);
 begin
   if CurStep = usPostUninstall then
     RemoveLocalAppData();
+end;
+
+function PrepareToInstall(var NeedsRestart: Boolean): String;
+var
+  ResultCode: Integer;
+begin
+  Result := '';
+  Exec(ExpandConstant('{sys}\taskkill.exe'),
+       '/F /IM YourRadio.exe /T',
+       '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+  Sleep(1000); // даём файлам освободиться
 end;

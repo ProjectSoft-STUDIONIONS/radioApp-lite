@@ -1905,27 +1905,6 @@ class App extends EventDispatcher {
 		const iconPath = path.join(DATA_DIR, `${id}.png`);
 		const imagePath = path.join(DATA_DIR, `${id}_big.png`);
 		try {
-			/**
-			dataStations.notify && notifier.notify({
-				title: name,
-				message: title,
-				icon: iconPath,
-				type: 'info',
-				sound: false,
-				id: 'yourradio',
-				appID: locale.get('appName'),
-				application: nw.process.execPath
-			});
-			*/
-			// Сделать вывод под свой toast
-			/**
-			 * Если это не Windows 10 и ниже
-			 * выводим стандартный nwjs нотификатор
-			 * Если это Windows 10 и выше
-			 * выодим toast
-			 * 
-			 * Предусмотреть модуль именно под эти параметры.
-			 */
 			dataStations.notify && toastNotify({
 				station: name,
 				track: title,

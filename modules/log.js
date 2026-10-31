@@ -31,6 +31,30 @@ const colors = require('ansi-colors'),
 			log.log(separatorEnd);
 			log.breakLn();
 		},
+		logTableError: obj => {
+			if (typeof obj !== 'object' || obj === null || Array.isArray(obj)) {
+				log.logError('Ожидается обычный объект (не массив)');
+				return;
+			}
+			const repeat = (text, width) => text.repeat(width);
+			const entries = Object.entries(obj);
+			if (entries.length === 0) {
+				log.log('Пустой объект');
+				return;
+			}
+			const maxKeyLen = Math.max(...entries.map(([k]) => k.length));
+			const maxValLen = Math.max(...entries.map(([, v]) => String(v).length));
+			const padKey = (k) => String(k).padStart(maxKeyLen);
+			const padVal = (v) => String(v).padEnd(maxValLen);
+			const separatorStart = colors.cyan('\u250c' + repeat('\u2014', maxKeyLen + 2) + '\u252c' + repeat('\u2014', maxValLen + 2) + '\u2510');
+			const separatorEnd = colors.cyan('\u2514' + repeat('\u2014', maxKeyLen + 2) + '\u2534' + repeat('\u2014', maxValLen + 2) + '\u2518');
+			log.log(separatorStart);
+			entries.forEach(([key, value]) => {
+				log.log(colors.cyan(`\u2502`) + ` ${colors.yellowBright(padKey(key))} ` + colors.cyan(`\u2502`)+ ` ${ String(value).trim() !== '' ? colors.redBright(padVal(String(value))) : colors.redBright('НЕ ЗАДАНО') } ` + colors.cyan(`\u2502`));
+			});
+			log.log(separatorEnd);
+			log.breakLn();
+		},
 		logStation: (obj, length = 9) => {
 			if (typeof obj !== 'object' || obj === null || Array.isArray(obj)) {
 				log.logError('Ожидается обычный объект (не массив)');

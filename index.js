@@ -42,7 +42,7 @@ const fs = require('fs'),
 	pack = require('./package.json'),
 	{ rcedit } = require('rcedit'),
 	colors = require('ansi-colors'),
-	{ log, logTable, logStation, logError, breakLn } = require('./modules/log.js'),
+	{ log, logTable, logTableError, logStation, logError, breakLn } = require('./modules/log.js'),
 	parseStations = require('./modules/parse-record.js'),
 	Downloader = require('./modules/Downloader.js'),
 	ttf2woff2 = require('./modules/ttf2woff2-convert.js'),
@@ -69,6 +69,11 @@ process.on('unhandledRejection', (reason, promise) => {
 		console.error(colors.redBright('   Неожиданная ошибка:'), String(reason));
 	}
 	process.exit(1);
+});
+
+process.on('uncaughtException', (error, stackTrace) => {
+	console.error('Необработанное исключение:', error.message);
+	console.error('Стек трассировки:', stackTrace);
 });
 
 const sleep = (ms) => {
@@ -180,29 +185,34 @@ const sleep = (ms) => {
 		breakLn();
 	},
 	copyToast = () => {
+		log(colors.yellowBright(`Копирование toast`), true);
+		breakLn();
 		//
 		path.join(__dirname, 'src', 'toast', 'release', 'toast.exe');
 		fs.mkdirSync(path.join(__dirname, 'build'), { recursive: true, force: true });
 		// Delphi
 		/**
 		fs.cpSync(path.join(__dirname, 'src', 'toast', 'release', 'toast.exe'), path.join(__dirname, 'build', 'toast.exe'), { filter: function(src, dest) {
-			log(colors.yellowBright("Копирование".padStart(options.maxLength)) + ": " + colors.cyanBright(getPath(dest)));
+			log(colors.yellowBright("Копирование".padStart(options.maxLength)) + ": " + colors.cyanBright(getPath('build', 'toast.exe')));
 			return true;
 		} });
 		fs.cpSync(path.join(__dirname, 'src', 'toast', 'favicon.png'), path.join(__dirname, 'build', 'favicon.png'), { filter: function(src, dest) {
-			log(colors.yellowBright("Копирование".padStart(options.maxLength)) + ": " + colors.cyanBright(getPath(dest)));
+			log(colors.yellowBright("Копирование".padStart(options.maxLength)) + ": " + colors.cyanBright(getPath('build', 'favicon.png')));
 			return true;
 		} });
 		*/
 		// C++
 		fs.cpSync(path.join(__dirname, 'src', 'toast_с++', 'Release', 'toast.exe'), path.join(__dirname, 'build', 'toast.exe'), { filter: function(src, dest) {
-			log(colors.yellowBright("Копирование".padStart(options.maxLength)) + ": " + colors.cyanBright(getPath(dest)));
+			log(colors.yellowBright("Копирование".padStart(options.maxLength)) + ": " + colors.cyanBright(getPath('build', 'toast.exe')));
 			return true;
 		} });
 		fs.cpSync(path.join(__dirname, 'src', 'toast_с++', 'favicon.png'), path.join(__dirname, 'build', 'favicon.png'), { filter: function(src, dest) {
-			log(colors.yellowBright("Копирование".padStart(options.maxLength)) + ": " + colors.cyanBright(getPath(dest)));
+			log(colors.yellowBright("Копирование".padStart(options.maxLength)) + ": " + colors.cyanBright(getPath('build', 'favicon.png')));
 			return true;
 		} });
+		breakLn();
+		log(colors.yellowBright(`Копирование toast завершено`), true);
+		breakLn();
 	},
 	start = async () => {
 		// Удаляем build
@@ -290,12 +300,18 @@ const sleep = (ms) => {
 		await terser({
 			sdk: options.sdk,
 			src: getPath('.', 'src', 'modules'),
-			dest: getPath('.', 'application', 'modules')
+			dest: getPath('.', 'application', 'modules'),
+			maxLength: options.maxLength
 		}).then(() => {}).catch(e => {
-			throw [terser.name, e];;
+			// Подправим вывод ошибки
+			logTableError(e);
+			throw [terser.name, colors.redBright('Ошибка terser')];
 		});
 		// pugjs
-		await pugjs(options).then(() => {}).catch(e => {
+		await pugjs(Object.assign( options, {
+			src: getPath('.', 'src', 'pug'),
+			dest: getPath('.', 'application')
+		} )).then(() => {}).catch(e => {
 			throw [pugjs.name, e];
 		});
 		// zip

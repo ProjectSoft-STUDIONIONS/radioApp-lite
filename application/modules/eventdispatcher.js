@@ -1,7 +1,58 @@
 /**!
  * Module eventdispatcher.js for "Your Radio"
- * 
+ *
  * @author	ProjectSoft <projectsoft2009@yandex.ru>
  * @license GPL-3.0
  */
-var EventDispatcher=function(){};Object.assign(EventDispatcher.prototype,{addEventListener:function(i,e){void 0===this._listeners&&(this._listeners={});var t=this._listeners;void 0===t[i]&&(t[i]=[]),-1===t[i].indexOf(e)&&t[i].push(e)},hasEventListener:function(i,e){if(void 0===this._listeners)return!1;var t=this._listeners;return void 0!==t[i]&&-1!==t[i].indexOf(e)},removeEventListener:function(i,e){if(void 0!==this._listeners){var t=this._listeners[i];if(void 0!==t){var s=t.indexOf(e);-1!==s&&t.splice(s,1)}}},dispatchEvent:function(i){if(void 0!==this._listeners){var e=this._listeners[i.type];if(void 0!==e){i.target=this;var t=[],s=0,n=e.length;for(s=0;s<n;s++)t[s]=e[s];for(s=0;s<n;s++)t[s].call(this,i)}}}}),module.exports=EventDispatcher;
+var EventDispatcher = function () {};
+
+Object.assign( EventDispatcher.prototype, {
+	addEventListener: function ( type, listener ) {
+		if ( this._listeners === undefined ) this._listeners = {};
+		var listeners = this._listeners;
+		if ( listeners[ type ] === undefined ) {
+			listeners[ type ] = [];
+		}
+		if ( listeners[ type ].indexOf( listener ) === - 1 ) {
+			listeners[ type ].push( listener );
+		}
+	},
+	hasEventListener: function ( type, listener ) {
+		if ( this._listeners === undefined ) return false;
+		var listeners = this._listeners;
+		if ( listeners[ type ] !== undefined && listeners[ type ].indexOf( listener ) !== - 1 ) {
+			return true;
+		}
+		return false;
+	},
+	removeEventListener: function ( type, listener ) {
+		if ( this._listeners === undefined ) return;
+		var listeners = this._listeners;
+		var listenerArray = listeners[ type ];
+		if ( listenerArray !== undefined ) {
+			var index = listenerArray.indexOf( listener );
+			if ( index !== - 1 ) {
+				listenerArray.splice( index, 1 );
+			}
+		}
+	},
+	dispatchEvent: function ( event ) {
+		if ( this._listeners === undefined ) return;
+		var listeners = this._listeners;
+		var listenerArray = listeners[ event.type ];
+		if ( listenerArray !== undefined ) {
+			event.target = this;
+			var array = [], i = 0;
+			var length = listenerArray.length;
+			for ( i = 0; i < length; i ++ ) {
+				array[ i ] = listenerArray[ i ];
+			}
+			for ( i = 0; i < length; i ++ ) {
+				array[ i ].call( this, event );
+			}
+		}
+	}
+});
+
+module.exports = EventDispatcher;
+

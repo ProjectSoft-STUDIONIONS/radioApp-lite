@@ -4,9 +4,9 @@ const cliProgress = require('cli-progress');
 const _colors = require('ansi-colors');
 const { log, logTable, logStation, logError, breakLn } = require('./log.js');
 const unzipper = require("unzipper");
-const allowed = ['true', '1', 'yes', 'y'];
 // Конвертируем в строку, переводим в нижний регистр, очищаем от пустых символов
-const toBoolean = (bool) => allowed.includes(String(bool).toLowerCase().trim());
+// Возвращаем Boolean если присутствует в массиве - true или false. Если нет - false
+const toBoolean = (bool) => ['true', '1', 'yes', 'y'].includes(String(bool).toLowerCase().trim());
 // Уникальное значение
 const uniqid = () => URL.createObjectURL(new Blob([])).slice(-36).replace(/-/g, '');
 

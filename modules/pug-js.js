@@ -7,13 +7,22 @@ const fs = require('fs'),
 	uniqid = () => URL.createObjectURL(new Blob([])).slice(-36).replace(/-/g, '');
 
 const start = (options) => {
-	return new Promise(async (resolve, reject) => {
+	options = Object.assign(
+		{
+			sdk: false,
+			src: "",
+			dest: "",
+			maxLength: 9
+		},
+		options
+	);
+	return new Promise( (resolve, reject) => {
 
 		log(colors.yellowBright(`Компиляция PUG`), true);
 		breakLn();
 
-		const inputPath = getPath('.', 'src', 'pug'),
-			outputPath = getPath('.', 'application'),
+		const inputPath = options.src,
+			outputPath = options.dest,
 			target = options.sdk ? 'sdk' : 'normal';
 
 		const items = [...fs.readdirSync(inputPath, { withFileTypes: true })]
@@ -26,8 +35,8 @@ const start = (options) => {
 			.map(file => {
 				const fileName = path.basename(file.name, '.pug');
 				return {
-					src: path.join(inputPath, file.name).replace(/[\\]+/g, '/'),
-					dest: path.join(outputPath, `${fileName}.html`).replace(/[\\]+/g, '/')
+					src: getPath(inputPath, file.name),
+					dest: getPath(outputPath, `${fileName}.html`)
 				};
 			});
 		// Создаём директорию application
@@ -36,10 +45,16 @@ const start = (options) => {
 		} catch(e) {
 			reject(e);
 		}
-		for(const data in items) {
-			// items[data]
+		for(const data of items) {
 			try {
-				var fn = pug.compileFile(items[data].src, {
+				log(
+					colors.yellowBright("Компиляция".padStart(options.maxLength)) +
+						": " +
+						colors.cyanBright(data.src) +
+						' -> ' +
+						colors.cyanBright(data.dest)
+				);
+				var fn = pug.compileFile(data.src, {
 					debug: false,                // включать отладочную информацию в вывод
 					globals: [],                 // глобальные переменные, доступные в шаблоне
 					locals: {},                  // переменные по умолчанию для всех рендеров через эту функцию
@@ -52,11 +67,12 @@ const start = (options) => {
 					hash: uniqid(),
 					target: target
 				});
-				fs.writeFileSync(items[data].dest, html + "\n");
+				fs.writeFileSync(data.dest, html + "\n");
 			} catch(e) {
 				reject(e);
 			}
 		}
+		breakLn();
 		log(colors.yellowBright(`Компиляция PUG завершена`), true);
 		breakLn();
 		resolve();

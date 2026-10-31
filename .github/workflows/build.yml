@@ -33,6 +33,7 @@ jobs:
               exit 1
             }
             echo "NW_STABLE=$stable" >> $env:GITHUB_OUTPUT
+            Write-Host "OUTPUT: NW_STABLE=$stable"
           } catch {
             Write-Host "ERROR: Failed to fetch or parse remote versions: $_"
             exit 1
@@ -47,15 +48,20 @@ jobs:
           if (-not (Test-Path $path)) {
             Write-Host "WARNING: .cache\manifest.json not found. Treating as new version."
             echo "LOCAL_NW=0.0.0" >> $env:GITHUB_OUTPUT
+            Write-Host "OUTPUT: LOCAL_NW=0.0.0"
           } else {
-            $m = Get-Content $path -Raw | ConvertFrom-Json
+            Write-Host "Found manifest at: $(Resolve-Path $path)"
+            $content = Get-Content $path -Raw
+            $m = $content | ConvertFrom-Json
+            Write-Host "Parsed manifest.stable raw: '$($m.stable)'"
             $local = $m.stable -replace '^v', ''
+            Write-Host "Normalized local NW version (no 'v'): '$local'"
             if ([string]::IsNullOrWhiteSpace($local)) {
               Write-Host "ERROR: Local NW version is empty after normalization!"
               exit 1
             }
             echo "LOCAL_NW=$local" >> $env:GITHUB_OUTPUT
-            Write-Host "LOCAL_NW=$local"
+            Write-Host "OUTPUT: LOCAL_NW=$local"
           }
         shell: pwsh
 
@@ -65,23 +71,26 @@ jobs:
           Write-Host "--- STEP: Read package.json ---"
           $path = ".\package.json"
           if (-not (Test-Path $path)) {
-            Write-Host "ERROR: package.json not found!"
+            Write-Host "ERROR: package.json not found at path: $(Resolve-Path .)"
             exit 1
           }
-          $pkg = Get-Content $path -Raw | ConvertFrom-Json
+          Write-Host "Found package.json at: $(Resolve-Path $path)"
+          $content = Get-Content $path -Raw
+          Write-Host "package.json content (first 300 chars): $($content.Substring(0, [Math]::Min(300, $content.Length)))"
+          $pkg = $content | ConvertFrom-Json
+          Write-Host "Parsed package.version raw: '$($pkg.version)'"
           $app = $pkg.version.Trim()
           if ([string]::IsNullOrWhiteSpace($app)) {
             Write-Host "ERROR: package.json 'version' field is missing or empty!"
             exit 1
           }
+          Write-Host "App version normalized: '$app'"
           echo "APP_VERSION=$app" >> $env:GITHUB_OUTPUT
-          Write-Host "APP_VERSION=$app"
+          Write-Host "OUTPUT: APP_VERSION=$app"
         shell: pwsh
 
       - name: "Decide: build or stop"
         id: decide-build
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           Write-Host "--- STEP: Decide build or stop ---"
           $remote = "${{ steps.fetch-nw-remote.outputs.NW_STABLE }}"
@@ -95,12 +104,15 @@ jobs:
           Write-Host "event='$event' | NW: local='$local' remote='$remote' | app='$app'"
           Write-Host "Candidate tag: '$tag'"
 
-          gh api "repos/${{ github.repository }}/git/ref/tags/$tag" --silent 2>$null
-          $tagExists = ($LASTEXITCODE -eq 0)
+          # git ls-remote: код возврата всегда 0,
+          # а наличие тега видно по выводу — не ломает шаг при отсутствии тега.
+          $refs = git ls-remote --tags origin "refs/tags/$tag" 2>$null
+          $tagExists = -not [string]::IsNullOrWhiteSpace("$refs")
+          Write-Host "Tag '$tag' exists: $tagExists"
 
           if ($remote -ne $local) {
             # 1. NW.js изменился — сборка всегда (и крон, и ручной запуск).
-            # Единственное исключение: ровно эта пара app+nw уже выпускалась,
+            # Исключение: ровно эта пара app+nw уже выпускалась,
             # иначе softprops упадёт на создании дублирующего тега.
             if ($tagExists) {
               Write-Host "NW.js changed, but tag '$tag' already exists. Nothing to release."
@@ -126,7 +138,8 @@ jobs:
           echo "BUILD_REQUIRED=true" >> $env:GITHUB_OUTPUT
           echo "TAG_NAME=$tag" >> $env:GITHUB_OUTPUT
           echo "FULL_VERSION=$full" >> $env:GITHUB_OUTPUT
-          Write-Host "OUTPUT: BUILD_REQUIRED=true, TAG_NAME=$tag"
+          Write-Host "OUTPUT: BUILD_REQUIRED=true, TAG_NAME=$tag, FULL_VERSION=$full"
+          exit 0
         shell: pwsh
 
       - name: Setup Node.js

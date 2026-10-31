@@ -53,13 +53,45 @@ russian.StopProgramm=Остановить «Ваше Радио Light»...
 [Files]
 Source: "build\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
+[Registry]
+; Настройки уведомлений — удаляем ветку целиком
+Root: HKCU; Subkey: "Software\Microsoft\Windows\CurrentVersion\Notifications\Settings\YourRadio.DesktopNotification.Sample"; ValueType: dword; ValueName: "ShowBanner"; ValueData: 1
+Root: HKCU; Subkey: "Software\Microsoft\Windows\CurrentVersion\Notifications\Settings\YourRadio.DesktopNotification.Sample"; ValueType: dword; ValueName: "Rank"; ValueData: 99
+Root: HKCU; Subkey: "Software\Microsoft\Windows\CurrentVersion\Notifications\Settings\YourRadio.DesktopNotification.Sample"; ValueType: dword; ValueName: "Enabled"; ValueData: 1
+Root: HKCU; Subkey: "Software\Microsoft\Windows\CurrentVersion\Notifications\Settings\YourRadio.DesktopNotification.Sample"; ValueType: dword; ValueName: "AllowContentAboveLock"; ValueData: 1
+Root: HKCU; Subkey: "Software\Microsoft\Windows\CurrentVersion\Notifications\Settings\YourRadio.DesktopNotification.Sample"; ValueType: dword; ValueName: "ShowInActionCenter"; ValueData: 0
+; Удаляем ветку целиком при деинсталляции
+Root: HKCU; Subkey: "Software\Microsoft\Windows\CurrentVersion\Notifications\Settings\YourRadio.DesktopNotification.Sample"; Flags: uninsdeletekey
+
+; AppUserModelId — тоже целиком
+Root: HKCU; Subkey: "Software\Classes\AppUserModelId\YourRadio.DesktopNotification.Sample"; ValueType: string; ValueName: "DisplayName"; ValueData: "{cm:AppName}"
+Root: HKCU; Subkey: "Software\Classes\AppUserModelId\YourRadio.DesktopNotification.Sample"; ValueType: string; ValueName: "IconUri"; ValueData: "{app}\favicon.png"
+; Удаляем ветку целиком
+Root: HKCU; Subkey: "Software\Classes\AppUserModelId\YourRadio.DesktopNotification.Sample"; Flags: uninsdeletekey
+
 [UninstallDelete]
 Type: filesandordirs; Name: {autopf}\{cm:ProgramName}
 Type: filesandordirs; Name: {localappdata}\YourRadio      
 
 [UninstallRun]
-Filename: {sys}\taskkill.exe; Parameters: "/F /IM YourRadio.exe /T"; Flags: skipifdoesntexist runhidden waituntilterminated; StatusMsg: "{cm:StopProgramm}"
+Filename: "{sys}\taskkill.exe"; Parameters: "/F /IM YourRadio.exe /T"; Flags: runhidden waituntilterminated; StatusMsg: "{cm:StopProgramm}"
 
 [Icons]
 Name: "{autoprograms}\{cm:ProgramName}"; Filename: "{app}\{#RadioAppExeName}"; AppUserModelID: "{#ToastAppID}"
 Name: "{autodesktop}\{cm:ProgramName}"; Filename: "{app}\{#RadioAppExeName}"
+
+[Code]
+procedure RemoveLocalAppData();
+var
+  LocalAppDataPath: string;
+begin
+  LocalAppDataPath := ExpandConstant('{localappdata}\YourRadio');
+  if DirExists(LocalAppDataPath) then
+    DelTree(LocalAppDataPath, True, True, True); // True = удалить и папку, и содержимое
+end;
+
+procedure CurUninstallStepChanged(CurStep: TUninstallStep);
+begin
+  if CurStep = usPostUninstall then
+    RemoveLocalAppData();
+end;

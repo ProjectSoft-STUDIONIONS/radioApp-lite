@@ -297,7 +297,7 @@ static void BuildToastXml(const wchar_t* StationName, const wchar_t* TrackName,
     EscapeXml(StationImageUri, e4, 2048);
 
     xml[0] = 0;
-    Cat(xml, cap, L"<toast activationType=\"foreground\">");
+    Cat(xml, cap, L"<toast activationType=\"foreground\" scenario=\"urgent\">");
     Cat(xml, cap, L"<visual>");
     Cat(xml, cap, L"<binding template=\"ToastGeneric\">");
     Cat(xml, cap, L"<text hint-style=\"title\">");

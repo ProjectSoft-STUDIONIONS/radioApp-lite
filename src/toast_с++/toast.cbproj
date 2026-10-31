@@ -4,7 +4,7 @@
         <ProjectVersion>20.2</ProjectVersion>
         <FrameworkType>None</FrameworkType>
         <Base>True</Base>
-        <Config Condition="'$(Config)'==''">Debug</Config>
+        <Config Condition="'$(Config)'==''">Release</Config>
         <Platform Condition="'$(Platform)'==''">Win32</Platform>
         <ProjectName Condition="'$(ProjectName)'==''">toast</ProjectName>
         <TargetedPlatforms>1</TargetedPlatforms>
@@ -1282,23 +1282,23 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <PostBuildEvent>del /q  .\debug\*.tds .\debug\*.obj .\debug\*.ilc .\debug\*.ild .\debug\*.ilf .\debug\*.ils .\debug\*.map</PostBuildEvent>
         <PostBuildEventIgnoreExitCode>False</PostBuildEventIgnoreExitCode>
     </PropertyGroup>
+    <PropertyGroup Condition="'$(Config)'=='Debug' And '$(FileToCompile)'=='toastPCH1.h'">
+        <PreBuildEvent/>
+        <PreBuildEventIgnoreExitCode>False</PreBuildEventIgnoreExitCode>
+        <PreLinkEvent/>
+        <PreLinkEventIgnoreExitCode>False</PreLinkEventIgnoreExitCode>
+        <PostBuildEvent>del /q  .\debug\*.tds .\debug\*.obj .\debug\*.ilc .\debug\*.ild .\debug\*.ilf .\debug\*.ils .\debug\*.map</PostBuildEvent>
+        <PostBuildEventIgnoreExitCode>False</PostBuildEventIgnoreExitCode>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Config)'=='Debug' And '$(FileToCompile)'=='toast.cpp'">
+        <PreBuildEvent/>
+        <PreBuildEventIgnoreExitCode>False</PreBuildEventIgnoreExitCode>
+        <PreLinkEvent/>
+        <PreLinkEventIgnoreExitCode>False</PreLinkEventIgnoreExitCode>
+        <PostBuildEvent>del /q  .\debug\*.tds .\debug\*.obj .\debug\*.ilc .\debug\*.ild .\debug\*.ilf .\debug\*.ils .\debug\*.map</PostBuildEvent>
+        <PostBuildEventIgnoreExitCode>False</PostBuildEventIgnoreExitCode>
+    </PropertyGroup>
     <PropertyGroup Condition="'$(Config)'=='Release' And '$(Platform)'=='Win32'">
-        <PreBuildEvent/>
-        <PreBuildEventIgnoreExitCode>False</PreBuildEventIgnoreExitCode>
-        <PreLinkEvent/>
-        <PreLinkEventIgnoreExitCode>False</PreLinkEventIgnoreExitCode>
-        <PostBuildEvent>del /q .\release\*.tds .\release\*.obj .\release\*.ilc .\release\*.ild .\release\*.ilf .\release\*.ils .\release\*.map</PostBuildEvent>
-        <PostBuildEventIgnoreExitCode>False</PostBuildEventIgnoreExitCode>
-    </PropertyGroup>
-    <PropertyGroup Condition="'$(Config)'=='Release' And '$(FileToCompile)'=='toastPCH1.h'">
-        <PreBuildEvent/>
-        <PreBuildEventIgnoreExitCode>False</PreBuildEventIgnoreExitCode>
-        <PreLinkEvent/>
-        <PreLinkEventIgnoreExitCode>False</PreLinkEventIgnoreExitCode>
-        <PostBuildEvent>del /q .\release\*.tds .\release\*.obj .\release\*.ilc .\release\*.ild .\release\*.ilf .\release\*.ils .\release\*.map</PostBuildEvent>
-        <PostBuildEventIgnoreExitCode>False</PostBuildEventIgnoreExitCode>
-    </PropertyGroup>
-    <PropertyGroup Condition="'$(Config)'=='Release' And '$(FileToCompile)'=='toast.cpp'">
         <PreBuildEvent/>
         <PreBuildEventIgnoreExitCode>False</PreBuildEventIgnoreExitCode>
         <PreLinkEvent/>

@@ -20,6 +20,8 @@
 
 ![Скриншот №2.2](src/screen/screen0002-001.jpg)
 
+![Скриншот №2.2](src/screen/screen0002-002.jpg)
+
 ![Скриншот №3](src/screen/screen0003.jpg)
 
 ![Скриншот №4](src/screen/screen0004.jpg)

@@ -196,8 +196,8 @@
 | 🌐‍🎧 | **Radio Record «Record 80-х»** | `https://radiorecord.hostingradio.ru/198096.aacp` | `OLDSCHOOL`, `POP`, `Эпохи` |
 | 🌐‍🎧 | **Radio Record «Нафталин FM»** | `https://radiorecord.hostingradio.ru/naft96.aacp` | `POP`, `RUSSIAN`, `Прикол` |
 | 🌐‍🎧 | **Radio Record «Маятник Фуко»** | `https://radiorecord.hostingradio.ru/mf96.aacp` | `RAP/URBAN`, `RUSSIAN` |
-| 🌐‍🎧 | **Radio Record «Trancemission»** | `https://radiorecord.hostingradio.ru/tm96.aacp` | `TRANCE` |
 | 🌐‍🎧 | **Radio Record «Summer Dance»** | `https://radiorecord.hostingradio.ru/summerparty96.aacp` | `HOUSE`, `POP`, `Лето` |
+| 🌐‍🎧 | **Radio Record «Trancemission»** | `https://radiorecord.hostingradio.ru/tm96.aacp` | `TRANCE` |
 | 🌐‍🎧 | **Radio Record «Russian Gold»** | `https://radiorecord.hostingradio.ru/russiangold96.aacp` | `POP`, `RUSSIAN` |
 | 🌐‍🎧 | **Radio Record «Beach Party»** | `https://radiorecord.hostingradio.ru/beach96.aacp` | `HOUSE`, `Лето` |
 | 🌐‍🎧 | **Radio Record «Pirate Station»** | `https://radiorecord.hostingradio.ru/ps96.aacp` | `DRUM` |

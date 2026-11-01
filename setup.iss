@@ -56,6 +56,7 @@ Source: "build\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createa
 
 [Registry]
 ; Настройки уведомлений — удаляем ветку целиком
+; LastNotificationAddedTime = 134379846401453395
 Root: HKCU; Subkey: "Software\Microsoft\Windows\CurrentVersion\Notifications\Settings\YourRadio.DesktopNotification.Sample"; ValueType: dword; ValueName: "ShowBanner"; ValueData: 1
 Root: HKCU; Subkey: "Software\Microsoft\Windows\CurrentVersion\Notifications\Settings\YourRadio.DesktopNotification.Sample"; ValueType: dword; ValueName: "Rank"; ValueData: 99
 Root: HKCU; Subkey: "Software\Microsoft\Windows\CurrentVersion\Notifications\Settings\YourRadio.DesktopNotification.Sample"; ValueType: dword; ValueName: "Enabled"; ValueData: 1

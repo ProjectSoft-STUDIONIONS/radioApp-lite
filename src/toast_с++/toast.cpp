@@ -47,18 +47,13 @@ static const wchar_t* TOAST_GROUP   = L"radio-app";
 static const wchar_t* APP_ICON_NAME = L"favicon.png";
 
 // IID фабрик и интерфейсов — подтверждены в Delphi-версии и по SDK
-static const GUID IID_ToastManagerStatics = {
-    0x50AC103F, 0xD235, 0x4598, {0xBB, 0xEF, 0x98, 0xFE, 0x4D, 0x1A, 0x3A, 0xD4}};
-static const GUID IID_ToastNotifFactory = {
-    0x04124B20, 0x82C6, 0x4229, {0xB1, 0x09, 0xFD, 0x9E, 0xD4, 0x66, 0x2B, 0x53}};
-static const GUID IID_ToastNotification2 = {
-    0x9DFB9FD1, 0x143A, 0x490E, {0x90, 0xBF, 0xB9, 0xFB, 0xA7, 0x13, 0x2D, 0xE7}};
-static const GUID IID_XmlDocumentIO = {
-    0x6CD0E74E, 0xEE65, 0x4489, {0x9E, 0xBF, 0xCA, 0x43, 0xE8, 0x7B, 0xA6, 0x37}};
+static const GUID IID_ToastManagerStatics = {0x50AC103F, 0xD235, 0x4598, {0xBB, 0xEF, 0x98, 0xFE, 0x4D, 0x1A, 0x3A, 0xD4}};
+static const GUID IID_ToastNotifFactory   = {0x04124B20, 0x82C6, 0x4229, {0xB1, 0x09, 0xFD, 0x9E, 0xD4, 0x66, 0x2B, 0x53}};
+static const GUID IID_ToastNotification2  = {0x9DFB9FD1, 0x143A, 0x490E, {0x90, 0xBF, 0xB9, 0xFB, 0xA7, 0x13, 0x2D, 0xE7}};
+static const GUID IID_XmlDocumentIO       = {0x6CD0E74E, 0xEE65, 0x4489, {0x9E, 0xBF, 0xCA, 0x43, 0xE8, 0x7B, 0xA6, 0x37}};
 
 // Добавлено
-static const GUID IID_IActivationFactory = {
-    0x00000035, 0x0000, 0x0000, {0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46}};
+static const GUID IID_IActivationFactory  = {0x00000035, 0x0000, 0x0000, {0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46}};
 
 
 // ============================================================
@@ -117,16 +112,13 @@ struct IToastNotifier : public IInspectable
 
 struct IToastNotificationFactory : public IInspectable
 {
-    virtual HRESULT STDMETHODCALLTYPE CreateToastNotification(IXmlDocument* content,
-                                                              IToastNotification** result) = 0;
+    virtual HRESULT STDMETHODCALLTYPE CreateToastNotification(IXmlDocument* content, IToastNotification** result) = 0;
 };
 
 struct IToastNotificationManagerStatics : public IInspectable
 {
-    virtual HRESULT STDMETHODCALLTYPE GetTemplateContent(ToastTemplateType templateType,
-                                                         IXmlDocument** value) = 0;
-    virtual HRESULT STDMETHODCALLTYPE CreateToastNotifier(HSTRING applicationId,
-                                                          IToastNotifier** value) = 0;
+    virtual HRESULT STDMETHODCALLTYPE GetTemplateContent(ToastTemplateType templateType, IXmlDocument** value) = 0;
+    virtual HRESULT STDMETHODCALLTYPE CreateToastNotifier(HSTRING applicationId, IToastNotifier** value) = 0;
 };
 
 // ============================================================
@@ -155,8 +147,7 @@ static bool LoadWinRtApi()
     pWindowsCreateString    = (PFN_WindowsCreateString)GetProcAddress(combase, "WindowsCreateString");
     pWindowsDeleteString    = (PFN_WindowsDeleteString)GetProcAddress(combase, "WindowsDeleteString");
 
-    Loaded = pRoInitialize && pRoGetActivationFactory &&
-             pWindowsCreateString && pWindowsDeleteString;
+    Loaded = pRoInitialize && pRoGetActivationFactory && pWindowsCreateString && pWindowsDeleteString;
     return Loaded;
 }
 
@@ -272,13 +263,10 @@ static void RegisterAppIdentity(const wchar_t* AppName)
     wsprintfW(key, L"Software\\Classes\\AppUserModelId\\%s", FIXED_APP_ID);
 
     HKEY h;
-    if (RegCreateKeyExW(HKEY_CURRENT_USER, key, 0, NULL,
-                        REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &h, NULL) == ERROR_SUCCESS)
+    if (RegCreateKeyExW(HKEY_CURRENT_USER, key, 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &h, NULL) == ERROR_SUCCESS)
     {
-        RegSetValueExW(h, L"DisplayName", 0, REG_SZ,
-                       (const BYTE*)AppName, (DWORD)((wcslen(AppName) + 1) * sizeof(wchar_t)));
-        RegSetValueExW(h, L"IconUri", 0, REG_SZ,
-                       (const BYTE*)icon, (DWORD)((wcslen(icon) + 1) * sizeof(wchar_t)));
+        RegSetValueExW(h, L"DisplayName", 0, REG_SZ, (const BYTE*)AppName, (DWORD)((wcslen(AppName) + 1) * sizeof(wchar_t)));
+        RegSetValueExW(h, L"IconUri", 0, REG_SZ, (const BYTE*)icon, (DWORD)((wcslen(icon) + 1) * sizeof(wchar_t)));
         RegCloseKey(h);
     }
 }
@@ -286,9 +274,7 @@ static void RegisterAppIdentity(const wchar_t* AppName)
 // ============================================================
 //  XML ТОАСТА
 // ============================================================
-static void BuildToastXml(const wchar_t* StationName, const wchar_t* TrackName,
-                          const wchar_t* AppIconUri, const wchar_t* StationImageUri,
-                          wchar_t* xml, size_t cap)
+static void BuildToastXml(const wchar_t* StationName, const wchar_t* TrackName, const wchar_t* AppIconUri, const wchar_t* StationImageUri, wchar_t* xml, size_t cap)
 {
     wchar_t e1[2048], e2[2048], e3[2048], e4[2048];
     EscapeXml(StationName,     e1, 2048);
@@ -322,9 +308,7 @@ static void BuildToastXml(const wchar_t* StationName, const wchar_t* TrackName,
 // ============================================================
 //  ПОКАЗ ТОАСТА
 // ============================================================
-static void ShowRadioToast(const wchar_t* AppID, const wchar_t* StationName,
-                           const wchar_t* TrackName, const wchar_t* AppIconUri,
-                           const wchar_t* StationImageUri, const wchar_t* AppName)
+static void ShowRadioToast(const wchar_t* AppID, const wchar_t* StationName, const wchar_t* TrackName, const wchar_t* AppIconUri, const wchar_t* StationImageUri, const wchar_t* AppName)
 {
     LogMsg(L"start");
     if (!LoadWinRtApi()) { LogMsg(L"FAIL: combase load"); return; }
@@ -518,8 +502,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
     FileUri(iconUrl,       u1, 2048);
     FileUri(stationImgUrl, u2, 2048);
 
-    ShowRadioToast(FIXED_APP_ID, station ? station : L"",
-                   track ? track : L"", u1, u2, appName);
+    ShowRadioToast(FIXED_APP_ID, station ? station : L"", track ? track : L"", u1, u2, appName);
 
     LocalFree(argv);
     return 0;

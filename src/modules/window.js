@@ -1855,13 +1855,13 @@ class App extends EventDispatcher {
 				const icon = `${this.GLOB_SERVER.URL}/` + (fs.existsSync(path.join(this.DATA_DIR, `${id}_big.png`)) ? `${id}_big.png?` : `image_big.png?`) + (new Date()).getTime();
 				const favicon = `${this.GLOB_SERVER.URL}/` + (fs.existsSync(path.join(this.DATA_DIR, `${id}.png`)) ? `${id}.png?` : `image_fav.png?`) + (new Date()).getTime();
 				if(player.isPlaying()){
-					if($_title.length > 5) {
+					if($_title.length > 5 && !/^{(?:\s+)?"/.test($_title)) {
 						this.title = $_title + ' | ' + name + ' | ' + locale.get("appName");
 					}else{
 						this.title = name + ' | ' + locale.get("appName");
-						dataStations.notify && chrome.notifications.clear(String(nw.App.manifest.name));
+						//dataStations.notify && chrome.notifications.clear(String(nw.App.manifest.name));
 					}
-					if($_title !== _title && $_title.length > 5) {
+					if($_title !== _title && $_title.length > 5 && !/^{(?:\s+)?"/.test($_title)) {
 						el.setAttribute("data-title", $_title);
 						// Отправить сообщение для отображения.
 						this.spawnNotification({icon: icon, favicon: favicon, id: id, name: name, title: $_title});

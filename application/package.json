@@ -3,11 +3,7 @@
 	"version": "4.0.3.0.120.0",
 	"comments": "Ваше Радио. Облегчённая версия. Самостоятельное добавление радио потока. Импорт/Экспорт плейлиста радиостанций.",
 	"description": "Ваше Радио. Облегчённая версия.",
-<<<<<<< HEAD
-	"buildDate": "19 November 2026 09:12:15",
-=======
-	"buildDate": "17 November 2026 02:42:51",
->>>>>>> 41b83970292a6e6f5e3a9878b86f78d24d6fe433
+	"buildDate": "19 November 2026 15:36:28",
 	"author": "ProjectSoft",
 	"homepage": "https://github.com/ProjectSoft-STUDIONIONS/radioApp-lite",
 	"license": "GPL-3.0",

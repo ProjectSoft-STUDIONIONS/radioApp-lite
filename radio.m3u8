@@ -10,6 +10,10 @@ http://nashe1.hostingradio.ru/nasheclassic.mp3
 http://nashe1.hostingradio.ru/nashepunks.mp3
 #EXTINF:-1,НАШЕ Радио «Щас спою!» (RUSSIAN, ROCK)
 https://nashe1.hostingradio.ru/nashesongs.mp3
+#EXTINF:-1,Радио 101. Дискотека СССР (POP, RUSSIAN, Эпохи)
+https://pub0101.101.ru/stream/pro/aac/64/144
+#EXTINF:-1,Радио 101 Пикник (ROCK, RUSSIAN)
+https://pub0101.101.ru/stream/pro/aac/64/157
 #EXTINF:-1,Радио Enigmatic Station 1
 https://listen8.myradio24.com/8226
 #EXTINF:-1,Synthetic FM

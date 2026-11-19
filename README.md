@@ -106,6 +106,8 @@
 | 🌐‍🎧 | **НАШЕ Радио «Классик Рок»** | `http://nashe1.hostingradio.ru/nasheclassic.mp3` | `RUSSIAN`, `ROCK` |
 | 🌐‍🎧 | **НАШЕ Радио «Панки хой!»** | `http://nashe1.hostingradio.ru/nashepunks.mp3` | `RUSSIAN`, `ROCK` |
 | 🌐‍🎧 | **НАШЕ Радио «Щас спою!»** | `https://nashe1.hostingradio.ru/nashesongs.mp3` | `RUSSIAN`, `ROCK` |
+| 🌐‍🎧 | **Радио 101. Дискотека СССР** | `https://pub0101.101.ru/stream/pro/aac/64/144` | `POP`, `RUSSIAN`, `Эпохи` |
+| 🌐‍🎧 | **Радио 101 Пикник** | `https://pub0101.101.ru/stream/pro/aac/64/157` | `ROCK`, `RUSSIAN` |
 | 🌐‍🎧 | **Радио Enigmatic Station 1** | `https://listen8.myradio24.com/8226` | --- |
 | 🌐‍🎧 | **Synthetic FM** | `https://mediaserv38.live-streams.nl:18040/live` | --- |
 | 🌐‍🎧 | **Соль FM** | `https://solfm.ru:8443/online128` | --- |

@@ -1859,7 +1859,6 @@ class App extends EventDispatcher {
 						this.title = $_title + ' | ' + name + ' | ' + locale.get("appName");
 					}else{
 						this.title = name + ' | ' + locale.get("appName");
-						//dataStations.notify && chrome.notifications.clear(String(nw.App.manifest.name));
 					}
 					if($_title !== _title && $_title.length > 5 && !/^{(?:\s+)?"/.test($_title)) {
 						el.setAttribute("data-title", $_title);

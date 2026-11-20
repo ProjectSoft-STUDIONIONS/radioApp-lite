@@ -315,6 +315,7 @@ const parseLocales = (length = 9) => {
 					 */
 					if(!fs.existsSync(path.normalize(path.join(filesDir ,`${values.id}.png`)))) {
 						console.log(values.name, "\n", colors.redBright(`Станция не добавлена`), colors.yellowBright(path.basename(files[f])), "\n");
+						reject('');
 						continue;
 					}
 					/**
